@@ -38,7 +38,7 @@
 [data-style="mono"][data-variant="ink"] { --paper: #111111; --ink-rgb: 255, 255, 255; --accent-a: #ffffff; --accent-b: #ffffff; --on-accent: #111111; }
 
 @scope ([data-style="mono"]) to ([data-style]:not([data-style="mono"])) {
-  .card { border: 0; border-top: 2px solid var(--glass-border); }
+  .card:not(.sheet, .palette) { border: 0; border-top: 2px solid var(--glass-border); }
   .list { gap: 0; }
   .item { border: 0; border-bottom: 1px solid rgba(var(--ink-rgb), 0.2); background: transparent; box-shadow: none; }
   .check { border: 1.5px solid rgb(var(--ink-rgb)); background: transparent; }
@@ -152,7 +152,7 @@ html[data-style="frost"] body::after, .style-preview[data-style="frost"]::before
 .style-preview[data-style="frost"]::before { position: absolute; }
 
 @scope ([data-style="frost"]) to ([data-style]:not([data-style="frost"])) {
-  .card, .item { border: 1px solid var(--glass-border); }
+  .card:not(.sheet, .palette), .item { border: 1px solid var(--glass-border); }
   .check { border: 1.5px solid rgba(var(--ink-rgb), 0.3); background: rgba(255, 255, 255, 0.6); }
   .done .check { box-shadow: 0 0 10px color-mix(in srgb, var(--accent-a) 50%, transparent); }
   .page-head h1, .summary-title { font-weight: 300; letter-spacing: 0.04em; }
@@ -198,7 +198,7 @@ html[data-style="frost"] body::after, .style-preview[data-style="frost"]::before
 [data-style="linen"][data-variant="rose"] { --cloth: #f3e7e4; --ink-rgb: 80, 48, 54; --accent-a: #a9566a; --accent-b: #a9566a; }
 
 @scope ([data-style="linen"]) to ([data-style]:not([data-style="linen"])) {
-  .card { border: 1px solid var(--glass-border); outline: 1px dashed rgba(var(--ink-rgb), 0.16); outline-offset: -6px; }
+  .card:not(.sheet, .palette) { border: 1px solid var(--glass-border); outline: 1px dashed rgba(var(--ink-rgb), 0.16); outline-offset: -6px; }
   .item { border: 1px solid var(--glass-border); box-shadow: none; }
   .check { border: 1.5px solid rgba(var(--ink-rgb), 0.45); background: transparent; }
   .done .check { background: var(--accent-a); }
@@ -242,7 +242,7 @@ html[data-style="frost"] body::after, .style-preview[data-style="frost"]::before
 [data-style="candy"][data-variant="melon"] { --c1: #2ec26a; --c2: #e5fbe7; --ink-rgb: 30, 76, 46; --tip-bg: #1e4c2e; }
 
 @scope ([data-style="candy"]) to ([data-style]:not([data-style="candy"])) {
-  .card, .item { border: 2px solid var(--glass-border); }
+  .card:not(.sheet, .palette), .item { border: 2px solid var(--glass-border); }
   .check { border: 2.5px solid var(--glass-border); background: #fff; }
   .done .check { background: radial-gradient(circle at 35% 30%, #ffffff 0 12%, var(--c1) 45%); border-color: var(--c1); }
   /* つやのあるゼリーのボタン */
@@ -291,14 +291,15 @@ html[data-style="frost"] body::after, .style-preview[data-style="frost"]::before
 
 @scope ([data-style="bear"]) to ([data-style]:not([data-style="bear"])) {
   /* カードの上に、まるい耳を 2 つ */
-  .card { position: relative; border: 2px solid var(--glass-border); overflow: visible; }
-  .card:not(.sp-card)::before, .card:not(.sp-card)::after {
+  .card:not(.sheet, .palette, .addbar) { position: relative; overflow: visible; }
+  .card:not(.sheet, .palette) { border: 2px solid var(--glass-border); }
+  .card:not(.sp-card, .sheet, .palette, .addbar)::before, .card:not(.sp-card, .sheet, .palette, .addbar)::after {
     content: ""; position: absolute; top: -12px; width: 30px; height: 30px; border-radius: 50%;
     background: var(--fur); box-shadow: inset 0 0 0 7px var(--fur), inset 0 0 0 30px color-mix(in srgb, var(--fur) 55%, #ffd9c0);
     z-index: -1;
   }
-  .card:not(.sp-card)::before { left: 22px; }
-  .card:not(.sp-card)::after { right: 22px; }
+  .card:not(.sp-card, .sheet, .palette, .addbar)::before { left: 22px; }
+  .card:not(.sp-card, .sheet, .palette, .addbar)::after { right: 22px; }
   .item { border: 2px solid var(--glass-border); }
   .check { border: 2px solid var(--glass-border); background: #fff; }
   .done .check { background: var(--fur); border-color: var(--fur); }
@@ -368,7 +369,7 @@ html[data-style="sakura"] body::after, .style-preview[data-style="sakura"]::befo
 @keyframes petals { from { background-position: 0 0; } to { background-position: 120px 520px; } }
 
 @scope ([data-style="sakura"]) to ([data-style]:not([data-style="sakura"])) {
-  .card, .item { border: 1px solid var(--glass-border); }
+  .card:not(.sheet, .palette), .item { border: 1px solid var(--glass-border); }
   .check { border: 1.5px solid var(--accent-b); background: transparent; }
   .done .check { background: var(--accent-a); border-color: var(--accent-a); }
   .page-head h1, .summary-title, .section-head > span:first-child { font-family: var(--font-title); }
@@ -414,7 +415,7 @@ html[data-style="sakura"] body::after, .style-preview[data-style="sakura"]::befo
 [data-style="y2k"][data-variant="chrome"] { --h1: #dfe6ef; --h2: #ffffff; --h3: #b9c5d6; --accent-a: #5a6b85; --accent-b: #9fb0c8; --ink-rgb: 34, 44, 60; --glass-border: rgba(90, 107, 133, 0.35); --page-bg: linear-gradient(160deg, #eef1f5, #dfe5ec 50%, #f6f8fb); }
 
 @scope ([data-style="y2k"]) to ([data-style]:not([data-style="y2k"])) {
-  .card { border: 1.5px solid var(--glass-border); }
+  .card:not(.sheet, .palette) { border: 1.5px solid var(--glass-border); }
   .list > .item { border: 1.5px solid var(--glass-border); padding-left: 14px; }
   .check { border: 2px solid var(--glass-border); background: #fff; }
   .done .check { background: var(--holo); border-color: #fff; box-shadow: 0 0 0 2px var(--accent-a); }
@@ -468,7 +469,7 @@ html[data-style="sakura"] body::after, .style-preview[data-style="sakura"]::befo
 
 @scope ([data-style="picnic"]) to ([data-style]:not([data-style="picnic"])) {
   /* 紙ナプキン：ふちをギザギザに */
-  .card {
+  .card:not(.sheet, .palette) {
     border: 0;
     outline: 2px dashed color-mix(in srgb, var(--accent-a) 35%, transparent); outline-offset: -8px;
   }
@@ -520,7 +521,7 @@ html[data-style="sakura"] body::after, .style-preview[data-style="sakura"]::befo
 [data-style="midnight"][data-variant="emerald"] { --navy: #071a17; --gold: #5fc9a5; }
 
 @scope ([data-style="midnight"]) to ([data-style]:not([data-style="midnight"])) {
-  .card { border: 1px solid var(--glass-border); outline: 1px solid color-mix(in srgb, var(--gold) 15%, transparent); outline-offset: 3px; }
+  .card:not(.sheet, .palette) { border: 1px solid var(--glass-border); outline: 1px solid color-mix(in srgb, var(--gold) 15%, transparent); outline-offset: 3px; }
   .list { gap: 0; }
   .item { border: 0; border-bottom: 1px solid color-mix(in srgb, var(--gold) 18%, transparent); background: transparent; box-shadow: none; }
   .check { border: 1px solid var(--gold); background: transparent; border-radius: 0; rotate: 45deg; width: 18px; height: 18px; }
@@ -574,11 +575,11 @@ html[data-style="sakura"] body::after, .style-preview[data-style="sakura"]::befo
 
 @scope ([data-style="cyber"]) to ([data-style]:not([data-style="cyber"])) {
   /* 右上と左下を斜めに切り落とす */
-  .card, .item, .addbar, .btn, .chip {
+  .card:not(.sheet, .palette), .item, .addbar, .btn, .chip {
     clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
   }
   .chip, .btn { --cut: 6px; }
-  .card { border: 0; border-left: 3px solid var(--hot); }
+  .card:not(.sheet, .palette) { border: 0; border-left: 3px solid var(--hot); }
   .item { border: 0; border-left: 2px solid var(--glass-border); box-shadow: none; }
   .check { border: 2px solid var(--hot); background: transparent; }
   .done .check { background: var(--hot); }
@@ -714,7 +715,7 @@ html[data-style="ember"] body::after, .style-preview[data-style="ember"]::before
 @keyframes embers { from { background-position: 0 0; } to { background-position: 40px -360px; } }
 
 @scope ([data-style="ember"]) to ([data-style]:not([data-style="ember"])) {
-  .card, .item { border: 1px solid var(--glass-border); }
+  .card:not(.sheet, .palette), .item { border: 1px solid var(--glass-border); }
   .check { border: 1.5px solid color-mix(in srgb, var(--fire) 60%, transparent); background: transparent; }
   .done .check { box-shadow: 0 0 12px var(--fire); }
   .check svg { stroke: var(--on-accent); }
@@ -776,7 +777,7 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
 @keyframes bubbles { from { background-position: 0 0; } to { background-position: 0 -420px; } }
 
 @scope ([data-style="deepsea"]) to ([data-style]:not([data-style="deepsea"])) {
-  .card, .item { border: 1px solid var(--glass-border); }
+  .card:not(.sheet, .palette), .item { border: 1px solid var(--glass-border); }
   .check { border: 1.5px solid color-mix(in srgb, var(--glow) 55%, transparent); background: transparent; }
   .done .check { box-shadow: 0 0 14px var(--glow), 0 0 4px #fff; }
   .check svg { stroke: var(--on-accent); }
@@ -832,9 +833,10 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
 }
 
 @scope ([data-style="blueprint"]) to ([data-style]:not([data-style="blueprint"])) {
-  .card { border: 1.5px solid var(--line); position: relative; overflow: visible; }
+  .card:not(.sheet, .palette) { border: 1.5px solid var(--line); }
+  .card:not(.sheet, .palette, .addbar) { position: relative; overflow: visible; }
   /* 寸法線：カードの上に、はばを示す線 */
-  .card:not(.sp-card)::before {
+  .card:not(.sp-card, .sheet, .palette, .addbar)::before {
     content: ""; position: absolute; left: 0; right: 0; top: -10px; height: 7px;
     border-left: 1px solid var(--line); border-right: 1px solid var(--line);
     background: linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat; opacity: 0.6;
@@ -889,7 +891,7 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
 
 @scope ([data-style="museum"]) to ([data-style]:not([data-style="museum"])) {
   /* 額縁：太い枠と内側の白いマット、壁に落ちる影 */
-  .card {
+  .card:not(.sheet, .palette, .addbar) {
     border: 10px solid var(--frame);
     border-image: linear-gradient(135deg, color-mix(in srgb, var(--frame) 70%, #fff), var(--frame) 40%, color-mix(in srgb, var(--frame) 60%, #000)) 1;
     box-shadow: inset 0 0 0 8px #ffffff, inset 0 0 0 9px rgba(0, 0, 0, 0.08), 0 18px 30px rgba(0, 0, 0, 0.25);
@@ -944,7 +946,7 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
 [data-style="botanical"][data-variant="lavender"] { --paper: #efebf2; --leaf: #6d5a9e; --ink-rgb: 46, 40, 60; }
 
 @scope ([data-style="botanical"]) to ([data-style]:not([data-style="botanical"])) {
-  .card { border: 1px solid var(--glass-border); outline: 3px double var(--glass-border); outline-offset: 4px; }
+  .card:not(.sheet, .palette) { border: 1px solid var(--glass-border); outline: 3px double var(--glass-border); outline-offset: 4px; }
   .list { gap: 0; }
   .item { border: 0; border-bottom: 1px dotted var(--glass-border); background: transparent; box-shadow: none; }
   .check { border: 1px solid rgba(var(--ink-rgb), 0.55); background: transparent; }
@@ -1000,7 +1002,7 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
   .content > .view { max-width: 520px; margin: 0 auto; }
   /* 紙がせまいので、今日のまとめは 2 段に */
   .layout-wide .summary, .layout-xwide .summary { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "ring text" "ring week"; }
-  .card {
+  .card:not(.sheet, .palette, .addbar) {
     background: var(--slip); border: 0; padding-bottom: 22px;
     -webkit-mask: linear-gradient(#000, #000) top / 100% calc(100% - 8px) no-repeat, conic-gradient(from 135deg at bottom, #000 90deg, transparent 0) bottom / 12px 8px repeat-x;
     mask: linear-gradient(#000, #000) top / 100% calc(100% - 8px) no-repeat, conic-gradient(from 135deg at bottom, #000 90deg, transparent 0) bottom / 12px 8px repeat-x;
@@ -1058,8 +1060,8 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
 
 @scope ([data-style="origami"]) to ([data-style]:not([data-style="origami"])) {
   /* 右上の角を折る（三角の影） */
-  .card, .list > .item { position: relative; clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%); }
-  .card::after, .list > .item::after {
+  .card:not(.sheet, .palette, .addbar), .list > .item { position: relative; clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%); }
+  .card:not(.sheet, .palette, .addbar)::after, .list > .item::after {
     content: ""; position: absolute; top: 0; right: 0; width: 22px; height: 22px;
     background: linear-gradient(225deg, transparent 50%, color-mix(in srgb, var(--fold, var(--o1)) 75%, #000) 50%);
     pointer-events: none;
@@ -1160,7 +1162,7 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
   :scope[data-variant="blue"] .section-head > span:first-child { background: rgba(0, 0, 0, 0.08); color: rgb(var(--ink-rgb)); }
   .section-head .count { color: inherit; opacity: 0.8; }
   .section-head .link { position: absolute; right: 0; color: var(--on-room); }
-  .card { border: 0; }
+  .card:not(.sheet, .palette) { border: 0; }
   .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--me); color: #fff; box-shadow: none; }
   .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff; }
   .addbar { border-radius: 24px; }
@@ -1231,7 +1233,7 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
   .section-head { font-family: var(--font-title); font-weight: 300; font-size: 22px; text-transform: lowercase; letter-spacing: 0; color: rgb(var(--ink-rgb)); }
   .page-head h1, .titlebar .date { font-family: var(--font-title); font-weight: 300; }
   .page-head h1 { font-size: 40px; text-transform: lowercase; }
-  .card { border: 0; }
+  .card:not(.sheet, .palette) { border: 0; }
   .check { border-color: rgba(var(--ink-rgb), 0.6); }
   .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--m2); color: #fff; box-shadow: none; }
   .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff; }
@@ -1293,7 +1295,7 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
   /* 見出しは年表の「時代」のラベル */
   .section-head > span:first-child { background: var(--rail); color: var(--on-accent); padding: 3px 12px; border-radius: 999px; font-size: 12px; }
   .section-head .count { color: inherit; opacity: 0.8; }
-  .card { border: 1px solid var(--glass-border); }
+  .card:not(.sheet, .palette) { border: 1px solid var(--glass-border); }
   .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; }
   .tab.active, .nav-item.active { background: color-mix(in srgb, var(--rail) 14%, transparent); box-shadow: none; }
   .nav-item.active svg, .tab.active svg { color: var(--rail); }
@@ -1431,7 +1433,7 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
   .titlebar .date { font-family: var(--font-title); font-weight: 700; font-size: 26px; }
   .titlebar .greeting { text-transform: uppercase; letter-spacing: 0.2em; font-size: 10px; }
   .summary-title { font-family: var(--font-title); font-size: 24px; }
-  .card { border: 0; border-top: 4px solid var(--hot); }
+  .card:not(.sheet, .palette) { border: 0; border-top: 4px solid var(--hot); }
   .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--hot); color: var(--on-accent); box-shadow: none; }
   .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: var(--on-accent); }
   .tip, .toast, .toast button { color: var(--paper); }
@@ -1498,7 +1500,7 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
   .list > .item .row-actions { position: absolute; right: 6px; bottom: 6px; }
   .section-head > span:first-child { display: inline-block; padding: 3px 14px; background: rgba(255, 255, 255, 0.85); color: rgb(var(--ink-rgb)); rotate: -1.5deg; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18); }
   .section-head .count { color: rgba(var(--ink-rgb), 0.6); }
-  .card { box-shadow: var(--shadow); }
+  .card:not(.sheet, .palette) { box-shadow: var(--shadow); }
   .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--accent-a); color: #fff; box-shadow: none; }
   .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff; }
   .sidebar { background: #fffef9; padding: 12px 8px; box-shadow: var(--shadow); rotate: -0.5deg; }

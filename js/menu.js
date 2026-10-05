@@ -246,6 +246,8 @@ document.addEventListener('contextmenu', (e) => {
     } else if (kind === 'someday') {
       const s = state.data.someday.find((x) => x.id === row.dataset.id);
       if (s) somedayMenu(s, e.clientX, e.clientY);
+    } else if (['shop', 'money', 'note', 'count'].includes(kind)) {
+      lifeMenu(kind, row.dataset.id, e.clientX, e.clientY);
     } else if (kind === 'class') {
       classMenu(row.dataset.day, Number(row.dataset.period), e.clientX, e.clientY);
     }

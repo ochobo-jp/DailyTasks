@@ -191,6 +191,23 @@ function weatherStrip() {
   </section>`;
 }
 
+// iPhone の今日の画面：天気は 1 行だけ（押すとくわしく）
+function weatherLine() {
+  if (!weatherOn()) return '';
+  if (!wxPrefs().place) return weatherPrompt();
+  if (!hasWeather()) return '';
+  const c = weather.data.current;
+  const t = dayForecast(state.today);
+  const info = wxInfo(c.weather_code, c.is_day);
+  const tip = weatherAdvice()[0];
+  return `<button class="wx-mini" data-act="wx-open" aria-label="くわしい天気">
+    <span class="wx-mini-icon">${info.icon}</span><b>${deg(c.temperature_2m)}</b>
+    ${t ? `<span class="wx-mini-hilo"><i class="hi">${deg(t.max)}</i>/<i class="lo">${deg(t.min)}</i></span>` : ''}
+    <span class="wx-mini-tip">${tip ? `${tip.icon} ${escapeHtml(tip.text)}` : escapeHtml(info.label)}</span>
+    <span class="wx-mini-go">${ICON.chevR}</span>
+  </button>`;
+}
+
 // 右パネルのカード
 function weatherPanel() {
   if (!weatherOn()) return '';

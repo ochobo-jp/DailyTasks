@@ -471,7 +471,7 @@ const STYLE_FILTERS = [
 
 // 端末のダークモード（iPhone スタイルはこれに合わせる）
 const systemDark = matchMedia('(prefers-color-scheme: dark)');
-systemDark.addEventListener('change', () => { if (styleById(prefs().style).autoDark) { applyAppearance(); renderAll(); } });
+systemDark.addEventListener('change', () => { if (state.data && styleById(prefs().style).autoDark) { applyAppearance(); renderAll(); } });
 
 const styleById = (id) => STYLES.find((s) => s.id === id) || STYLES[0];
 const variantOf = (style, id) => style.variants.find((v) => v.id === id) || style.variants[0];

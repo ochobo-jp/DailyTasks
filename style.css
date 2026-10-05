@@ -1623,3 +1623,119 @@ kbd {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ============================================================
+   くらし：買い物・お金・メモ・カウントダウン
+   ============================================================ */
+
+.life-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 0 0 14px; }
+.life-tab {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 4px 8px;
+  border-radius: var(--r-item);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--ink-2); font-size: 12px; font-weight: 650;
+}
+.life-tab svg { width: 22px; height: 22px; }
+.life-tab.on { background: var(--accent-a); border-color: transparent; color: var(--on-accent); }
+.life-tab.on svg { color: var(--on-accent); }
+.life-tab i { position: absolute; top: 5px; right: 8px; font-style: normal; font-size: 10.5px; min-width: 17px; height: 17px; line-height: 17px; border-radius: 9px; background: var(--danger); color: #fff; }
+.layout-compact .life-tab span { font-size: 11px; white-space: nowrap; }
+
+.qty { font-size: 12px; color: var(--accent); font-weight: 700; margin-left: 4px; }
+.shop-freq { display: flex; flex-wrap: wrap; gap: 6px; }
+.shop-freq .chip svg { width: 13px; height: 13px; }
+
+.money-head { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; margin-bottom: 14px; }
+.money-month { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.money-month b { font-size: 14px; min-width: 7em; text-align: center; }
+.money-big { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.money-big small { font-size: 12px; color: var(--ink-2); }
+.money-big b { font-family: var(--font-num); font-size: 32px; font-weight: 750; letter-spacing: -0.01em; }
+.money-in { font-size: 13px; color: #1f9d55; font-weight: 650; }
+.money-bar { height: 10px; border-radius: 5px; background: var(--track); overflow: hidden; }
+.money-bar i { display: block; height: 100%; border-radius: 5px; background: var(--grad); }
+.money-bar.over i { background: var(--danger); }
+.money-sub { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); }
+.money-cats { padding: 14px 18px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px; }
+.money-cat { display: grid; grid-template-columns: 7em minmax(0, 1fr) auto; align-items: center; gap: 10px; font-size: 13px; }
+.money-cat i { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--accent-a) var(--w), var(--track) var(--w)); }
+.money-cat b { font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.money-ic { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+.money-amt { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 15px; white-space: nowrap; }
+.item.money.income .money-amt { color: #1f9d55; }
+
+.note-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.layout-compact .note-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.note-card {
+  position: relative;
+  display: flex; flex-direction: column; align-items: stretch; gap: 6px;
+  min-height: 110px; padding: 12px 14px 10px;
+  text-align: left;
+  border-radius: var(--r-item);
+  background: var(--note, var(--glass));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+}
+.note-card[style*="--note"] { color: #2a2a2a; }
+.note-card b { font-size: 14px; font-weight: 700; line-height: 1.4; word-break: break-word; }
+.note-body { font-size: 12.5px; line-height: 1.55; color: inherit; opacity: 0.75; white-space: pre-wrap; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.note-card small { margin-top: auto; font-size: 11px; opacity: 0.55; }
+.note-pin { position: absolute; top: 8px; right: 8px; color: var(--accent); }
+.note-pin svg { width: 14px; height: 14px; }
+.note-edit { min-height: 220px; font-size: 15px; line-height: 1.7; width: 100%; }
+.note-colors { display: flex; gap: 8px; margin: 12px 0 4px; }
+.note-color { width: 30px; height: 30px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.note-color.on { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 0 0 2px var(--sheet-bg), 0 0 0 4px var(--accent-a); }
+
+.count-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.layout-compact .count-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.count-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  padding: 14px; text-align: left;
+  border-radius: var(--r-item);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow);
+}
+.count-emoji { font-size: 26px; }
+.count-title { font-size: 13.5px; font-weight: 650; line-height: 1.35; word-break: break-word; }
+.count-days { font-size: 12px; color: var(--ink-2); }
+.count-days b { font-family: var(--font-num); font-size: 30px; font-weight: 750; color: var(--accent); margin: 0 3px; }
+.count-card small { font-size: 11px; color: var(--ink-3); }
+.count-card.today { background: var(--accent-soft); border-color: var(--accent-a); }
+.count-card.past { opacity: 0.55; }
+.count-strip { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: -4px 0 14px; padding: 2px 1px; }
+.count-strip::-webkit-scrollbar { display: none; }
+.count-chip {
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 12px; border-radius: var(--r-chip);
+  background: var(--glass); border: 1px solid var(--glass-border);
+  font-size: 12.5px; white-space: nowrap;
+}
+.count-chip b { color: var(--accent); }
+
+/* ---------- iPhone の今日の画面 ---------- */
+
+.wx-mini {
+  width: 100%;
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; margin-bottom: 12px;
+  border-radius: var(--r-card);
+  background: var(--glass); border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow);
+  text-align: left; font-size: 13px;
+}
+.wx-mini-icon { font-size: 22px; }
+.wx-mini b { font-family: var(--font-num); font-size: 17px; }
+.wx-mini-hilo { font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+.wx-mini-hilo .hi { color: #e8590c; font-style: normal; }
+.wx-mini-hilo .lo { color: #1c7ed6; font-style: normal; }
+.wx-mini-tip { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+.wx-mini-go svg { width: 16px; height: 16px; color: var(--ink-3); }
+.cfold > .section-head { cursor: pointer; padding: 10px 4px; }
+.cfold-body > .card { margin: 0; }
+.cfold-body > .card > .card-head { display: none; }

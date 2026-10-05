@@ -68,6 +68,14 @@ function addFromText(text, { source = 'bar' } = {}) {
   if (!text) return null;
   if (source !== 'paste') checkpoint();
 
+  // くらし：開いているタブ（買い物・お金・メモ・カウントダウン）に追加する
+  if (state.view === 'life' && source !== 'palette') {
+    const made = lifeAddFromText(text);
+    if (!made) return null;
+    if (source !== 'paste') { save(); transition(refresh); }
+    return made;
+  }
+
   // いつか：ずっと先のことはカードにする
   if (state.view === 'someday' && source !== 'palette') {
     const item = addSomeday(text);
@@ -502,6 +510,7 @@ const actions = {
     toast('まとめて出席にしました', { undo: true });
   },
 };
+Object.assign(actions, LIFE_ACTIONS);
 
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]');
@@ -535,6 +544,10 @@ document.addEventListener('input', (e) => {
   }
   if (e.target.id === 'search') {
     state.filter.query = e.target.value;
+    renderContent();
+  }
+  if (e.target.id === 'noteSearch') {
+    state.noteQuery = e.target.value;
     renderContent();
   }
 });
@@ -898,6 +911,7 @@ window.api.onFocus(checkDayChange);
   resetHistory();
   checkBadges({ announce: false });
   try {
+    state.lifeTab = localStorage.getItem('lifeTab') || 'shop';
     const v = localStorage.getItem('view');
     if (VIEWS.some((x) => x.id === v)) state.view = v;
   } catch { /* 無視 */ }

@@ -14,7 +14,7 @@ const BGM_SOUNDS = [
   { id: 'forest', icon: '🌲', name: '森の小鳥' },
   { id: 'insects', icon: '🦗', name: '虫の声' },
   { id: 'chime', icon: '🎐', name: '風鈴' },
-  { id: 'piano', icon: '🎹', name: 'ピアノ' },
+  { id: 'celtic', icon: '🍀', name: 'ケルト' },
   { id: 'lofi', icon: '🎧', name: 'ローファイ' },
   { id: 'brown', icon: '🟤', name: 'ブラウンノイズ' },
   { id: 'white', icon: '⚪', name: 'ホワイトノイズ' },

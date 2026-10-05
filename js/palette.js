@@ -67,7 +67,7 @@ function paletteCommands() {
     }, '', 'bgm music sound'),
     c('sun', '天気をくわしく見る', openWeatherSheet, '', 'weather tenki'),
     c('sun', '天気の場所を変える', openPlaceSheet, '', 'weather place location'),
-    c('music', 'BGM を選ぶ', () => openBgmMenu(innerWidth / 2 - 150, 90), '', 'bgm music rain lofi piano'),
+    c('music', 'BGM を選ぶ', () => openBgmMenu(innerWidth / 2 - 150, 90), '', 'bgm music rain lofi celtic'),
     c('moon', isDarkNow() ? '明るい色にする' : '夜モード（暗い色）にする', () => setDarkMode(!isDarkNow()), '', 'dark theme night'),
     ...STYLES.map((s) => c('paint', `スタイル：${s.name}`, () => { setStyle(s.id); renderAll(); toast(`スタイルを「${s.name}」にしました`); }, '', `style theme ${s.id}`)),
     c('expand', '全画面の切り替え', () => window.api.toggleFullScreen(), 'F11', 'fullscreen'),

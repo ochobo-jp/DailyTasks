@@ -10,6 +10,7 @@ const VIEWS = [
   { id: 'routine', label: 'ルーティン', icon: 'repeat' },
   { id: 'school', label: '学校', icon: 'school', feature: 'school' },
   { id: 'someday', label: 'いつか', icon: 'star', feature: 'someday' },
+  { id: 'life', label: 'くらし', icon: 'home', feature: 'life' },
   { id: 'calendar', label: 'カレンダー', icon: 'calendar' },
   { id: 'stats', label: '記録', icon: 'chart' },
   { id: 'focus', label: '集中', icon: 'timer' },
@@ -87,7 +88,7 @@ function renderSidebar() {
 }
 
 // iPhone：下のタブは 4 つ＋「その他」。よく使う順に並べ、残りは「その他」から開く
-const TOUCH_TAB_ORDER = ['today', 'todo', 'school', 'calendar', 'routine', 'someday', 'focus', 'stats'];
+const TOUCH_TAB_ORDER = ['today', 'todo', 'school', 'life', 'calendar', 'routine', 'someday', 'focus', 'stats'];
 
 function touchTabs() {
   const all = visibleViews();
@@ -187,7 +188,56 @@ function renderRightPanel() {
 //  今日
 // ============================================================
 
+// iPhone の今日の画面：最初は「次にやること」だけ。ほかは件数つきでたたんでおく
+function compactFold(id, title, count, inner, defaultOpen = false, link = '') {
+  if (!inner) return '';
+  const open = state.folds[id] ?? defaultOpen;
+  return `<details class="section fold cfold" data-fold="${id}"${open ? ' open' : ''}>
+    <summary class="section-head"><span><span class="chev">›</span>${title} <span class="count">${count}</span></span>${link}</summary>
+    <div class="cfold-body">${inner}</div>
+  </details>`;
+}
+
+function renderTodayCompact() {
+  const t = state.today;
+  const routines = state.data.routines.filter((r) => isScheduled(r, t));
+  const { overdue, due, doneToday } = todayTodos();
+  due.sort((a, b) => byTime(a, b) || b.priority - a.priority);
+  const tomorrow = state.data.todos.filter((x) => !x.done && x.due === addDays(t, 1)).sort(byTime);
+  const s = todaySummary();
+  const list = (rows) => `<div class="list">${rows.join('')}</div>`;
+
+  let html = installHint() + weatherLine() + summaryCard() + countdownStrip();
+  if (s.total > 0 && s.left === 0) html += '<div class="all-done">🎉 今日のタスクはぜんぶ完了！おつかれさまでした</div>';
+
+  const next = pendingToday().slice(0, 3);
+  if (next.length) {
+    html += section('次にやること', next.map(({ kind, item }) => (kind === 'todo' ? todoRow(item, { context: 'today' }) : routineRow(item))),
+      { count: s.left > next.length ? `ほか ${s.left - next.length} 件` : '' });
+  } else if (!s.total) {
+    html += emptyState('🌿', '今日の予定はまだありません。<br>下の欄からやることを追加してみてね');
+  }
+
+  // 授業は、いま授業中か 1 時間以内に始まるときだけ開いておく
+  const cls = classesOn(t);
+  if (cls.length) {
+    const now = nowMinutes();
+    const soon = cls.some((c) => toMinutes(c.end) > now && toMinutes(c.start) - 60 <= now);
+    const unmarked = cls.filter((c) => !c.rec).length;
+    html += compactFold('c-classes', '今日の授業', `${cls.length}コマ`, list(cls.map((c) => classRow(c, t))), soon,
+      unmarked ? `<button class="link" data-act="attend-all" data-day="${t}">まとめて出席</button>` : '');
+  }
+  if (routines.length) html += compactFold('c-routines', 'ルーティン', `${s.rDone}/${s.routines}`, list(routines.map((r) => routineRow(r))));
+  const todays = [...overdue, ...due, ...doneToday];
+  if (todays.length) html += compactFold('c-todos', '今日の ToDo', `${doneToday.length}/${todays.length}`, list(todays.map((x) => todoRow(x, { context: 'today' }))));
+  if (tomorrow.length) html += compactFold('c-tomorrow', '明日の予定', tomorrow.length, list(tomorrow.map((x) => todoRow(x))), new Date().getHours() >= 18);
+  const j = journalOf(t);
+  html += compactFold('c-journal', '今日のひとこと', j.mood != null ? MOODS[j.mood] : (j.text ? '✏️' : ''), journalCard());
+  return html;
+}
+
 function renderToday() {
+  if (state.layout === 'compact' && IS_TOUCH) return renderTodayCompact();
   const t = state.today;
   const routines = state.data.routines.filter((r) => isScheduled(r, t));
   const { overdue, due, doneToday } = todayTodos();
@@ -198,7 +248,7 @@ function renderToday() {
   const s = todaySummary();
   const wide = state.layout !== 'compact';
 
-  let html = installHint() + (state.layout === 'xwide' ? '' : weatherStrip()) + summaryCard();
+  let html = installHint() + (state.layout === 'xwide' ? '' : weatherStrip()) + summaryCard() + countdownStrip();
   if (s.total > 0 && s.left === 0) html += '<div class="all-done">🎉 今日のタスクはぜんぶ完了！おつかれさまでした</div>';
 
   let colA = section('ルーティン', routines.map((r) => routineRow(r)), { count: `${s.rDone}/${s.routines}` });
@@ -621,7 +671,7 @@ function preserveFocus(container, fn) {
 function renderContent() {
   const render = {
     today: renderToday, todo: renderTodoView, routine: renderRoutineView,
-    school: renderSchoolView, someday: renderSomedayView,
+    school: renderSchoolView, someday: renderSomedayView, life: renderLifeView,
     calendar: renderCalendarView, stats: renderStatsView, focus: renderFocusView,
   }[state.view] || renderToday;
   const enter = lastView !== state.view;
@@ -712,6 +762,8 @@ function renderAddbar() {
       ${Object.entries(SOMEDAY_KINDS).map(([k, x]) => `<button type="button" class="chip ${state.newSomedayKind === k ? 'on' : ''}" data-sdkind="${k}">${x.icon} ${x.name}</button>`).join('')}
       <span class="chip-sep"></span>
       ${HORIZONS.map((h) => `<button type="button" class="chip ${state.newSomedayHorizon === h.id ? 'on' : ''}" data-sdhorizon="${h.id}">${h.name}</button>`).join('')}`;
+  } else if (v === 'life') {
+    lifeAddbar(input, opts, roomy);
   } else if (v === 'school') {
     const subs = school().subjects;
     bar.hidden = !school().setup;
