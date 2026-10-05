@@ -256,7 +256,6 @@ const STYLE_FILTERS = [
   { id: 'unique', name: '個性派' },
   { id: 'bold', name: '大胆（配置も変わる）' },
 ];
-const styleHasDark = (s) => !!(s.dark || s.darkToggle || s.variants.some((v) => v.dark));
 
 // 端末のダークモード（iPhone スタイルはこれに合わせる）
 const systemDark = matchMedia('(prefers-color-scheme: dark)');
