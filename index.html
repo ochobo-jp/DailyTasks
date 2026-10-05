@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ja" data-style="ios" data-variant="blue" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.open-meteo.com https://air-quality-api.open-meteo.com https://nominatim.openstreetmap.org; img-src 'self' data: blob:; media-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self'; manifest-src 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Daily Tasks">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#f2f2f7">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/favicon-32.png">
+  <title>Daily Tasks</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="ios.css">
+</head>
+<body class="layout-compact">
+  <div class="blobs" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+  </div>
+
+  <header class="titlebar" id="titlebar">
+    <div class="tb-left" id="tbLeft"></div>
+    <div class="tb-right">
+      <button class="timer-chip" id="timerChip" data-act="timer-chip" hidden></button>
+      <button class="icon-btn" id="searchBtn" title="検索・コマンド"></button>
+      <button class="icon-btn" id="setBtn" title="設定"></button>
+      <button class="icon-btn" id="miniBtn" title="ミニ表示"></button>
+      <button class="icon-btn" id="pinBtn" title="最前面に固定"></button>
+      <button class="icon-btn" id="minBtn" title="最小化"></button>
+      <button class="icon-btn" id="maxBtn" title="最大化"></button>
+      <button class="icon-btn close" id="hideBtn" title="トレイにしまう"></button>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main">
+      <nav class="tabbar" id="tabbar"></nav>
+      <main class="content" id="content"></main>
+      <footer class="addbar card" id="addbar">
+        <form id="addForm" autocomplete="off">
+          <div class="add-row">
+            <input id="addInput" type="text" maxlength="300" placeholder="">
+            <button type="submit" class="add-btn" title="追加（Enter）"></button>
+          </div>
+          <div class="add-preview" id="addPreview"></div>
+          <div class="add-options" id="addOptions"></div>
+        </form>
+      </footer>
+    </div>
+
+    <aside class="rightpanel" id="rightpanel"></aside>
+  </div>
+
+  <div class="mini-bar" id="mini"></div>
+  <div class="zen" id="zen" hidden></div>
+
+  <div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+  <div class="sheet card" id="sheet" role="dialog" hidden></div>
+
+  <div class="palette-backdrop" id="paletteBackdrop" hidden></div>
+  <div class="palette card" id="palette" role="dialog" aria-label="検索とコマンド" hidden>
+    <div class="pal-input-row">
+      <span class="pal-ic" id="palIcon"></span>
+      <input id="palInput" type="text" autocomplete="off" spellcheck="false" placeholder="ToDo・ルーティン・コマンドを検索…">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="pal-list" id="palList" role="listbox"></div>
+    <div class="pal-foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> 選ぶ</span>
+      <span><kbd>Enter</kbd> 実行</span>
+      <span class="pal-foot-hint">見つからなければ、そのまま Enter で追加できます</span>
+    </div>
+  </div>
+
+  <div class="menu" id="menu" role="menu" hidden></div>
+  <div class="toast" id="toast" hidden></div>
+  <div class="tip" id="tip" hidden></div>
+  <canvas class="confetti" id="confetti"></canvas>
+
+  <script src="api.js"></script>
+  <script src="core.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/themes.js"></script>
+  <script src="js/badges.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/timeline.js"></script>
+  <script src="js/school.js"></script>
+  <script src="js/someday.js"></script>
+  <script src="js/weather.js"></script>
+  <script src="js/views.js"></script>
+  <script src="js/sheets.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/bgm.js"></script>
+  <script src="js/bgm-sounds.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/palette.js"></script>
+  <script src="js/mini.js"></script>
+  <script src="js/app.js"></script>
+  <script src="touch.js"></script>
+</body>
+</html>
