@@ -1464,6 +1464,539 @@ html[data-style="vapor"] body::before {
   .sp-line { background: linear-gradient(90deg, var(--c1), var(--c2)); }
 }
 
+/* ============================================================
+   ここから「大胆」：色だけでなく、並び方や形まで変える
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   20. 付箋ボード：タスク 1 つが付箋 1 枚
+   ------------------------------------------------------------ */
+
+[data-style="board"] {
+  --font: "Note Latin", "UD Digi Kyokasho NK-R", "UD Digi Kyokasho N", "Hiragino Maru Gothic ProN", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --font-num: var(--font);
+  --wall: #c69c6d;
+  --page-bg:
+    radial-gradient(rgba(90, 60, 30, 0.28) 1px, transparent 1.6px) 0 0 / 9px 9px,
+    radial-gradient(rgba(255, 240, 210, 0.16) 1px, transparent 1.6px) 4px 5px / 11px 11px,
+    var(--wall);
+  --noise-opacity: 0.25;
+  --ink-rgb: 52, 40, 30;
+  --accent-a: #d9443a;
+  --accent-b: #d9443a;
+  --grad: linear-gradient(var(--accent-a), var(--accent-a));
+  --glass: #fffdf6;
+  --glass-soft: rgba(255, 253, 246, 0.86);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.75);
+  --field-focus: #ffffff;
+  --sheet-bg: #fffdf6;
+  --zen-bg: var(--wall);
+  --shadow: 0 2px 3px rgba(0, 0, 0, 0.18), 0 8px 18px rgba(0, 0, 0, 0.14);
+  --shadow-pop: 0 20px 50px rgba(0, 0, 0, 0.35);
+  --tip-bg: #34281e;
+  --r-card: 3px;
+  --r-item: 2px;
+  --r-field: 4px;
+  --n1: #fff59d; --n2: #ffcdd2; --n3: #c8e6ff; --n4: #d4f5c9; --n5: #ffe0b2;
+  --pin: radial-gradient(circle at 35% 35%, #ff8a80, #c62828 60%, #8e0000);
+}
+[data-style="board"][data-variant="wall"] {
+  --wall: #efebe4;
+  --page-bg: var(--wall);
+  --noise-opacity: 0.12;
+}
+[data-style="board"][data-variant="peg"] {
+  --wall: #cfe3d8;
+  --page-bg: radial-gradient(rgba(30, 60, 45, 0.22) 2.2px, transparent 2.8px) 0 0 / 24px 24px, var(--wall);
+  --noise-opacity: 0.08;
+  --pin: radial-gradient(circle at 35% 35%, #8ab4ff, #1e5bd8 60%, #0b2f80);
+  --accent-a: #1e5bd8; --accent-b: #1e5bd8;
+}
+
+@scope ([data-style="board"]) to ([data-style]:not([data-style="board"])) {
+  .list:has(> .item) { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 18px 14px; padding: 12px 4px 8px; }
+  .layout-compact .list:has(> .item) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .list > .item {
+    flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 6px;
+    min-height: 120px;
+    padding: 24px 12px 40px;
+    background: var(--note, var(--n1));
+    border: 0;
+    border-radius: 2px 2px 18px 2px;
+    box-shadow: 2px 7px 12px rgba(0, 0, 0, 0.2), inset 0 -10px 18px rgba(0, 0, 0, 0.03);
+    rotate: -1.4deg;
+    transition: rotate 0.2s, scale 0.2s, opacity 0.25s;
+  }
+  .list > .item:nth-child(5n+2) { --note: var(--n2); rotate: 1.2deg; }
+  .list > .item:nth-child(5n+3) { --note: var(--n3); rotate: -0.6deg; }
+  .list > .item:nth-child(5n+4) { --note: var(--n4); rotate: 1.8deg; }
+  .list > .item:nth-child(5n+5) { --note: var(--n5); rotate: -2deg; }
+  .list > .item:hover { rotate: 0deg; scale: 1.04; z-index: 2; background: var(--note, var(--n1)); }
+  .list > .item::before {
+    content: ""; position: absolute; top: 7px; left: 50%;
+    width: 14px; height: 14px; margin-left: -7px; border-radius: 50%;
+    background: var(--pin);
+    box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.35);
+  }
+  :scope[data-variant="wall"] .list > .item::before {
+    width: 62px; height: 20px; margin-left: -31px; top: -9px; border-radius: 1px;
+    background: rgba(255, 255, 255, 0.6); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); rotate: -4deg;
+  }
+  .list > .item .body { width: 100%; }
+  .list > .item .title { font-size: 15px; line-height: 1.45; }
+  .list > .item .check { position: absolute; right: 10px; bottom: 10px; background: rgba(255, 255, 255, 0.6); border: 2px solid rgba(var(--ink-rgb), 0.45); }
+  .list > .item.done .check { background: var(--accent-a); border-color: var(--accent-a); }
+  .list > .item.done { opacity: 0.6; }
+  .list > .item .row-actions { position: absolute; left: 6px; bottom: 6px; }
+  .section-head { margin-bottom: 4px; }
+  .section-head > span:first-child { display: inline-block; padding: 4px 14px; background: rgba(255, 255, 255, 0.78); rotate: -1.2deg; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18); }
+  .card { box-shadow: var(--shadow); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--accent-a); color: #fff; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff; }
+  .sidebar { background: rgba(255, 253, 246, 0.9); border-radius: 4px; padding: 12px 8px; box-shadow: var(--shadow); }
+  .sp-line { background: rgba(var(--ink-rgb), 0.35); }
+}
+
+/* ------------------------------------------------------------
+   21. ベント：タスクはタイル、メニューはアイコンのレール
+   ------------------------------------------------------------ */
+
+[data-style="bento"] {
+  --font: "Segoe UI Variable Display", -apple-system, "SF Pro Display", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-num: var(--font);
+  --page: #eef0f3;
+  --tile: #ffffff;
+  --page-bg: var(--page);
+  --ink-rgb: 20, 22, 28;
+  --accent-a: #ff5a1f;
+  --accent-b: #ffb020;
+  --glass: var(--tile);
+  --glass-soft: var(--tile);
+  --glass-strong: var(--tile);
+  --glass-hover: var(--tile);
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: rgba(var(--ink-rgb), 0.05);
+  --field-focus: rgba(var(--ink-rgb), 0.08);
+  --sheet-bg: var(--tile);
+  --zen-bg: var(--page);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-pop: 0 24px 60px rgba(0, 0, 0, 0.18);
+  --tip-bg: #14161c;
+  --r-card: 28px;
+  --r-item: 22px;
+  --r-field: 16px;
+  --t1: #ffe8d9; --t2: #e3f0ff; --t3: #e6f7e9; --t4: #f3e8ff;
+}
+[data-style="bento"][data-variant="ocean"] { --page: #edf2f7; --accent-a: #2563eb; --accent-b: #06b6d4; --t1: #dbeafe; --t2: #e0f2fe; --t3: #ede9fe; --t4: #ccfbf1; }
+[data-style="bento"][data-variant="leaf"] { --page: #eef3ee; --accent-a: #16a34a; --accent-b: #84cc16; --t1: #dcfce7; --t2: #fef9c3; --t3: #e0f2fe; --t4: #fce7f3; }
+[data-style="bento"][data-variant="night"] {
+  --page: #0f1115; --tile: #1a1d24; --ink-rgb: 236, 238, 244; --accent-a: #f5b041; --accent-b: #ff7849; --on-accent: #14161c;
+  --t1: #2a2117; --t2: #17222f; --t3: #18271d; --t4: #241a2f; --tip-bg: #f5b041; --shadow-pop: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+@scope ([data-style="bento"]) to ([data-style]:not([data-style="bento"])) {
+  /* 左のメニューはアイコンだけ */
+  .layout-wide .shell { grid-template-columns: 78px minmax(0, 1fr); }
+  .layout-xwide .shell { grid-template-columns: 78px minmax(0, 1fr) 320px; }
+  .sidebar { align-items: center; background: var(--tile); border-radius: 28px; padding: 14px 0; }
+  .sidebar .nav-label, .sidebar .badge, .sidebar .sb-date, .sidebar .sb-head, .sidebar .sb-search span,
+  .sidebar .sb-search kbd, .sidebar .edit-list, .sidebar .sb-empty { display: none; }
+  .sidebar .nav { align-items: center; }
+  .sidebar .nav-item, .sidebar .sb-search { width: 52px; height: 52px; justify-content: center; padding: 0; border-radius: 18px; }
+  .sidebar .nav-item svg, .sidebar .sb-search svg { width: 22px; height: 22px; }
+  .sidebar .list-dot { margin: 0; width: 14px; height: 14px; }
+  .nav-item.active { background: var(--accent-a); box-shadow: none; }
+  .nav-item.active svg { color: var(--on-accent); }
+
+  /* タスクは大きなタイル */
+  .list:has(> .item) { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+  .layout-compact .list:has(> .item) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .list > .item {
+    flex-direction: column; align-items: flex-start; gap: 10px;
+    min-height: 128px; padding: 16px;
+    background: var(--tt, var(--t1)); border: 0; box-shadow: none;
+  }
+  .list > .item:nth-child(4n+2) { --tt: var(--t2); }
+  .list > .item:nth-child(4n+3) { --tt: var(--t3); }
+  .list > .item:nth-child(4n+4) { --tt: var(--t4); }
+  .list > .item:hover { background: var(--tt, var(--t1)); filter: brightness(0.98); }
+  .list > .item .body { width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .list > .item .title { font-size: 16px; font-weight: 700; line-height: 1.3; }
+  .list > .item .check { width: 30px; height: 30px; border: 2px solid rgba(var(--ink-rgb), 0.25); background: var(--tile); }
+  .list > .item.done .check { background: var(--accent-a); border-color: var(--accent-a); }
+  .list > .item.done { background: var(--field); }
+  .list > .item .row-actions { position: absolute; top: 12px; right: 10px; }
+  .section-head { font-size: 17px; font-weight: 800; color: var(--ink); margin: 6px 4px 10px; }
+  .section-head .count { font-size: 13px; }
+  .card { border: 0; }
+  .summary-title { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
+  .ring-label { font-size: 22px; font-weight: 800; }
+  .page-head h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; }
+  .chip.on, .btn.primary, .add-btn, .play-btn { background: var(--accent-a); color: var(--on-accent); box-shadow: none; }
+  .tab.active { background: var(--accent-a); color: var(--on-accent); }
+  .tab.active svg { color: var(--on-accent); }
+  .sp-line { background: rgba(var(--ink-rgb), 0.2); }
+}
+
+/* ------------------------------------------------------------
+   22. ブルータル：特大の文字と太い線
+   ------------------------------------------------------------ */
+
+[data-style="brutal"] {
+  --font: "Arial", "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+  --font-title: "Arial Black", "Helvetica Neue", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-num: "Arial Black", "Helvetica Neue", sans-serif;
+  --paper: #ffffff;
+  --hi: #e6ff00;
+  --page-bg: var(--paper);
+  --ink-rgb: 0, 0, 0;
+  --accent-a: rgb(var(--ink-rgb));
+  --accent-b: rgb(var(--ink-rgb));
+  --grad: linear-gradient(var(--accent-a), var(--accent-a));
+  --accent-soft: var(--hi);
+  --on-accent: var(--hi);
+  --glass: var(--paper);
+  --glass-soft: var(--paper);
+  --glass-strong: var(--hi);
+  --glass-hover: var(--hi);
+  --glass-border: rgb(var(--ink-rgb));
+  --highlight: transparent;
+  --field: var(--paper);
+  --field-focus: var(--paper);
+  --sheet-bg: var(--paper);
+  --zen-bg: var(--paper);
+  --shadow: none;
+  --shadow-pop: 8px 8px 0 rgb(var(--ink-rgb));
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-check: 0; --r-field: 0; --r-play: 0;
+}
+[data-style="brutal"][data-variant="pink"] { --hi: #ff3ea5; }
+[data-style="brutal"][data-variant="blue"] { --hi: #2f6bff; --on-accent: #ffffff; }
+[data-style="brutal"][data-variant="black"] { --paper: #0a0a0a; --ink-rgb: 255, 255, 255; --on-accent: #0a0a0a; }
+
+@scope ([data-style="brutal"]) to ([data-style]:not([data-style="brutal"])) {
+  .titlebar .date { font-family: var(--font-title); font-size: 34px; letter-spacing: -0.03em; }
+  .layout-wide .titlebar .date, .layout-xwide .titlebar .date { font-size: 21px; }
+  .page-head h1 { font-family: var(--font-title); font-size: 58px; line-height: 0.95; letter-spacing: -0.03em; }
+  .layout-compact .page-head h1 { font-size: 36px; }
+  .card, .addbar, .tabbar { border: 3px solid var(--glass-border); box-shadow: none; }
+  .section-head {
+    background: rgb(var(--ink-rgb)); color: var(--paper);
+    padding: 7px 12px; margin: 0;
+    font-family: var(--font-title); font-size: 15px; letter-spacing: 0.04em;
+  }
+  .section-head .count, .section-head .link { color: var(--hi); }
+  .section { margin-bottom: 18px; }
+  .list { gap: 0; border: 3px solid var(--glass-border); border-top: 0; }
+  .item { border: 0; border-bottom: 3px solid var(--glass-border); border-radius: 0; min-height: 66px; background: var(--paper); box-shadow: none; }
+  .item:last-child { border-bottom: 0; }
+  .item:hover { background: var(--hi); color: #000; }
+  .item.done, .item.skipped { background: var(--paper); }
+  .title { font-size: 16px; font-weight: 700; }
+  .check { width: 32px; height: 32px; border: 3px solid var(--glass-border); background: var(--paper); }
+  .done .check { background: var(--hi); }
+  .check svg { width: 20px; height: 20px; stroke: #000; stroke-width: 4; }
+  .item.done .title { text-decoration-thickness: 3px; text-decoration-color: rgb(var(--ink-rgb)); }
+  .summary .ring-wrap { background: var(--hi); border: 3px solid var(--glass-border); }
+  .summary .ring-wrap svg { opacity: 0; }
+  .ring-label { font-family: var(--font-title); font-size: 28px; color: #000; }
+  .summary-title { font-family: var(--font-title); font-size: 26px; letter-spacing: -0.02em; }
+  .chip, .btn { border: 2px solid var(--glass-border); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: rgb(var(--ink-rgb)); color: var(--hi); box-shadow: none; }
+  .tab.active svg, .nav-item.active svg, .nav-item.active .badge, .add-btn svg { color: var(--hi); }
+  .nav-item { border-radius: 0; border-bottom: 2px solid var(--glass-border); font-family: var(--font-title); font-size: 14px; }
+  #addInput { font-weight: 700; border: 0; }
+  .tip, .toast { color: var(--paper); }
+  .toast button { color: var(--hi); }
+  .sp-line { background: rgb(var(--ink-rgb)); height: 4px; }
+}
+
+/* ------------------------------------------------------------
+   23. 手帳：リングでとじた手帳とインデックスのタブ
+   ------------------------------------------------------------ */
+
+[data-style="planner"] {
+  --font: "UD Digi Kyokasho NK-R", "UD Digi Kyokasho N", "Hiragino Maru Gothic ProN", "Yu Gothic UI", sans-serif;
+  --font-title: "Georgia", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-num: "Georgia", serif;
+  --cover: #8a5a3c;
+  --paper: #fbf8f1;
+  --rule: rgba(80, 110, 160, 0.16);
+  --on-cover: #f6ecdc;
+  --page-bg:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.08), transparent 60%),
+    radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1.5px) 0 0 / 5px 5px,
+    var(--cover);
+  --noise-opacity: 0.2;
+  --ink-rgb: 44, 40, 52;
+  --accent-a: #3d6fb6;
+  --accent-b: #3d6fb6;
+  --grad: linear-gradient(var(--accent-a), var(--accent-a));
+  --red-pen: #d8433a;
+  --glass: transparent;
+  --glass-soft: transparent;
+  --glass-strong: rgba(61, 111, 182, 0.1);
+  --glass-hover: rgba(61, 111, 182, 0.05);
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: rgba(0, 0, 0, 0.04);
+  --field-focus: rgba(0, 0, 0, 0.06);
+  --sheet-bg: var(--paper);
+  --zen-bg: var(--paper);
+  --shadow: none;
+  --shadow-pop: 0 18px 44px rgba(0, 0, 0, 0.3);
+  --tip-bg: #2c2834;
+  --r-card: 4px;
+  --r-item: 0;
+  --r-field: 6px;
+  --tab1: #e8a13a; --tab2: #d8433a; --tab3: #3d8a6a; --tab4: #3d6fb6; --tab5: #8a5cb6; --tab6: #c25a8a; --tab7: #5a8ab6; --tab8: #7a9a3a;
+}
+[data-style="planner"][data-variant="navy"] { --cover: #24365c; }
+[data-style="planner"][data-variant="wine"] { --cover: #7a2e3e; }
+[data-style="planner"][data-variant="forest"] { --cover: #2f5a46; }
+
+@scope ([data-style="planner"]) to ([data-style]:not([data-style="planner"])) {
+  /* 表紙の上の文字は明るく */
+  .titlebar, .titlebar .greeting, .titlebar .icon-btn, .brand { color: var(--on-cover); }
+  .titlebar .greeting { opacity: 0.8; }
+  :scope[data-platform] .titlebar .tb-right .icon-btn { color: var(--on-cover); }
+  /* 開いた手帳 */
+  .main {
+    position: relative;
+    background: repeating-linear-gradient(180deg, transparent 0 31px, var(--rule) 31px 32px), var(--paper);
+    border-radius: 4px 12px 12px 4px;
+    padding: 14px 14px 14px 30px;
+    box-shadow: 2px 2px 0 #ece4d2, 4px 4px 0 #ddd3bc, 0 18px 40px rgba(0, 0, 0, 0.35);
+  }
+  .main::before {
+    content: ""; position: absolute; left: -9px; top: 16px; bottom: 16px; width: 26px; z-index: 3; pointer-events: none;
+    background:
+      radial-gradient(circle at 20px 13px, rgba(60, 45, 35, 0.75) 0 3.6px, transparent 4.2px) 0 0 / 26px 26px repeat-y,
+      repeating-linear-gradient(180deg, transparent 0 9px, #8d8d8d 9px 10px, #f4f4f4 10px 12px, #a5a5a5 12px 14px, transparent 14px 26px);
+    background-size: 26px 26px, 16px 26px;
+    background-repeat: repeat-y, repeat-y;
+  }
+  .rightpanel .card, .palette, .menu { background: var(--paper); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25); }
+  .card { background: transparent; border: 0; box-shadow: none; }
+  .rightpanel .card { border-radius: 6px; }
+  .addbar { background: transparent; border: 0; border-top: 1px dashed var(--rule); border-radius: 0; box-shadow: none; }
+  .list { gap: 0; }
+  .item { background: transparent; border: 0; border-bottom: 1px dashed rgba(var(--ink-rgb), 0.18); border-radius: 0; box-shadow: none; }
+  .item:hover { background: var(--glass-hover); }
+  .check { border: 1.8px solid rgba(var(--ink-rgb), 0.7); background: transparent; border-radius: 48% 52% 46% 54% / 52% 46% 54% 48%; overflow: visible; }
+  .done .check { background: transparent; border-color: rgba(var(--ink-rgb), 0.7); }
+  .check svg { stroke: var(--red-pen); stroke-width: 3.4; width: 22px; height: 22px; margin: -8px -6px 0 0; }
+  .item.done .title { text-decoration-color: var(--red-pen); text-decoration-thickness: 2px; }
+  .section-head > span:first-child { font-family: var(--font-title); font-size: 14px; background: linear-gradient(transparent 58%, color-mix(in srgb, var(--tab1) 45%, transparent) 58%); padding: 0 4px; }
+  .page-head h1 { font-family: var(--font-title); font-weight: 700; }
+  /* サイドバーはインデックスのタブ */
+  .sidebar { color: var(--on-cover); }
+  .sidebar .sb-date, .sidebar .sb-head, .sidebar .nav-item:not(.list-item):not(.active), .sidebar .list-item, .sidebar .sb-foot .nav-item { color: var(--on-cover); }
+  .sidebar .sb-search { background: rgba(255, 255, 255, 0.14); color: var(--on-cover); border-color: transparent; }
+  .sidebar .nav:not(.lists) .nav-item { margin-right: -14px; padding-right: 22px; border-radius: 10px 0 0 10px; background: var(--tab, var(--tab1)); color: #fff; box-shadow: inset -6px 0 8px -6px rgba(0, 0, 0, 0.3); }
+  .sidebar .nav:not(.lists) .nav-item svg { color: #fff; }
+  .sidebar .nav:not(.lists) .nav-item:nth-child(8n+2) { --tab: var(--tab2); }
+  .sidebar .nav:not(.lists) .nav-item:nth-child(8n+3) { --tab: var(--tab3); }
+  .sidebar .nav:not(.lists) .nav-item:nth-child(8n+4) { --tab: var(--tab4); }
+  .sidebar .nav:not(.lists) .nav-item:nth-child(8n+5) { --tab: var(--tab5); }
+  .sidebar .nav:not(.lists) .nav-item:nth-child(8n+6) { --tab: var(--tab6); }
+  .sidebar .nav:not(.lists) .nav-item:nth-child(8n+7) { --tab: var(--tab7); }
+  .sidebar .nav:not(.lists) .nav-item:nth-child(8n+8) { --tab: var(--tab8); }
+  .sidebar .nav:not(.lists) .nav-item.active { background: var(--paper); color: rgb(var(--ink-rgb)); margin-right: -22px; box-shadow: none; }
+  .sidebar .nav:not(.lists) .nav-item.active svg { color: var(--tab, var(--tab1)); }
+  .sidebar .nav:not(.lists) .nav-item .badge { color: rgba(255, 255, 255, 0.85); }
+  .sidebar .nav:not(.lists) .nav-item.active .badge { color: rgba(var(--ink-rgb), 0.5); }
+  .tabbar { background: var(--paper); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { background: var(--accent-a); color: #fff; box-shadow: none; }
+  .tab.active { background: var(--glass-strong); }
+  .tip, .toast, .toast button { color: #fff; }
+  .sp-line { background: rgba(var(--ink-rgb), 0.3); }
+}
+.style-preview[data-style="planner"] .sp-card { background: var(--paper); }
+
+/* ------------------------------------------------------------
+   24. カンバン：今日のリストが横に並ぶ列
+   ------------------------------------------------------------ */
+
+[data-style="kanban"] {
+  --font: -apple-system, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --board1: #0079bf;
+  --board2: #5ba4cf;
+  --lane: #f1f2f4;
+  --card-bg: #ffffff;
+  --on-board: #ffffff;
+  --page-bg: linear-gradient(135deg, var(--board1), var(--board2));
+  --ink-rgb: 23, 43, 77;
+  --accent-a: #0c66e4;
+  --accent-b: #0c66e4;
+  --grad: linear-gradient(var(--accent-a), var(--accent-a));
+  --glass: var(--card-bg);
+  --glass-soft: rgba(255, 255, 255, 0.24);
+  --glass-strong: var(--card-bg);
+  --glass-hover: #f7f8f9;
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: rgba(9, 30, 66, 0.06);
+  --field-focus: rgba(9, 30, 66, 0.1);
+  --sheet-bg: var(--lane);
+  --zen-bg: var(--board1);
+  --shadow: 0 1px 1px rgba(9, 30, 66, 0.25);
+  --shadow-pop: 0 12px 30px rgba(9, 30, 66, 0.35);
+  --tip-bg: #172b4d;
+  --r-card: 12px;
+  --r-item: 8px;
+  --r-field: 6px;
+  --r-chip: 4px;
+  --l1: #4bce97; --l2: #f5cd47; --l3: #fea362; --l4: #f87168; --l5: #9f8fef; --l6: #579dff;
+}
+[data-style="kanban"][data-variant="green"] { --board1: #3d8a4a; --board2: #7ac46b; --accent-a: #1f845a; --accent-b: #1f845a; }
+[data-style="kanban"][data-variant="grape"] { --board1: #89609e; --board2: #cd5a91; --accent-a: #6e5dc6; --accent-b: #6e5dc6; }
+[data-style="kanban"][data-variant="dark"] {
+  --board1: #1d2125; --board2: #2c333a; --lane: #101204; --card-bg: #22272b; --ink-rgb: 222, 228, 234;
+  --accent-a: #579dff; --accent-b: #579dff; --glass-hover: #2c333a; --field: rgba(255, 255, 255, 0.06); --field-focus: rgba(255, 255, 255, 0.1);
+  --sheet-bg: #161a1d; --tip-bg: #579dff; --shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+@scope ([data-style="kanban"]) to ([data-style]:not([data-style="kanban"])) {
+  .titlebar, .titlebar .greeting, .titlebar .icon-btn, .brand, .page-head, .page-head h1, .sidebar, .sidebar .nav-item, .sidebar .sb-head, .sidebar .list-item { color: var(--on-board); }
+  .sidebar { background: rgba(0, 0, 0, 0.16); border-radius: 12px; padding: 10px 8px; }
+  :scope[data-platform] .titlebar .tb-right .icon-btn { color: var(--on-board); }
+  .layout-compact .today-cols { scrollbar-width: none; }
+  .sidebar .nav-item svg { color: var(--on-board); }
+  .sidebar .nav-item.active { background: rgba(255, 255, 255, 0.28); box-shadow: none; }
+  .sidebar .badge { color: rgba(255, 255, 255, 0.75); }
+  .sidebar .sb-search { background: rgba(255, 255, 255, 0.2); color: var(--on-board); border-color: transparent; }
+  /* 今日の列：横に並べて、横にスクロール */
+  .today-cols, .cols.masonry {
+    display: flex; align-items: flex-start; gap: 12px;
+    overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding: 2px 2px 12px;
+    columns: auto;
+  }
+  .today-cols > .col { display: contents; }
+  .today-cols .section, .cols.masonry > .section, .today-cols > .col > .card {
+    flex: 0 0 300px; scroll-snap-align: start;
+    margin: 0; padding: 10px 8px;
+    background: var(--lane); border-radius: 12px;
+    max-height: 70vh; overflow-y: auto;
+  }
+  .layout-compact .today-cols .section, .layout-compact .cols.masonry > .section, .layout-compact .today-cols > .col > .card { flex-basis: 84%; }
+  .section-head { padding: 2px 6px 8px; font-weight: 700; color: var(--ink); }
+  .section-head .count { background: var(--field); padding: 1px 7px; border-radius: 10px; font-size: 11px; }
+  .list { gap: 8px; }
+  .item { background: var(--card-bg); border: 0; box-shadow: var(--shadow); }
+  .list > .item { padding-top: 18px; }
+  .list > .item::after { content: ""; position: absolute; top: 7px; left: 12px; width: 40px; height: 6px; border-radius: 3px; background: var(--lab, var(--l1)); }
+  .list > .item:nth-child(6n+2) { --lab: var(--l2); }
+  .list > .item:nth-child(6n+3) { --lab: var(--l3); }
+  .list > .item:nth-child(6n+4) { --lab: var(--l4); }
+  .list > .item:nth-child(6n+5) { --lab: var(--l5); }
+  .list > .item:nth-child(6n+6) { --lab: var(--l6); }
+  .check { border-radius: 4px; }
+  .done .check { background: var(--l1); border-color: var(--l1); }
+  .card { border: 0; }
+  .summary, .wx-strip, .wx-prompt, .all-done { background: var(--lane); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { background: var(--accent-a); color: #fff; box-shadow: none; }
+  .tab.active { background: var(--card-bg); color: var(--accent-a); }
+  .tip, .toast, .toast button { color: #fff; }
+  .sp-line { background: rgba(var(--ink-rgb), 0.25); }
+}
+
+/* ------------------------------------------------------------
+   25. ウィジェット：リストがひとつずつカラフルなウィジェットに
+   ------------------------------------------------------------ */
+
+[data-style="widget"] {
+  --font: -apple-system, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Segoe UI Variable Display", "Yu Gothic UI", sans-serif;
+  --font-num: var(--font);
+  --wp: linear-gradient(160deg, #ffd1dc, #ffe3c4 45%, #c7d2fe);
+  --page-bg: var(--wp);
+  --ink-rgb: 30, 26, 46;
+  --accent-a: #ff5e7e;
+  --accent-b: #ff9a6b;
+  --backdrop: blur(18px) saturate(160%);
+  --backdrop-strong: blur(26px) saturate(170%);
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-soft: rgba(255, 255, 255, 0.4);
+  --glass-strong: rgba(255, 255, 255, 0.85);
+  --glass-hover: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --highlight: rgba(255, 255, 255, 0.6);
+  --field: rgba(255, 255, 255, 0.55);
+  --field-focus: rgba(255, 255, 255, 0.85);
+  --sheet-bg: rgba(255, 255, 255, 0.9);
+  --zen-bg: rgba(255, 240, 245, 0.8);
+  --shadow: 0 10px 30px rgba(60, 40, 90, 0.12);
+  --shadow-pop: 0 24px 60px rgba(60, 40, 90, 0.25);
+  --tip-bg: #2a2440;
+  --r-card: 26px;
+  --r-item: 16px;
+  --r-field: 14px;
+  --w1: linear-gradient(135deg, #ff9a6b, #ff5e7e);
+  --w2: linear-gradient(135deg, #5ec8ff, #5b7cff);
+  --w3: linear-gradient(135deg, #6fe0a0, #22b38a);
+  --w4: linear-gradient(135deg, #c89bff, #8a5cf6);
+  --w5: linear-gradient(135deg, #ffd166, #ff9f43);
+}
+[data-style="widget"][data-variant="ocean"] {
+  --wp: linear-gradient(160deg, #c7f0ff, #d6e4ff 50%, #b8f3e0); --accent-a: #2f7bff; --accent-b: #22c3e6;
+  --w1: linear-gradient(135deg, #36c2ff, #2f7bff); --w2: linear-gradient(135deg, #22d3b6, #0ea5a4); --w3: linear-gradient(135deg, #7b8cff, #5048e5); --w4: linear-gradient(135deg, #38bdf8, #0284c7); --w5: linear-gradient(135deg, #5eead4, #14b8a6);
+}
+[data-style="widget"][data-variant="candy"] {
+  --wp: linear-gradient(160deg, #fde2ff, #ffe4ef 50%, #e0e7ff); --accent-a: #8a5cf6; --accent-b: #ec4899;
+  --w1: linear-gradient(135deg, #f472b6, #ec4899); --w2: linear-gradient(135deg, #a78bfa, #7c3aed); --w3: linear-gradient(135deg, #fb923c, #f472b6); --w4: linear-gradient(135deg, #60a5fa, #a78bfa); --w5: linear-gradient(135deg, #f9a8d4, #c084fc);
+}
+[data-style="widget"][data-variant="night"] {
+  --wp: linear-gradient(160deg, #14142b, #231a3a 50%, #0e1d2f); --ink-rgb: 240, 238, 250;
+  --glass: rgba(255, 255, 255, 0.08); --glass-soft: rgba(255, 255, 255, 0.05); --glass-strong: rgba(255, 255, 255, 0.16); --glass-hover: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.12); --highlight: rgba(255, 255, 255, 0.08); --field: rgba(255, 255, 255, 0.08); --field-focus: rgba(255, 255, 255, 0.14);
+  --sheet-bg: rgba(28, 24, 48, 0.95); --zen-bg: rgba(20, 20, 43, 0.85); --tip-bg: #ff5e7e; --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+@scope ([data-style="widget"]) to ([data-style]:not([data-style="widget"])) {
+  /* 今日の画面：列をやめて、リストごとのウィジェットを並べる */
+  .today-cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; align-items: start; }
+  .layout-compact .today-cols { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .today-cols > .col { display: contents; }
+  .today-cols .section {
+    margin: 0; padding: 14px 12px 12px;
+    background: var(--w, var(--w1)); border-radius: 26px;
+    color: #fff; box-shadow: 0 12px 28px rgba(60, 40, 90, 0.18);
+  }
+  .today-cols .col > .section:nth-child(4n+2) { --w: var(--w2); }
+  .today-cols .col > .section:nth-child(4n+3) { --w: var(--w3); }
+  .today-cols .col > .section:nth-child(4n+4) { --w: var(--w4); }
+  .today-cols .col + .col > .section:nth-child(4n+1) { --w: var(--w5); }
+  .today-cols .col + .col > .section:nth-child(4n+2) { --w: var(--w4); }
+  .today-cols .col + .col > .section:nth-child(4n+3) { --w: var(--w2); }
+  .today-cols .col > .section.danger { --w: linear-gradient(135deg, #ff6b6b, #e5383b); }
+  .today-cols .section-head { color: #fff; font-size: 15px; font-weight: 800; padding: 0 4px 8px; }
+  .today-cols .section-head .count, .today-cols .section-head .link { color: rgba(255, 255, 255, 0.85); }
+  .today-cols .section .item, .today-cols .section .class-row { background: rgba(255, 255, 255, 0.2); border: 0; box-shadow: none; color: #fff; }
+  .today-cols .section .item:hover { background: rgba(255, 255, 255, 0.3); }
+  .today-cols .section .meta, .today-cols .section .cr-meta { color: rgba(255, 255, 255, 0.85); }
+  .today-cols .section .check { border: 2px solid rgba(255, 255, 255, 0.85); background: transparent; }
+  .today-cols .section .done .check { background: #fff; }
+  .today-cols .section .check svg { stroke: #ff5e7e; }
+  .today-cols .section .item.done .title { color: rgba(255, 255, 255, 0.7); }
+  .today-cols .section .list { gap: 6px; }
+  .today-cols .section .tag { background: rgba(255, 255, 255, 0.24); color: #fff; }
+  .card { border: 1px solid var(--glass-border); }
+  .summary-title { font-size: 22px; font-weight: 800; }
+  .chip.on, .btn.primary, .add-btn, .play-btn { color: #fff; }
+  .tab.active, .nav-item.active { background: var(--glass-strong); }
+  .nav-item.active svg, .tab.active svg { color: var(--accent-a); }
+  .tip, .toast, .toast button { color: #fff; }
+  .sp-line { background: linear-gradient(90deg, var(--accent-a), var(--accent-b)); }
+}
+
 /* 塗りつぶしのタブでは、件数も同じ色に */
 :is([data-style="pop"], [data-style="terminal"], [data-style="news"]) .nav-item.active .badge { color: inherit; opacity: 0.8; }
 

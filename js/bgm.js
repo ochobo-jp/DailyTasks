@@ -11,7 +11,7 @@ const BGM_SOUNDS = [
   { id: 'stream', icon: '🏞️', name: '川のせせらぎ' },
   { id: 'waves', icon: '🌊', name: '波の音' },
   { id: 'fire', icon: '🔥', name: '焚き火' },
-  { id: 'forest', icon: '🌲', name: '森の朝' },
+  { id: 'forest', icon: '🌲', name: '森の小鳥' },
   { id: 'insects', icon: '🦗', name: '虫の声' },
   { id: 'chime', icon: '🎐', name: '風鈴' },
   { id: 'piano', icon: '🎹', name: 'ピアノ' },
@@ -22,7 +22,8 @@ const BGM_SOUNDS = [
 ];
 
 // 音ごとの聞こえ方の差をならす
-const SOUND_LEVEL = { rain: 1, stream: 1, waves: 1.05, fire: 1, forest: 1.1, insects: 0.8, chime: 1.2, piano: 1.35, lofi: 1.15, brown: 0.8, white: 0.45 };
+// （録音の音は bgm-recorded.js で自動的に大きさをそろえるので 1 のまま）
+const SOUND_LEVEL = { brown: 0.8, white: 1.3 };
 
 const bgm = {
   ctx: null,
@@ -415,7 +416,8 @@ function bgmMenuHtml() {
       <div class="menu-sep"></div>` : '<div class="menu-sep"></div>'}
     <button class="menu-item" data-m="on">${check(b.on)}<span>集中タイマーと一緒に流す</span></button>
     <button class="menu-item" data-m="break">${check(b.duringBreak)}<span>休憩中も流す</span></button>
-    <button class="menu-item" data-m="manual">${bgm.manual ? ICON.pause : ICON.play}<span>${bgm.manual ? '止める' : 'タイマーなしで今すぐ流す'}</span></button>`;
+    <button class="menu-item" data-m="manual">${bgm.manual ? ICON.pause : ICON.play}<span>${bgm.manual ? '止める' : 'タイマーなしで今すぐ流す'}</span></button>
+    <button class="menu-item subtle" data-m="credits">${ICON.note}<span>音源について</span></button>`;
 }
 
 function openBgmMenu(x, y) {
@@ -442,6 +444,10 @@ function openBgmMenu(x, y) {
     } else if (m === 'clear-tracks') {
       b.tracks = [];
       if (bgm.audio) { bgm.audio.pause(); bgm.audio.removeAttribute('src'); }
+    } else if (m === 'credits') {
+      closeMenu();
+      openSoundCredits();
+      return;
     } else if (m === 'pick-files' || m === 'pick-folder') {
       pickMusic(m === 'pick-folder');
       return 'keep';

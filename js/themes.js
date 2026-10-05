@@ -183,13 +183,70 @@ const STYLES = [
       { id: 'pastel', name: 'パステル', colors: ['#ffe3f6', '#b967ff'], dark: false },
     ],
   },
+
+  // ---------- 大胆：色だけでなく、並び方や形まで変わる ----------
+  {
+    id: 'board', name: '付箋ボード', desc: 'タスクが 1 枚ずつ付箋になって、ボードにピンで留まります',
+    variants: [
+      { id: 'cork', name: 'コルク', colors: ['#c69c6d', '#fff59d'] },
+      { id: 'wall', name: '白い壁', colors: ['#efebe4', '#ffcdd2'] },
+      { id: 'peg', name: '有孔ボード', colors: ['#cfe3d8', '#c8e6ff'] },
+    ],
+  },
+  {
+    id: 'bento', name: 'ベント', desc: 'タスクが大きなタイルに。左のメニューはアイコンだけの細いレールになります',
+    variants: [
+      { id: 'tangerine', name: 'みかん', colors: ['#eef0f3', '#ff5a1f'] },
+      { id: 'ocean', name: '海', colors: ['#edf2f7', '#2563eb'] },
+      { id: 'leaf', name: '若葉', colors: ['#eef3ee', '#16a34a'] },
+      { id: 'night', name: '夜', colors: ['#0f1115', '#f5b041'], dark: true },
+    ],
+  },
+  {
+    id: 'brutal', name: 'ブルータル', desc: '特大の見出し、太い線、大きなチェック。飾りのない力強い画面',
+    variants: [
+      { id: 'volt', name: 'ボルト', colors: ['#ffffff', '#e6ff00'] },
+      { id: 'pink', name: 'ピンク', colors: ['#ffffff', '#ff3ea5'] },
+      { id: 'blue', name: 'ブルー', colors: ['#ffffff', '#2f6bff'] },
+      { id: 'black', name: 'ブラック', colors: ['#0a0a0a', '#e6ff00'], dark: true },
+    ],
+  },
+  {
+    id: 'planner', name: '手帳', desc: 'リングでとじた手帳を開いたところ。メニューはインデックスのタブ',
+    variants: [
+      { id: 'leather', name: '革', colors: ['#8a5a3c', '#fbf8f1'] },
+      { id: 'navy', name: 'ネイビー', colors: ['#24365c', '#fbf8f1'] },
+      { id: 'wine', name: 'ワイン', colors: ['#7a2e3e', '#fbf8f1'] },
+      { id: 'forest', name: 'フォレスト', colors: ['#2f5a46', '#fbf8f1'] },
+    ],
+  },
+  {
+    id: 'kanban', name: 'カンバン', desc: '今日のリストが横に並ぶ列になり、カードを横にスクロールして見ます',
+    variants: [
+      { id: 'blue', name: 'ブルー', colors: ['#0079bf', '#ffffff'] },
+      { id: 'green', name: 'グリーン', colors: ['#3d8a4a', '#ffffff'] },
+      { id: 'grape', name: 'グレープ', colors: ['#89609e', '#ffffff'] },
+      { id: 'dark', name: 'ダーク', colors: ['#1d2125', '#22272b'], dark: true },
+    ],
+  },
+  {
+    id: 'widget', name: 'ウィジェット', desc: '今日のリストがひとつずつ、カラフルなウィジェットになります',
+    variants: [
+      { id: 'peach', name: 'ピーチ', colors: ['#ffd1dc', '#ff5e7e'] },
+      { id: 'ocean', name: 'オーシャン', colors: ['#c7f0ff', '#2f7bff'] },
+      { id: 'candy', name: 'キャンディ', colors: ['#fde2ff', '#8a5cf6'] },
+      { id: 'night', name: 'ナイト', colors: ['#14142b', '#ff5e7e'], dark: true },
+    ],
+  },
 ];
 
-// 設定のスタイル一覧で絞り込むための分類
-const STYLE_TAGS = {
-  glass: ['simple'], ios: ['simple'], minimal: ['simple'], soft: ['simple', 'cute'], material: ['simple'], news: ['simple', 'unique'],
-  paper: ['cute', 'unique'], pop: ['cute'], cafe: ['cute', 'simple'], comic: ['unique', 'cute'], retro: ['unique', 'cute'], wa: ['unique'],
-  chalk: ['unique'], neon: ['dark'], aurora: ['dark'], space: ['dark'], terminal: ['dark', 'unique'], rpg: ['dark', 'unique'], vapor: ['dark', 'cute'],
+// 設定のスタイル一覧で絞り込むための分類（1 つのスタイルは 1 つの分類だけに入れる）
+const STYLE_CATEGORY = {
+  glass: 'simple', ios: 'simple', minimal: 'simple', soft: 'simple', material: 'simple', news: 'simple',
+  pop: 'cute', paper: 'cute', cafe: 'cute', comic: 'cute',
+  neon: 'dark', aurora: 'dark', space: 'dark', vapor: 'dark',
+  retro: 'unique', wa: 'unique', chalk: 'unique', terminal: 'unique', rpg: 'unique',
+  board: 'bold', bento: 'bold', brutal: 'bold', planner: 'bold', kanban: 'bold', widget: 'bold',
 };
 const STYLE_FILTERS = [
   { id: 'all', name: 'すべて' },
@@ -197,6 +254,7 @@ const STYLE_FILTERS = [
   { id: 'cute', name: 'かわいい' },
   { id: 'dark', name: 'ダーク' },
   { id: 'unique', name: '個性派' },
+  { id: 'bold', name: '大胆（配置も変わる）' },
 ];
 const styleHasDark = (s) => !!(s.dark || s.darkToggle || s.variants.some((v) => v.dark));
 
@@ -302,7 +360,7 @@ function styleGalleryGrid(filter) {
   const p = prefs();
   const current = styleById(p.style);
   let list = IS_TOUCH ? [styleById('ios'), ...STYLES.filter((s) => s.id !== 'ios')] : STYLES;
-  if (filter !== 'all') list = list.filter((s) => (STYLE_TAGS[s.id] || []).includes(filter) || (filter === 'dark' && styleHasDark(s)));
+  if (filter !== 'all') list = list.filter((s) => STYLE_CATEGORY[s.id] === filter);
   return list.map((s) => {
     const v = s.id === current.id ? variantOf(s, p.variant) : s.variants[0];
     return `<button class="style-tile ${s.id === current.id ? 'on' : ''}" data-pick-style="${s.id}">

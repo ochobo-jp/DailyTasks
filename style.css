@@ -1045,6 +1045,11 @@ kbd {
 .menu-item kbd { margin-left: auto; font-size: 10.5px; padding: 1px 6px; opacity: 0.75; }
 .menu-item.on, .menu-item.on svg { color: var(--accent); font-weight: 650; }
 .menu-hint { margin-left: auto; font-size: 11.5px; color: var(--ink-3); }
+.menu-item.subtle, .menu-item.subtle svg { color: var(--ink-3); }
+.credits { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.credit { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: var(--r-field); background: var(--field); font-size: 12.5px; }
+.credit span { color: var(--ink-2); line-height: 1.5; word-break: break-word; }
+.credit a { color: var(--accent); font-size: 12px; }
 .menu-sep { height: 1px; background: var(--line); margin: 4px 6px; }
 .menu-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 10px; }
 .menu-row > span { width: 40px; padding-top: 4px; font-size: 11.5px; color: var(--ink-3); flex-shrink: 0; }
