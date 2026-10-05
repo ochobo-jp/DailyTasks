@@ -4,7 +4,7 @@
 // 新しい版を置くと VERSION が変わり、次に開いたときから新しい版になる。
 // 天気など外のサーバーへの通信はそのままネットに流す。
 
-const VERSION = 'daily-tasks-d0fe9459f134';
+const VERSION = 'daily-tasks-fe5371bcd6e1';
 const FILES = [
   "./",
   "api.js",
@@ -36,6 +36,7 @@ const FILES = [
   "js/weather.js",
   "manifest.webmanifest",
   "style.css",
+  "themes-more.css",
   "themes.css",
   "touch.js"
 ];

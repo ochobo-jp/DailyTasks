@@ -58,6 +58,16 @@ html[data-platform="ios"] .shell {
   padding-right: calc(var(--safe-r) + 14px);
 }
 
+/* ---------- 画面全体をスクロール：上の日付も一緒に流れていく ---------- */
+
+html[data-platform="ios"] body.layout-compact { overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
+html[data-platform="ios"] .layout-compact .shell { flex: 1 0 auto; min-height: 0; }
+html[data-platform="ios"] .layout-compact .main { min-height: 0; }
+html[data-platform="ios"] .layout-compact .content { flex: 1 0 auto; overflow: visible; margin: 0; padding: 2px 0 6px; }
+/* 追加欄は、スクロールしてもタブバーのすぐ上に残す */
+html[data-platform="ios"] .layout-compact .addbar { position: sticky; bottom: calc(var(--tabbar-h) + var(--safe-b) + 8px); z-index: 20; }
+html[data-platform="ios"].kb-open .layout-compact .addbar { bottom: 8px; }
+
 /* ---------- 下：タブバー ---------- */
 
 html[data-platform="ios"] .layout-compact .shell { padding-bottom: calc(var(--tabbar-h) + var(--safe-b) + 8px); }

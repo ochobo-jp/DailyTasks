@@ -53,6 +53,7 @@ function switchView(view, { keepFilter = false } = {}) {
   state.view = view;
   try { localStorage.setItem('view', view); } catch { /* 保存できなくても困らない */ }
   content.scrollTop = 0;
+  document.body.scrollTop = 0;   // iPhone は画面全体がスクロールする
   closeSheet();
   closeMenu();
   renderAll();
