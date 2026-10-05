@@ -12,7 +12,7 @@
   if (!window.api.touch) return;
 
   const MENU_TARGET = '[data-kind][data-id], .tt-cell, [data-list], [data-drop-day]';
-  const SWIPE_TARGET = '#content .item[data-kind="todo"], #content .item[data-kind="routine"], #content .class-row, #content .item[data-kind="shop"], #content .item[data-kind="money"]';
+  const SWIPE_TARGET = '#content .item[data-kind="todo"], #content .item[data-kind="routine"], #content .class-row, #content .item[data-kind="shop"], #content .item[data-kind="money"], #content .item[data-kind="pack"]';
   const SWIPE_DONE = 72;
 
   let g = null;   // いまの指の動き

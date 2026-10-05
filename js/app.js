@@ -68,7 +68,15 @@ function addFromText(text, { source = 'bar' } = {}) {
   if (!text) return null;
   if (source !== 'paste') checkpoint();
 
-  // くらし：開いているタブ（買い物・お金・メモ・カウントダウン）に追加する
+  // 単語帳：単語帳を開いていればカード、開いていなければ新しい単語帳
+  if (state.view === 'study' && source !== 'palette') {
+    const made = studyAddFromText(text);
+    if (!made) return null;
+    if (source !== 'paste') { save(); transition(() => { refresh(); renderAddbar(); }); }
+    return made;
+  }
+
+  // くらし：開いているタブ（買い物・お金・メモ・持ち物・からだ・カウントダウン）に追加する
   if (state.view === 'life' && source !== 'palette') {
     const made = lifeAddFromText(text);
     if (!made) return null;
@@ -510,7 +518,10 @@ const actions = {
     toast('まとめて出席にしました', { undo: true });
   },
 };
-Object.assign(actions, LIFE_ACTIONS);
+Object.assign(actions, LIFE_ACTIONS, STUDY_ACTIONS, {
+  'grade-new': () => openGradeSheet({}),
+  'grade-open': (el) => { const g = grades().find((x) => x.id === el.dataset.id); if (g) openGradeSheet(g); },
+});
 
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]');

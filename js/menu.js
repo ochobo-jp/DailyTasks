@@ -246,6 +246,12 @@ document.addEventListener('contextmenu', (e) => {
     } else if (kind === 'someday') {
       const s = state.data.someday.find((x) => x.id === row.dataset.id);
       if (s) somedayMenu(s, e.clientX, e.clientY);
+    } else if (kind === 'deck') {
+      const d = deckById(row.dataset.id);
+      if (d) deckMenu(d, e.clientX, e.clientY);
+    } else if (kind === 'sub') {
+      const x = life().money.subs.find((s) => s.id === row.dataset.id);
+      if (x) openSubSheet(x);
     } else if (['shop', 'money', 'note', 'count'].includes(kind)) {
       lifeMenu(kind, row.dataset.id, e.clientX, e.clientY);
     } else if (kind === 'class') {

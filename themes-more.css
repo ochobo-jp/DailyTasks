@@ -1506,3 +1506,618 @@ html[data-style="deepsea"] body::after, .style-preview[data-style="deepsea"]::be
   .sidebar { background: #fffef9; padding: 12px 8px; box-shadow: var(--shadow); rotate: -0.5deg; }
   .sp-line { background: rgba(var(--ink-rgb), 0.3); }
 }
+
+/* ============================================================
+   51〜60：さらに雰囲気がガラッと変わるスタイル
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   51. レトロPC：リストがひとつずつ、昔のパソコンのウィンドウに
+   ------------------------------------------------------------ */
+
+[data-style="retropc"] {
+  --font: "MS UI Gothic", "Tahoma", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --font-num: "Tahoma", var(--font);
+  --desk: #008080;
+  --bar1: #000080;
+  --bar2: #1084d0;
+  --face: #c0c0c0;
+  --page-bg: var(--desk);
+  --ink-rgb: 0, 0, 0;
+  --accent-a: var(--bar1);
+  --accent-b: var(--bar2);
+  --grad: linear-gradient(90deg, var(--bar1), var(--bar2));
+  --accent-soft: rgba(0, 0, 128, 0.12);
+  --glass: var(--face);
+  --glass-soft: var(--face);
+  --glass-strong: var(--face);
+  --glass-hover: #cfcfcf;
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: var(--face);
+  --zen-bg: var(--desk);
+  --raised: inset -1px -1px 0 #0a0a0a, inset 1px 1px 0 #ffffff, inset -2px -2px 0 #808080, inset 2px 2px 0 #dfdfdf;
+  --sunken: inset -1px -1px 0 #ffffff, inset 1px 1px 0 #808080, inset -2px -2px 0 #dfdfdf, inset 2px 2px 0 #0a0a0a;
+  --shadow: var(--raised);
+  --shadow-pop: var(--raised), 4px 4px 0 rgba(0, 0, 0, 0.35);
+  --tip-bg: #ffffe1;
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-check: 0; --r-field: 0; --r-play: 0;
+}
+[data-style="retropc"][data-variant="rose"] { --desk: #a0566b; --bar1: #6b1e3a; --bar2: #c0607e; }
+[data-style="retropc"][data-variant="sky"] { --desk: #3a6ea5; --bar1: #0a246a; --bar2: #a6caf0; }
+
+@scope ([data-style="retropc"]) to ([data-style]:not([data-style="retropc"])) {
+  .titlebar .date, .titlebar .greeting, .page-head { color: #ffffff; text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5); }
+  :scope[data-platform] .titlebar .tb-right .icon-btn { color: #ffffff; }
+  .card:not(.sheet, .palette), .addbar, .sidebar, .tabbar, .sheet, .menu, .palette { background: var(--face); border: 0; box-shadow: var(--raised); }
+  .sidebar { padding: 6px; }
+  /* 見出しはウィンドウのタイトルバー（右に ＿ □ ×） */
+  .section { background: var(--face); box-shadow: var(--raised); padding: 3px 3px 6px; margin-bottom: 14px; }
+  .section-head {
+    background: var(--grad); color: #ffffff; padding: 3px 6px; margin: 0 0 4px; font-weight: 700; font-size: 12.5px;
+    position: relative;
+  }
+  .section-head .count, .section-head .link { color: rgba(255, 255, 255, 0.85); }
+  .section > .section-head::after { content: "_ □ ×"; margin-left: auto; padding-left: 10px; letter-spacing: 3px; font-size: 11px; color: #ffffff; opacity: 0.9; }
+  .list { gap: 0; background: #ffffff; box-shadow: var(--sunken); padding: 2px; }
+  .item { border: 0; border-radius: 0; background: #ffffff; box-shadow: none; min-height: 40px; }
+  .item:hover { background: var(--bar1); color: #ffffff; }
+  .item:hover .meta, .item:hover .meta-ic { color: #dfe6ff; }
+  .check { border: 0; background: #ffffff; box-shadow: var(--sunken); width: 18px; height: 18px; }
+  .done .check { background: #ffffff; }
+  .check svg { stroke: #000000; stroke-width: 3.5; }
+  .chip, .btn { background: var(--face); border: 0; box-shadow: var(--raised); color: #000000; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--face); color: #000000; box-shadow: var(--sunken); }
+  .nav-item.active { background: var(--bar1); color: #ffffff; box-shadow: none; }
+  .nav-item.active svg, .nav-item.active .badge { color: #ffffff; }
+  .add-btn svg, .play-btn svg, .tab.active svg { color: #000000; }
+  #addInput, .text, .search { background: #ffffff; border: 0; box-shadow: var(--sunken); }
+  .tip, .toast { color: #000000; border: 1px solid #000000; }
+  .toast button { color: var(--bar1); }
+  .ring-bar { stroke-linecap: butt; }
+  .sp-line { background: var(--bar1); height: 4px; }
+}
+
+/* ------------------------------------------------------------
+   52. 電光掲示板：黒い板に光る点の文字
+   ------------------------------------------------------------ */
+
+[data-style="led"] {
+  --font: "BIZ UDGothic", "Osaka-mono", "MS Gothic", "Consolas", monospace;
+  --font-title: var(--font);
+  --font-num: "Consolas", "Menlo", var(--font);
+  --lit: #ffb000;
+  --page-bg: #070707;
+  --ink-rgb: 255, 176, 0;
+  --accent-a: var(--lit);
+  --accent-b: var(--lit);
+  --on-accent: #070707;
+  --grad: linear-gradient(var(--lit), var(--lit));
+  --accent-soft: color-mix(in srgb, var(--lit) 14%, transparent);
+  --glass: #101010;
+  --glass-soft: #0c0c0c;
+  --glass-strong: #1a1a1a;
+  --glass-hover: #161616;
+  --glass-border: #262626;
+  --highlight: transparent;
+  --field: #0e0e0e;
+  --field-focus: #151515;
+  --sheet-bg: #0d0d0d;
+  --zen-bg: #070707;
+  --shadow: inset 0 0 0 1px #000, 0 2px 0 #1c1c1c;
+  --shadow-pop: 0 0 0 1px #2a2a2a, 0 20px 50px rgba(0, 0, 0, 0.7);
+  --tip-bg: var(--lit);
+  --r-card: 4px; --r-item: 0; --r-chip: 2px; --r-check: 1px; --r-field: 2px; --r-play: 4px;
+}
+[data-style="led"][data-variant="green"] { --lit: #46ff6e; --ink-rgb: 70, 255, 110; }
+[data-style="led"][data-variant="white"] { --lit: #dfe9ff; --ink-rgb: 223, 233, 255; }
+
+@scope ([data-style="led"]) to ([data-style]:not([data-style="led"])) {
+  /* 文字がにじんで光る＋細かい点の格子を重ねて、LED の点に見せる */
+  .title, .page-head h1, .titlebar .date, .summary-title, .section-head, .timer-time, .count-days b, .money-big b {
+    text-shadow: 0 0 6px color-mix(in srgb, var(--lit) 70%, transparent);
+  }
+  .list > .item, .card:not(.sheet, .palette, .addbar) {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.55) 0.7px, transparent 0.9px);
+    background-size: 3px 3px;
+  }
+  .list { gap: 0; border: 1px solid var(--glass-border); }
+  /* 行は発車案内の 1 行：左に番号、上下に区切り */
+  .list { counter-reset: led; }
+  .list > .item { counter-increment: led; padding-left: 46px; border: 0; border-bottom: 1px solid #1d1d1d; background-color: #0b0b0b; box-shadow: none; letter-spacing: 0.06em; }
+  .list > .item::before { content: counter(led, decimal-leading-zero); position: absolute; left: 10px; top: 50%; translate: 0 -50%; color: var(--lit); font-family: var(--font-num); font-size: 13px; opacity: 0.8; }
+  .item.done .title { opacity: 0.45; text-decoration-color: var(--lit); }
+  .meta, .meta-ic { color: color-mix(in srgb, var(--lit) 65%, #000); }
+  .section-head { background: #161616; color: #ffffff; padding: 6px 10px; margin: 0; letter-spacing: 0.2em; border: 1px solid var(--glass-border); border-bottom: 0; }
+  .section-head .count { color: var(--lit); }
+  .check { border: 1px solid var(--lit); background: transparent; }
+  .done .check { background: var(--lit); box-shadow: 0 0 8px var(--lit); }
+  .check svg { stroke: var(--on-accent); }
+  .tag { background: #1a1a1a; color: var(--lit); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--lit); color: var(--on-accent); box-shadow: 0 0 10px color-mix(in srgb, var(--lit) 50%, transparent); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg, .play-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .ring-bar, .timer-bar { filter: drop-shadow(0 0 5px var(--lit)); }
+  .sp-line { background: var(--lit); box-shadow: 0 0 6px var(--lit); }
+}
+
+/* ------------------------------------------------------------
+   53. ステンドグラス：色ガラスと黒い鉛の線
+   ------------------------------------------------------------ */
+
+[data-style="stained"] {
+  --font: "Georgia", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-title: "Georgia", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --lead: #0b0b0b;
+  --g1: #b8202e; --g2: #1f5fbf; --g3: #d4a017; --g4: #2e8b57; --g5: #7b3fa0; --g6: #1aa3a3;
+  --page-bg: radial-gradient(ellipse at 50% 0%, rgba(255, 230, 170, 0.18), transparent 60%), #14101c;
+  --ink-rgb: 245, 238, 225;
+  --accent-a: #d4a017;
+  --accent-b: #d4a017;
+  --on-accent: #14101c;
+  --accent-soft: rgba(212, 160, 23, 0.18);
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-soft: rgba(255, 255, 255, 0.03);
+  --glass-strong: rgba(255, 255, 255, 0.12);
+  --glass-hover: rgba(255, 255, 255, 0.08);
+  --glass-border: var(--lead);
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.07);
+  --field-focus: rgba(255, 255, 255, 0.11);
+  --sheet-bg: #1b1524;
+  --zen-bg: #14101c;
+  --shadow: 0 0 0 3px var(--lead), 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-pop: 0 0 0 3px var(--lead), 0 20px 60px rgba(0, 0, 0, 0.6);
+  --tip-bg: #d4a017;
+  --r-card: 14px; --r-item: 6px;
+}
+[data-style="stained"][data-variant="modern"] { --g1: #3fb6c8; --g2: #f2c94c; --g3: #eb5757; --g4: #6fcf97; --g5: #bb6bd9; --g6: #2d9cdb; --accent-a: #3fb6c8; --accent-b: #3fb6c8; --page-bg: #101418; }
+[data-style="stained"][data-variant="rose"] { --g1: #e0457b; --g2: #9b2d6b; --g3: #f28fb0; --g4: #5a2a82; --g5: #c2185b; --g6: #f6b26b; --accent-a: #e0457b; --accent-b: #e0457b; --page-bg: radial-gradient(ellipse at 50% 0%, rgba(255, 150, 190, 0.16), transparent 60%), #1a0d14; }
+
+@scope ([data-style="stained"]) to ([data-style]:not([data-style="stained"])) {
+  .list:has(> .item) { gap: 4px; background: var(--lead); padding: 4px; border-radius: 10px; }
+  .list > .item {
+    border: 0; box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.35), transparent 55%),
+      linear-gradient(135deg, var(--pane, var(--g1)), color-mix(in srgb, var(--pane, var(--g1)) 60%, #000));
+    color: #ffffff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  }
+  .list > .item:nth-child(6n+2) { --pane: var(--g2); }
+  .list > .item:nth-child(6n+3) { --pane: var(--g3); }
+  .list > .item:nth-child(6n+4) { --pane: var(--g4); }
+  .list > .item:nth-child(6n+5) { --pane: var(--g5); }
+  .list > .item:nth-child(6n+6) { --pane: var(--g6); }
+  .list > .item .meta, .list > .item .meta-ic { color: rgba(255, 255, 255, 0.85); }
+  .list > .item .tag { background: rgba(0, 0, 0, 0.3); color: #ffffff; }
+  .list > .item.done { filter: saturate(0.35) brightness(0.8); }
+  .check { border: 2px solid var(--lead); background: rgba(255, 255, 255, 0.85); }
+  .done .check { background: radial-gradient(circle at 35% 30%, #fff 0 15%, var(--accent-a) 60%); }
+  .check svg { stroke: var(--lead); }
+  .card:not(.sheet, .palette) { border: 3px solid var(--lead); }
+  .section-head > span:first-child { font-variant: small-caps; letter-spacing: 0.08em; color: var(--accent-a); }
+  .page-head h1, .summary-title { letter-spacing: 0.04em; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--accent-a); color: var(--on-accent); box-shadow: 0 0 0 2px var(--lead); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: var(--accent-a); }
+}
+
+/* ------------------------------------------------------------
+   54. アクア：ストライプとジェルのボタン
+   ------------------------------------------------------------ */
+
+[data-style="aqua"] {
+  --font: "Lucida Grande", -apple-system, "Hiragino Kaku Gothic ProN", "Segoe UI", "Yu Gothic UI", sans-serif;
+  --gel: #3b8ef0;
+  --gel-dark: #1560c8;
+  --page-bg: repeating-linear-gradient(0deg, #ffffff 0 2px, #eef1f5 2px 4px);
+  --ink-rgb: 20, 24, 30;
+  --accent-a: var(--gel);
+  --accent-b: var(--gel);
+  --grad: linear-gradient(180deg, color-mix(in srgb, var(--gel) 55%, #fff) 0%, var(--gel) 50%, var(--gel-dark) 51%, color-mix(in srgb, var(--gel) 75%, #fff) 100%);
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #f6f9ff;
+  --glass-border: #b8bec8;
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #f4f6f9;
+  --zen-bg: #eef1f5;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  --shadow-pop: 0 12px 30px rgba(0, 0, 0, 0.3);
+  --tip-bg: #fffbcc;
+  --r-card: 8px; --r-item: 6px; --r-chip: 999px; --r-field: 6px;
+}
+[data-style="aqua"][data-variant="graphite"] { --gel: #8a95a5; --gel-dark: #5a6575; }
+[data-style="aqua"][data-variant="lime"] { --gel: #4caf50; --gel-dark: #2e7d32; --page-bg: repeating-linear-gradient(0deg, #ffffff 0 2px, #f0f5ee 2px 4px); }
+
+@scope ([data-style="aqua"]) to ([data-style]:not([data-style="aqua"])) {
+  .card:not(.sheet, .palette) { border: 1px solid var(--glass-border); }
+  /* 見出しに 3 つの信号 */
+  .section-head > span:first-child::before {
+    content: ""; display: inline-block; width: 42px; height: 12px; margin-right: 8px; vertical-align: -1px;
+    background:
+      radial-gradient(circle at 6px 6px, #ff5f57 0 5px, transparent 5.5px),
+      radial-gradient(circle at 21px 6px, #febc2e 0 5px, transparent 5.5px),
+      radial-gradient(circle at 36px 6px, #28c840 0 5px, transparent 5.5px);
+  }
+  .section-head { background: linear-gradient(180deg, #f7f7f7, #d9d9d9); border: 1px solid var(--glass-border); border-radius: 6px 6px 0 0; padding: 4px 10px; margin: 0; color: #333; }
+  .list { gap: 0; border: 1px solid var(--glass-border); border-top: 0; border-radius: 0 0 6px 6px; overflow: hidden; }
+  .item { border: 0; border-radius: 0; box-shadow: none; }
+  .list > .item:nth-child(even) { background: #f1f5fb; }
+  .check { border: 1px solid #7a8698; background: linear-gradient(180deg, #ffffff, #dfe4ea); box-shadow: inset 0 1px 0 #fff; border-radius: 4px; }
+  .done .check { background: var(--grad); border-color: var(--gel-dark); }
+  .check svg { stroke: #ffffff; }
+  .chip, .btn { background: linear-gradient(180deg, #ffffff, #e3e6ea); border: 1px solid #a8aeb8; box-shadow: inset 0 1px 0 #fff; color: #222; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active {
+    background: var(--grad); color: #ffffff; border: 1px solid var(--gel-dark);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(0, 0, 0, 0.25); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: #ffffff; }
+  .tip { color: #000; border: 1px solid #c8b84a; }
+  .sp-line { background: var(--gel); }
+}
+
+/* ------------------------------------------------------------
+   55. 和室：畳の床と障子
+   ------------------------------------------------------------ */
+
+[data-style="tatami"] {
+  --font: "Hiragino Mincho ProN", "Yu Mincho", "BIZ UDPMincho Medium", serif;
+  --font-title: var(--font);
+  --font-num: var(--font);
+  --mat: #c9c38a;
+  --heri: #2f4a2a;
+  --paper: #fdfbf3;
+  --wood: #8a6a43;
+  --page-bg:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 4px),
+    linear-gradient(90deg, transparent calc(50% - 6px), var(--heri) calc(50% - 6px), var(--heri) calc(50% + 6px), transparent calc(50% + 6px)) 0 0 / 360px 100%,
+    linear-gradient(0deg, transparent calc(100% - 12px), var(--heri) calc(100% - 12px)) 0 0 / 100% 720px,
+    var(--mat);
+  --noise-opacity: 0.18;
+  --ink-rgb: 44, 36, 24;
+  --accent-a: #9b3a2b;
+  --accent-b: #9b3a2b;
+  --grad: linear-gradient(#9b3a2b, #9b3a2b);
+  --glass: var(--paper);
+  --glass-soft: var(--paper);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: var(--wood);
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.7);
+  --field-focus: #ffffff;
+  --sheet-bg: var(--paper);
+  --zen-bg: var(--mat);
+  --shadow: 0 6px 16px rgba(60, 50, 20, 0.25);
+  --shadow-pop: 0 20px 50px rgba(40, 30, 10, 0.4);
+  --tip-bg: #2c2418;
+  --r-card: 0; --r-item: 0; --r-field: 0; --r-chip: 2px;
+}
+[data-style="tatami"][data-variant="night"] { --mat: #5a5232; --heri: #1a2416; --paper: #f6e7c4; --wood: #4a3420; --ink-rgb: 44, 30, 16; }
+
+@scope ([data-style="tatami"]) to ([data-style]:not([data-style="tatami"])) {
+  /* 障子：木の枠と細い格子 */
+  .card:not(.sheet, .palette, .addbar) {
+    border: 6px solid var(--wood);
+    background:
+      linear-gradient(90deg, transparent calc(100% - 1.5px), color-mix(in srgb, var(--wood) 55%, transparent) 0) 0 0 / 25% 100%,
+      linear-gradient(0deg, transparent calc(100% - 1.5px), color-mix(in srgb, var(--wood) 55%, transparent) 0) 0 0 / 100% 64px,
+      var(--paper);
+  }
+  :scope[data-variant="night"] .card:not(.sheet, .palette, .addbar) { box-shadow: 0 0 40px rgba(255, 190, 90, 0.35), var(--shadow); }
+  .titlebar .date, .titlebar .greeting, .page-head, .sidebar .sb-date { color: #fbf6e6; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); }
+  :scope[data-platform] .titlebar .tb-right .icon-btn { color: #fbf6e6; }
+  .section { background: var(--paper); border: 4px solid var(--wood); padding: 8px 10px; margin-bottom: 14px; box-shadow: var(--shadow); }
+  .list { gap: 0; }
+  .item { border: 0; border-bottom: 1px solid color-mix(in srgb, var(--wood) 30%, transparent); background: transparent; box-shadow: none; }
+  .check { border: 1.5px solid rgba(var(--ink-rgb), 0.6); background: transparent; border-radius: 0; }
+  .done .check { background: var(--accent-a); border-color: var(--accent-a); border-radius: 50%; }
+  .check svg { stroke: #fff; }
+  .section-head > span:first-child { border-left: 4px solid var(--accent-a); padding-left: 8px; letter-spacing: 0.12em; }
+  .sidebar { background: var(--paper); border: 4px solid var(--wood); padding: 10px 8px; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { box-shadow: none; }
+  .sp-line { background: rgba(var(--ink-rgb), 0.3); }
+}
+
+/* ------------------------------------------------------------
+   56. 夜景：ビルの窓に明かり
+   ------------------------------------------------------------ */
+
+[data-style="nightview"] {
+  --font: "Segoe UI Variable Display", -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --sky1: #0a0c1e;
+  --sky2: #241a4a;
+  --neon1: #ff4fa3;
+  --neon2: #3ee0ff;
+  --win: #ffd27a;
+  --page-bg: linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 75%, color-mix(in srgb, var(--neon1) 30%, var(--sky2)) 100%);
+  --ink-rgb: 236, 238, 255;
+  --accent-a: var(--neon1);
+  --accent-b: var(--neon2);
+  --on-accent: #0a0c1e;
+  --accent-soft: color-mix(in srgb, var(--neon1) 18%, transparent);
+  --backdrop: blur(10px) saturate(130%);
+  --backdrop-strong: blur(22px);
+  --glass: rgba(14, 16, 40, 0.62);
+  --glass-soft: rgba(14, 16, 40, 0.45);
+  --glass-strong: rgba(255, 255, 255, 0.12);
+  --glass-hover: rgba(30, 32, 70, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --highlight: rgba(255, 255, 255, 0.05);
+  --field: rgba(255, 255, 255, 0.07);
+  --field-focus: rgba(255, 255, 255, 0.11);
+  --sheet-bg: rgba(14, 16, 40, 0.96);
+  --zen-bg: rgba(10, 12, 30, 0.88);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-pop: 0 20px 60px rgba(0, 0, 0, 0.6);
+  --tip-bg: var(--neon1);
+}
+[data-style="nightview"][data-variant="golden"] { --sky1: #120d08; --sky2: #3a2412; --neon1: #ffbf47; --neon2: #ff8a3d; --win: #ffe2a0; }
+[data-style="nightview"][data-variant="blue"] { --sky1: #0b1636; --sky2: #23407a; --neon1: #7cc4ff; --neon2: #b9a8ff; --win: #fff1b8; }
+
+/* 街のシルエット（大小のビル）と、ともる窓 */
+html[data-style="nightview"] body::after, .style-preview[data-style="nightview"]::before {
+  content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 34%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(1.6px 1.6px at 3px 4px, var(--win) 60%, transparent 65%) 0 0 / 14px 16px,
+    linear-gradient(#05060f, #05060f);
+  -webkit-mask:
+    linear-gradient(#000, #000) 2% 100% / 7% 62% no-repeat, linear-gradient(#000, #000) 10% 100% / 9% 84% no-repeat,
+    linear-gradient(#000, #000) 20% 100% / 6% 48% no-repeat, linear-gradient(#000, #000) 27% 100% / 10% 100% no-repeat,
+    linear-gradient(#000, #000) 38% 100% / 7% 70% no-repeat, linear-gradient(#000, #000) 46% 100% / 12% 56% no-repeat,
+    linear-gradient(#000, #000) 59% 100% / 6% 92% no-repeat, linear-gradient(#000, #000) 66% 100% / 10% 66% no-repeat,
+    linear-gradient(#000, #000) 77% 100% / 7% 80% no-repeat, linear-gradient(#000, #000) 85% 100% / 9% 52% no-repeat,
+    linear-gradient(#000, #000) 95% 100% / 8% 74% no-repeat;
+  mask:
+    linear-gradient(#000, #000) 2% 100% / 7% 62% no-repeat, linear-gradient(#000, #000) 10% 100% / 9% 84% no-repeat,
+    linear-gradient(#000, #000) 20% 100% / 6% 48% no-repeat, linear-gradient(#000, #000) 27% 100% / 10% 100% no-repeat,
+    linear-gradient(#000, #000) 38% 100% / 7% 70% no-repeat, linear-gradient(#000, #000) 46% 100% / 12% 56% no-repeat,
+    linear-gradient(#000, #000) 59% 100% / 6% 92% no-repeat, linear-gradient(#000, #000) 66% 100% / 10% 66% no-repeat,
+    linear-gradient(#000, #000) 77% 100% / 7% 80% no-repeat, linear-gradient(#000, #000) 85% 100% / 9% 52% no-repeat,
+    linear-gradient(#000, #000) 95% 100% / 8% 74% no-repeat;
+  opacity: 0.95;
+}
+.style-preview[data-style="nightview"]::before { position: absolute; height: 45%; }
+
+@scope ([data-style="nightview"]) to ([data-style]:not([data-style="nightview"])) {
+  .card:not(.sheet, .palette), .item { border: 1px solid var(--glass-border); }
+  .check { border-color: rgba(255, 255, 255, 0.35); background: transparent; }
+  .done .check { box-shadow: 0 0 12px var(--neon1); }
+  .check svg { stroke: var(--on-accent); }
+  .page-head h1, .titlebar .date, .summary-title { text-shadow: 0 0 14px color-mix(in srgb, var(--neon1) 60%, transparent); }
+  .section-head > span:first-child { color: var(--neon2); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { color: var(--on-accent); box-shadow: 0 0 14px color-mix(in srgb, var(--neon1) 45%, transparent); }
+  .nav-item.active svg, .tab.active svg { color: var(--neon1); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: linear-gradient(90deg, var(--neon1), var(--neon2)); }
+}
+
+/* ------------------------------------------------------------
+   57. クレイ：ねんどのようにぷっくり
+   ------------------------------------------------------------ */
+
+[data-style="clay"] {
+  --font: "Hiragino Maru Gothic ProN", "HGMaruGothicMPRO", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --bg: #fde8ef;
+  --clay: #fff5f8;
+  --tone: #f27aa0;
+  --page-bg: var(--bg);
+  --ink-rgb: 92, 52, 70;
+  --accent-a: var(--tone);
+  --accent-b: color-mix(in srgb, var(--tone) 60%, #fff);
+  --glass: var(--clay);
+  --glass-soft: var(--clay);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: color-mix(in srgb, var(--tone) 8%, #fff);
+  --field-focus: #ffffff;
+  --sheet-bg: var(--clay);
+  --zen-bg: var(--bg);
+  --puff: 10px 14px 24px color-mix(in srgb, var(--tone) 28%, transparent), inset -8px -8px 14px color-mix(in srgb, var(--tone) 16%, transparent), inset 8px 8px 14px rgba(255, 255, 255, 0.9);
+  --shadow: var(--puff);
+  --shadow-pop: 0 24px 50px color-mix(in srgb, var(--tone) 30%, transparent);
+  --tip-bg: #5c3446;
+  --r-card: 32px; --r-item: 24px; --r-field: 20px; --r-chip: 999px;
+}
+[data-style="clay"][data-variant="mint"] { --bg: #e3f7ef; --clay: #f5fffa; --tone: #3fbf8f; --ink-rgb: 30, 70, 56; --tip-bg: #1e4638; }
+[data-style="clay"][data-variant="lavender"] { --bg: #ece8fb; --clay: #faf8ff; --tone: #8b74e8; --ink-rgb: 56, 44, 96; --tip-bg: #382c60; }
+[data-style="clay"][data-variant="peach"] { --bg: #fdeee3; --clay: #fffaf5; --tone: #f39a5d; --ink-rgb: 92, 56, 30; --tip-bg: #5c381e; }
+
+@scope ([data-style="clay"]) to ([data-style]:not([data-style="clay"])) {
+  .card:not(.sheet, .palette), .item, .tabbar, .sidebar { border: 0; box-shadow: var(--puff); }
+  .list { gap: 12px; }
+  .item { padding: 12px 14px; }
+  .check { border: 0; background: var(--clay); box-shadow: inset 3px 3px 6px color-mix(in srgb, var(--tone) 22%, transparent), inset -3px -3px 6px #ffffff; }
+  .done .check { background: var(--tone); box-shadow: inset -3px -3px 6px rgba(0, 0, 0, 0.12), inset 3px 3px 6px rgba(255, 255, 255, 0.5), 3px 4px 8px color-mix(in srgb, var(--tone) 40%, transparent); }
+  .chip, .btn { border: 0; box-shadow: 4px 5px 10px color-mix(in srgb, var(--tone) 20%, transparent), inset 3px 3px 5px rgba(255, 255, 255, 0.9); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active {
+    background: var(--tone); color: #fff;
+    box-shadow: 5px 7px 14px color-mix(in srgb, var(--tone) 40%, transparent), inset -4px -4px 8px rgba(0, 0, 0, 0.12), inset 4px 4px 8px rgba(255, 255, 255, 0.45);
+  }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff; }
+  .page-head h1, .summary-title { font-weight: 800; }
+  .sidebar { border-radius: 32px; padding: 12px 8px; }
+  .sp-line { background: color-mix(in srgb, var(--tone) 45%, transparent); }
+}
+
+/* ------------------------------------------------------------
+   58. 水彩：にじんだ絵の具
+   ------------------------------------------------------------ */
+
+[data-style="watercolor"] {
+  --font: "Note Latin", "UD Digi Kyokasho NK-R", "UD Digi Kyokasho N", "Hiragino Maru Gothic ProN", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --w1: rgba(231, 132, 155, 0.35); --w2: rgba(247, 198, 110, 0.32); --w3: rgba(140, 200, 170, 0.32); --w4: rgba(150, 170, 230, 0.32);
+  --page-bg:
+    radial-gradient(ellipse 40% 30% at 12% 15%, var(--w1), transparent 70%),
+    radial-gradient(ellipse 35% 28% at 85% 22%, var(--w4), transparent 70%),
+    radial-gradient(ellipse 45% 30% at 75% 85%, var(--w3), transparent 70%),
+    radial-gradient(ellipse 30% 25% at 20% 80%, var(--w2), transparent 70%),
+    #fbf8f2;
+  --noise-opacity: 0.16;
+  --ink-rgb: 60, 50, 56;
+  --accent-a: #e7849b;
+  --accent-b: #f2b07a;
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-soft: rgba(255, 255, 255, 0.35);
+  --glass-strong: rgba(255, 255, 255, 0.85);
+  --glass-hover: rgba(255, 255, 255, 0.7);
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.65);
+  --field-focus: rgba(255, 255, 255, 0.9);
+  --sheet-bg: #fdfbf7;
+  --zen-bg: #fbf8f2;
+  --shadow: none;
+  --shadow-pop: 0 18px 44px rgba(60, 50, 56, 0.18);
+  --tip-bg: #3c3238;
+  --r-card: 40% 8% 30% 10% / 12% 30% 10% 40%;
+  --r-item: 18px 6px 16px 8px;
+}
+[data-style="watercolor"][data-variant="ocean"] { --w1: rgba(74, 144, 194, 0.32); --w2: rgba(120, 200, 220, 0.3); --w3: rgba(100, 180, 160, 0.28); --w4: rgba(160, 180, 230, 0.3); --accent-a: #4a90c2; --accent-b: #6fc3c9; --ink-rgb: 40, 56, 72; }
+[data-style="watercolor"][data-variant="autumn"] { --w1: rgba(200, 118, 58, 0.32); --w2: rgba(220, 170, 70, 0.32); --w3: rgba(170, 90, 70, 0.26); --w4: rgba(150, 130, 80, 0.26); --accent-a: #c8763a; --accent-b: #d9a441; --ink-rgb: 70, 50, 36; }
+
+@scope ([data-style="watercolor"]) to ([data-style]:not([data-style="watercolor"])) {
+  .card:not(.sheet, .palette, .addbar) { border-radius: 26px 10px 22px 14px; background: radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.45) 70%); }
+  .list > .item { border: 0; background: radial-gradient(ellipse 90% 140% at 10% 50%, var(--wash, var(--w1)), transparent 75%), rgba(255, 255, 255, 0.5); }
+  .list > .item:nth-child(4n+2) { --wash: var(--w2); }
+  .list > .item:nth-child(4n+3) { --wash: var(--w3); }
+  .list > .item:nth-child(4n+4) { --wash: var(--w4); }
+  .check { border: 2px solid color-mix(in srgb, var(--accent-a) 60%, transparent); background: rgba(255, 255, 255, 0.6); border-radius: 46% 54% 50% 50%; }
+  .done .check { background: radial-gradient(circle at 40% 40%, var(--accent-b), var(--accent-a)); }
+  .section-head > span:first-child { background: linear-gradient(transparent 55%, var(--w1) 55%, var(--w1) 90%, transparent 90%); padding: 0 6px; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: radial-gradient(ellipse at 30% 30%, var(--accent-b), var(--accent-a)); color: #fff; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff; }
+  .sp-line { background: var(--accent-a); opacity: 0.5; }
+}
+
+/* ------------------------------------------------------------
+   59. 海辺：空と海と砂浜、寄せては返す波
+   ------------------------------------------------------------ */
+
+[data-style="beach"] {
+  --font: "Hiragino Maru Gothic ProN", "Segoe UI Variable Text", "Yu Gothic UI", sans-serif;
+  --sky: #bfeaf5;
+  --sea: #3fb8c9;
+  --sand: #f5e2b8;
+  --page-bg: linear-gradient(180deg, var(--sky) 0%, color-mix(in srgb, var(--sky) 60%, #fff) 45%, var(--sea) 46%, color-mix(in srgb, var(--sea) 70%, #fff) 70%, var(--sand) 71%, var(--sand) 100%);
+  --ink-rgb: 30, 52, 70;
+  --accent-a: #ff7f6a;
+  --accent-b: #ffb347;
+  --glass: rgba(255, 255, 255, 0.82);
+  --glass-soft: rgba(255, 255, 255, 0.6);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --highlight: transparent;
+  --backdrop: blur(8px);
+  --field: rgba(255, 255, 255, 0.8);
+  --field-focus: #ffffff;
+  --sheet-bg: rgba(255, 253, 248, 0.97);
+  --zen-bg: rgba(191, 234, 245, 0.9);
+  --shadow: 0 8px 20px rgba(30, 80, 100, 0.12);
+  --shadow-pop: 0 20px 50px rgba(30, 80, 100, 0.25);
+  --tip-bg: #1e3446;
+  --r-card: 22px; --r-item: 16px;
+}
+[data-style="beach"][data-variant="sunset"] { --sky: #ffd2b0; --sea: #e8556d; --sand: #f3d4b0; --accent-a: #e8556d; --accent-b: #ffb347; --ink-rgb: 70, 36, 44; }
+
+/* 波打ちぎわで、白い泡のふちがゆっくり行き来する */
+html[data-style="beach"] body::after, .style-preview[data-style="beach"]::before {
+  content: ""; position: fixed; left: -10%; right: -10%; top: 66%; height: 9%; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 60px 18px at 50% 0%, rgba(255, 255, 255, 0.95) 45%, transparent 50%) 0 0 / 90px 30px repeat-x,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent);
+  animation: tide 7s ease-in-out infinite alternate;
+}
+.style-preview[data-style="beach"]::before { position: absolute; animation: none; }
+@keyframes tide { from { transform: translate(0, -6px); } to { transform: translate(-30px, 10px); } }
+
+@scope ([data-style="beach"]) to ([data-style]:not([data-style="beach"])) {
+  .card:not(.sheet, .palette), .item { border: 1px solid var(--glass-border); }
+  .check { border: 2px solid color-mix(in srgb, var(--sea) 70%, transparent); background: #fff; }
+  .done .check { background: var(--accent-a); border-color: var(--accent-a); }
+  .section-head > span:first-child::before { content: "🐚 "; }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-a) 40%, transparent); }
+  .sp-line { background: var(--sea); }
+}
+
+/* ------------------------------------------------------------
+   60. 雪：しんしんと降る雪、カードの上にも雪
+   ------------------------------------------------------------ */
+
+[data-style="snow"] {
+  --font: "Segoe UI Variable Text", -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --sky1: #dfeaf6;
+  --sky2: #f7fbff;
+  --flake: #ffffff;
+  --page-bg: linear-gradient(180deg, var(--sky1), var(--sky2));
+  --ink-rgb: 36, 52, 76;
+  --accent-a: #5b8bc4;
+  --accent-b: #8fb6e3;
+  --glass: rgba(255, 255, 255, 0.78);
+  --glass-soft: rgba(255, 255, 255, 0.55);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(255, 255, 255, 0.95);
+  --highlight: #ffffff;
+  --backdrop: blur(6px);
+  --field: rgba(255, 255, 255, 0.8);
+  --field-focus: #ffffff;
+  --sheet-bg: rgba(250, 252, 255, 0.97);
+  --zen-bg: rgba(223, 234, 246, 0.9);
+  --shadow: 0 8px 20px rgba(60, 90, 130, 0.1);
+  --shadow-pop: 0 20px 50px rgba(40, 70, 110, 0.22);
+  --tip-bg: #24344c;
+  --r-card: 18px; --r-item: 14px;
+}
+[data-style="snow"][data-variant="night"] {
+  --sky1: #0f1a2e; --sky2: #1d2f4f; --ink-rgb: 226, 236, 252; --accent-a: #a9c8ff; --accent-b: #d6e4ff; --on-accent: #0f1a2e;
+  --glass: rgba(255, 255, 255, 0.07); --glass-soft: rgba(255, 255, 255, 0.05); --glass-strong: rgba(255, 255, 255, 0.14); --glass-hover: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.14); --highlight: rgba(255, 255, 255, 0.1); --field: rgba(255, 255, 255, 0.07); --field-focus: rgba(255, 255, 255, 0.12);
+  --sheet-bg: rgba(18, 30, 52, 0.97); --zen-bg: rgba(15, 26, 46, 0.88); --tip-bg: #a9c8ff; --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+html[data-style="snow"] body::after, .style-preview[data-style="snow"]::before {
+  content: ""; position: fixed; inset: -20% 0 0; z-index: -1; pointer-events: none;
+  background-image:
+    radial-gradient(3px 3px at 8% 10%, var(--flake) 60%, transparent 65%), radial-gradient(2px 2px at 24% 32%, var(--flake) 60%, transparent 65%),
+    radial-gradient(3.5px 3.5px at 41% 18%, var(--flake) 60%, transparent 65%), radial-gradient(2px 2px at 57% 44%, var(--flake) 60%, transparent 65%),
+    radial-gradient(3px 3px at 72% 8%, var(--flake) 60%, transparent 65%), radial-gradient(2.5px 2.5px at 88% 36%, var(--flake) 60%, transparent 65%),
+    radial-gradient(2px 2px at 15% 58%, var(--flake) 60%, transparent 65%), radial-gradient(3px 3px at 66% 70%, var(--flake) 60%, transparent 65%),
+    radial-gradient(2px 2px at 92% 80%, var(--flake) 60%, transparent 65%), radial-gradient(3px 3px at 33% 86%, var(--flake) 60%, transparent 65%);
+  background-size: 360px 400px;
+  filter: drop-shadow(0 0 1px rgba(120, 150, 190, 0.6));
+  animation: snowfall 24s linear infinite;
+}
+.style-preview[data-style="snow"]::before { position: absolute; background-size: 140px 160px; animation: none; }
+@keyframes snowfall { from { background-position: 0 0; } to { background-position: 60px 400px; } }
+
+@scope ([data-style="snow"]) to ([data-style]:not([data-style="snow"])) {
+  /* カードの上に積もった雪 */
+  .card:not(.sheet, .palette, .addbar) { position: relative; overflow: visible; border: 1px solid var(--glass-border); }
+  .card:not(.sp-card, .sheet, .palette, .addbar)::before {
+    content: ""; position: absolute; left: 10px; right: 10px; top: -7px; height: 14px; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse 18px 9px at 50% 100%, #ffffff 70%, transparent 72%) 0 0 / 30px 14px repeat-x;
+    filter: drop-shadow(0 1px 1px rgba(120, 150, 190, 0.35));
+  }
+  .item { border: 1px solid var(--glass-border); }
+  .check { border: 1.5px solid color-mix(in srgb, var(--accent-a) 55%, transparent); background: transparent; }
+  .done .check { background: var(--accent-a); }
+  .check svg { stroke: var(--on-accent); }
+  .section-head > span:first-child::before { content: "❄ "; color: var(--accent-a); }
+  .page-head h1, .summary-title { font-weight: 500; letter-spacing: 0.04em; }
+  .chip.on, .btn.primary, .add-btn, .play-btn { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: color-mix(in srgb, var(--accent-a) 50%, transparent); }
+}

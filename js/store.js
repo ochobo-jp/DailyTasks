@@ -35,7 +35,7 @@ const DEFAULT_PREFS = {
   variant: window.api.defaultStyle === 'ios' ? 'blue' : 'lavender',    // スタイルごとの色
   tint: 0.6,
   dark: false,            // ガラスの夜モード
-  features: { school: true, someday: true, life: true },
+  features: { school: true, someday: true, life: true, study: true },
   bgm: { on: false, sound: 'rain', volume: 0.6, duringBreak: false, tracks: [], shuffle: false },
   classNotify: true,      // 授業の 5 分前に通知
   tabs: null,             // iPhone の下のタブに並べる画面（null ならおすすめの順）
@@ -65,13 +65,13 @@ function freshPrefs() {
 }
 
 function emptySchool() {
-  return { setup: false, days: [1, 2, 3, 4, 5], periods: [], subjects: [], timetable: {}, attendance: {} };
+  return { setup: false, days: [1, 2, 3, 4, 5], periods: [], subjects: [], timetable: {}, attendance: {}, grades: [] };
 }
 
 function emptyData() {
   return {
     version: 2, lists: [], routines: [], todos: [], log: {}, journal: {}, focus: {},
-    someday: [], school: emptySchool(), life: emptyLife(),
+    someday: [], school: emptySchool(), life: emptyLife(), decks: [], studyLog: {},
     badges: {}, archivedDone: 0, prefs: freshPrefs(),
   };
 }
@@ -98,6 +98,7 @@ function mergePrefs(p = {}) {
   delete out.accent;
   // ピアノの BGM はケルトに入れ替えた
   if (out.bgm.sound === 'piano') out.bgm.sound = 'celtic';
+  if (out.bgm.sound === 'chime') out.bgm.sound = 'cafe';
   return out;
 }
 
@@ -147,6 +148,8 @@ function migrate(raw) {
     raw.someday ||= [];
     raw.school = { ...emptySchool(), ...(raw.school || {}) };
     raw.life = { ...emptyLife(), ...(raw.life || {}) };
+    raw.decks ||= [];
+    raw.studyLog ||= {};
     raw.badges ||= {};
     raw.archivedDone ||= 0;
     return raw;

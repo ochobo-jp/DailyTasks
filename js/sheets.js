@@ -429,7 +429,8 @@ function openSettings() {
         <h3>使う機能</h3>
         ${row('学校', '時間割・出席・課題', sw('swSchool', p.features.school))}
         ${row('いつか', 'ずっと先のやりたいこと・やるべきこと', sw('swSomeday', p.features.someday))}
-        ${row('くらし', '買い物リスト・お金の記録・メモ・カウントダウン', sw('swLife', p.features.life))}
+        ${row('くらし', '買い物・お金・メモ・持ち物・からだ・カウントダウン', sw('swLife', p.features.life))}
+        ${row('単語帳', '表と裏のカードで暗記。覚えたものほど間をあけて出る', sw('swStudy', p.features.study))}
         ${row('紙吹雪', '今日のタスクが全部終わったとき', sw('swConfetti', p.confetti))}
         ${row('効果音', 'チェックやタイマー終了のとき', sw('swSound', p.sound))}
       </div>
@@ -510,6 +511,7 @@ function openSettings() {
     feature('#swSchool', 'school');
     feature('#swSomeday', 'someday');
     feature('#swLife', 'life');
+    feature('#swStudy', 'study');
     $('#swConfetti', el).onclick = (e) => { p.confetti = !p.confetti; setSwitch(e.currentTarget, p.confetti); save(); if (p.confetti) confetti(); };
     $('#swSound', el).onclick = (e) => { p.sound = !p.sound; setSwitch(e.currentTarget, p.sound); save(); chime(); };
     $('#swBgm', el).onclick = (e) => {

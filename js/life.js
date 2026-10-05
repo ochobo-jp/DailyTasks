@@ -9,6 +9,8 @@ const LIFE_TABS = [
   { id: 'shop', label: '買い物', icon: 'cart' },
   { id: 'money', label: 'お金', icon: 'wallet' },
   { id: 'notes', label: 'メモ', icon: 'note' },
+  { id: 'pack', label: '持ち物', icon: 'bag' },
+  { id: 'body', label: 'からだ', icon: 'heart' },
   { id: 'count', label: 'カウントダウン', icon: 'hourglass' },
 ];
 
@@ -27,12 +29,13 @@ const moneyCat = (id) => MONEY_CATS.find((c) => c.id === id) || MONEY_CATS[7];
 const yen = (n) => `¥${Math.round(Math.abs(n)).toLocaleString('ja-JP')}`;
 
 function emptyLife() {
-  return { shop: [], shopHistory: {}, money: { entries: [], budget: 0 }, notes: [], countdowns: [] };
+  return { shop: [], shopHistory: {}, money: { entries: [], budget: 0, subs: [] }, notes: [], countdowns: [], packs: [], packChecks: {}, body: {} };
 }
 function life() {
   if (!state.data.life) state.data.life = emptyLife();
   const l = state.data.life;
-  l.shop ||= []; l.shopHistory ||= {}; l.money ||= { entries: [], budget: 0 }; l.money.entries ||= []; l.notes ||= []; l.countdowns ||= [];
+  l.shop ||= []; l.shopHistory ||= {}; l.money ||= { entries: [], budget: 0 }; l.money.entries ||= []; l.money.subs ||= []; l.notes ||= []; l.countdowns ||= [];
+  l.packs ||= []; l.packChecks ||= {}; l.body ||= {};
   return l;
 }
 
@@ -163,6 +166,7 @@ function renderMoney() {
     </section>
     ${byCat.length ? `<section class="card money-cats"><div class="card-head">何に使った？</div>
       ${byCat.map(({ c, sum }) => `<div class="money-cat"><span>${c.icon} ${c.name}</span><i style="--w:${(sum / max) * 100}%"></i><b>${yen(sum)}</b></div>`).join('')}</section>` : ''}
+    ${subsSection()}
     ${days.length ? days.map((d) => {
       const rows = list.filter((e) => e.date === d).reverse();
       const sum = rows.filter((e) => e.kind !== 'in').reduce((s, e) => s + e.amount, 0);
@@ -301,8 +305,10 @@ function openCountSheet(c) {
 function countdownStrip() {
   if (!prefs().features.life) return '';
   const list = countdownsSorted().filter((x) => x.days >= 0 && x.days <= 60).slice(0, 3);
-  if (!list.length) return '';
-  return `<div class="count-strip">${list.map(({ c, days }) => `<button class="count-chip" data-act="count-open" data-id="${c.id}">
+  const subs = subsSoon();
+  if (!list.length && !subs.length) return '';
+  return `<div class="count-strip">${subs.map(({ x, days }) => `<button class="count-chip pay" data-act="sub-open" data-id="${x.id}">
+    🔁 ${escapeHtml(x.name)} <b>${days === 0 ? '今日' : '明日'} ${yen(x.amount)}</b></button>`).join('')}${list.map(({ c, days }) => `<button class="count-chip" data-act="count-open" data-id="${c.id}">
     ${c.emoji} ${escapeHtml(c.title)} <b>${days === 0 ? '今日！' : `あと${days}日`}</b></button>`).join('')}</div>`;
 }
 
@@ -356,10 +362,12 @@ function renderLifeView() {
     shop: life().shop.filter((x) => !x.done).length,
     money: '',
     notes: life().notes.length,
+    pack: packTomorrow().items.filter((x) => !packChecked(packTomorrow().day, x.name)).length || '',
+    body: '',
     count: countdownsSorted().filter((x) => x.days >= 0).length,
   };
-  const body = { shop: renderShop, money: renderMoney, notes: renderNotes, count: renderCountdowns }[tab.id]();
-  return `${pageHead('くらし', '買い物・お金・メモ・カウントダウン')}
+  const body = { shop: renderShop, money: renderMoney, notes: renderNotes, pack: renderPack, body: renderBody, count: renderCountdowns }[tab.id]();
+  return `${pageHead('くらし', '買い物・お金・メモ・持ち物・からだ・カウントダウン')}
     <div class="life-tabs" role="tablist">${LIFE_TABS.map((t) => `<button class="life-tab ${t.id === tab.id ? 'on' : ''}" data-act="life-tab" data-tab="${t.id}" role="tab">
       ${ICON[t.icon]}<span>${t.label}</span>${counts[t.id] ? `<i>${counts[t.id]}</i>` : ''}</button>`).join('')}</div>
     <div class="life-body life-${tab.id}">${body}</div>`;
@@ -372,9 +380,14 @@ function lifeAddbar(input, opts, roomy) {
     shop: roomy ? '買うものを追加…　例：牛乳、卵、パン×2' : '買うもの（例：牛乳、卵）',
     money: roomy ? '使ったお金を記録…　例：ランチ 850　／　+3000 バイト　／　昨日 電車 420' : '例：ランチ 850',
     notes: 'メモを書く…（1 行目がタイトル）',
+    pack: roomy ? '持ち物を追加…　例：部活：ラケット、タオル、水筒　／　選んだリストに「傘」' : '例：部活：ラケット、タオル',
+    body: '例：体重 52.3',
     count: roomy ? 'カウントダウンを追加…　例：期末テスト 12/20　／　🎂 誕生日 3/14 毎年' : '例：期末テスト 12/20',
   }[tab];
-  opts.innerHTML = '';
+  opts.innerHTML = tab === 'pack' && life().packs.length
+    ? `<span class="muted small">追加先</span>${life().packs.map((p) => `<button type="button" class="chip ${state.packTarget === p.id ? 'on' : ''}" data-act="pack-target" data-id="${p.id}">${escapeHtml(p.name)}</button>`).join('')}
+       <button type="button" class="chip ${!state.packTarget ? 'on' : ''}" data-act="pack-target" data-id="">＋ 新しいリスト</button>`
+    : '';
 }
 
 function lifeAddFromText(text) {
@@ -390,6 +403,14 @@ function lifeAddFromText(text) {
     return { kind: 'money', item: e };
   }
   if (tab === 'notes') return { kind: 'note', item: addNote(text) };
+  if (tab === 'pack') return addPackText(text);
+  if (tab === 'body') {
+    const m = /([0-9０-９]+(?:[.．][0-9０-９]+)?)/.exec(text);
+    if (!m) { toast('数字が見つかりませんでした（例：体重 52.3）'); return null; }
+    const v = Number(m[1].replace(/[０-９．]/g, (c) => (c === '．' ? '.' : String.fromCharCode(c.charCodeAt(0) - 0xfee0))));
+    bodyDay(state.today).weight = v;
+    return { kind: 'body', item: v };
+  }
   const c = addCountdown(text);
   if (!c) { toast('日付が見つかりませんでした（例：期末テスト 12/20）'); return null; }
   return { kind: 'count', item: c };
@@ -465,3 +486,235 @@ const LIFE_ACTIONS = {
   'note-open': (el) => { const n = life().notes.find((x) => x.id === el.dataset.id); if (n) openNoteSheet(n); },
   'count-open': (el) => { const c = life().countdowns.find((x) => x.id === el.dataset.id); if (c) openCountSheet(c); },
 };
+
+// ---------- サブスク（毎月・毎年の支払い） ----------
+
+function subNext(sub) {
+  const t = state.today;
+  const [y, m] = t.split('-').map(Number);
+  const clampDay = (yy, mm) => Math.min(sub.day, new Date(yy, mm, 0).getDate());
+  if (sub.cycle === 'year') {
+    const mo = sub.month || 1;
+    let k = `${y}-${pad(mo)}-${pad(clampDay(y, mo))}`;
+    if (k < t) k = `${y + 1}-${pad(mo)}-${pad(clampDay(y + 1, mo))}`;
+    return k;
+  }
+  let k = `${y}-${pad(m)}-${pad(clampDay(y, m))}`;
+  if (k < t) {
+    const d = new Date(y, m, 1);
+    k = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(clampDay(d.getFullYear(), d.getMonth() + 1))}`;
+  }
+  return k;
+}
+const subMonthly = (sub) => (sub.cycle === 'year' ? sub.amount / 12 : sub.amount);
+
+function subsSection() {
+  const subs = life().money.subs;
+  if (!subs.length) return `<button class="hint-card" data-act="sub-new">${ICON.repeat}サブスクや毎月の支払い（スマホ代など）を登録する</button>`;
+  const total = subs.reduce((s, x) => s + subMonthly(x), 0);
+  const rows = subs.map((x) => ({ x, next: subNext(x) })).sort((a, b) => (a.next < b.next ? -1 : 1)).map(({ x, next }) => {
+    const days = diffDays(next, state.today);
+    return `<div class="item sub-row" data-kind="sub" data-id="${x.id}">
+      <span class="money-ic">🔁</span>
+      <div class="body" data-act="sub-open" data-id="${x.id}"><div class="title">${escapeHtml(x.name)}</div>
+        <div class="meta"><span>${x.cycle === 'year' ? `毎年 ${x.month}月${x.day}日` : `毎月 ${x.day}日`}</span><span class="${days <= 1 ? 'tag today' : ''}">次は ${days === 0 ? '今日' : days === 1 ? '明日' : shortDate(next)}</span></div></div>
+      <b class="money-amt">${yen(x.amount)}${x.cycle === 'year' ? '<small>/年</small>' : ''}</b>
+    </div>`;
+  });
+  return section('サブスク・毎月の支払い', rows, { count: `月 ${yen(total)}`, link: '<button class="link" data-act="sub-new">＋ 追加</button>' });
+}
+
+function openSubSheet(sub) {
+  const isNew = !sub;
+  sub ||= { id: uid(), name: '', amount: '', cycle: 'month', day: Number(state.today.slice(8)), month: Number(state.today.slice(5, 7)) };
+  openSheet(`
+    <div class="sheet-head"><h2>🔁 ${isNew ? 'サブスクを登録' : 'サブスク'}</h2><span class="spacer"></span><button class="icon-btn" id="sbClose" aria-label="閉じる">${ICON.close}</button></div>
+    <div class="sheet-grid">
+      ${field('なまえ', `<input class="text" id="sbName" value="${escapeHtml(sub.name)}" placeholder="例：音楽アプリ・スマホ代">`)}
+      ${field('金額', `<div class="inline">¥<input class="text" type="number" inputmode="numeric" id="sbAmt" value="${sub.amount}"></div>`)}
+      ${field('払う日', `<div class="inline"><div class="seg mini" id="sbCycle"><button class="${sub.cycle === 'month' ? 'active' : ''}" data-c="month">毎月</button><button class="${sub.cycle === 'year' ? 'active' : ''}" data-c="year">毎年</button></div>
+        <input class="text num-input" type="number" id="sbMonth" min="1" max="12" value="${sub.month || 1}" ${sub.cycle === 'year' ? '' : 'hidden'}><span id="sbMonthL" ${sub.cycle === 'year' ? '' : 'hidden'}>月</span>
+        <input class="text num-input" type="number" id="sbDay" min="1" max="31" value="${sub.day}">日</div>`)}
+    </div>
+    <p class="desc small">払う日の前の日から、今日の画面に出ます。</p>
+    <div class="sheet-foot">${isNew ? '' : `<button class="btn danger" id="sbDel">${ICON.trash}消す</button>`}<span class="spacer"></span><button class="btn primary" id="sbSave">${isNew ? '登録する' : 'OK'}</button></div>`, (el) => {
+    $('#sbClose', el).onclick = closeSheet;
+    $('#sbCycle', el).onclick = (e) => {
+      const b = e.target.closest('[data-c]');
+      if (!b) return;
+      sub.cycle = b.dataset.c;
+      $$('[data-c]', el).forEach((x) => x.classList.toggle('active', x === b));
+      $('#sbMonth', el).hidden = sub.cycle !== 'year';
+      $('#sbMonthL', el).hidden = sub.cycle !== 'year';
+    };
+    $('#sbSave', el).onclick = () => {
+      const name = $('#sbName', el).value.trim();
+      const amount = Math.round(Number($('#sbAmt', el).value));
+      if (!name || !amount) { toast('なまえと金額を入れてください'); return; }
+      checkpoint();
+      Object.assign(sub, { name, amount, day: clamp(Number($('#sbDay', el).value) || 1, 1, 31), month: clamp(Number($('#sbMonth', el).value) || 1, 1, 12) });
+      if (isNew) life().money.subs.push(sub);
+      save(); closeSheet(); refresh();
+    };
+    if (!isNew) $('#sbDel', el).onclick = () => { checkpoint(); life().money.subs = life().money.subs.filter((x) => x !== sub); save(); closeSheet(); refresh(); };
+    if (isNew) setTimeout(() => $('#sbName', el).focus(), 50);
+  });
+}
+
+// 今日の画面：今日・明日に払うサブスク
+function subsSoon() {
+  if (!prefs().features.life) return [];
+  return life().money.subs.map((x) => ({ x, days: diffDays(subNext(x), state.today) })).filter((s) => s.days <= 1);
+}
+
+// ---------- 持ち物 ----------
+
+// 次に授業がある日の持ち物（時間割の科目に書いた持ち物から）
+function packTomorrow() {
+  const start = addDays(state.today, 1);
+  for (let i = 0; i < 7; i++) {
+    const k = addDays(start, i);
+    if (classesOn(k).length) return { day: k, items: packForDay(k) };
+  }
+  return { day: start, items: [] };
+}
+const packChecked = (day, name) => !!life().packChecks[day]?.[name];
+
+function packItemRow(id, name, done, sub) {
+  return `<div class="item pack ${done ? 'done' : ''}" data-kind="pack" data-id="${escapeHtml(id)}">
+    <button class="check" data-act="pack-toggle" data-id="${escapeHtml(id)}">${ICON.check}</button>
+    <div class="body"><div class="title">${escapeHtml(name)}</div>${sub ? `<div class="meta"><span class="pack-sub" style="--c:${sub.color}"><i></i>${escapeHtml(sub.name)}</span></div>` : ''}</div>
+  </div>`;
+}
+
+function renderPack() {
+  const l = life();
+  let html = '';
+  if (schoolOn() && school().setup) {
+    const { day, items } = packTomorrow();
+    const title = `${relDate(day, state.today)}の時間割の持ち物`;
+    if (items.length) {
+      const left = items.filter((x) => !packChecked(day, x.name)).length;
+      html += section(title, items.map((x) => packItemRow(`tt:${day}:${x.name}`, x.name, packChecked(day, x.name), x.sub)),
+        { count: left ? `あと ${left}` : 'ぜんぶ OK' });
+    } else {
+      html += `<p class="hint">${ICON.school}科目を開いて「持ち物」を書いておくと、次の日の時間割から持ち物リストを作ります</p>`;
+    }
+  }
+  for (const p of l.packs) {
+    const left = p.items.filter((x) => !x.done).length;
+    html += section(escapeHtml(p.name), p.items.map((x) => packItemRow(`${p.id}:${x.id}`, x.name, x.done)),
+      { count: p.items.length ? `${p.items.length - left}/${p.items.length}` : '',
+        link: `<span class="pack-links"><button class="link" data-act="pack-reset" data-id="${p.id}">チェックを外す</button><button class="link" data-act="pack-del" data-id="${p.id}">消す</button></span>` });
+  }
+  if (!l.packs.length) html += emptyState('🎒', '旅行・部活・お出かけなど、くり返し使う持ち物リストを作れます。<br>下の欄に「部活：ラケット、タオル、水筒」のように書きます');
+  return html;
+}
+
+function addPackText(text) {
+  const l = life();
+  const m = /^(.+?)[：:]\s*(.*)$/.exec(text);
+  let list = !m && state.packTarget ? l.packs.find((p) => p.id === state.packTarget) : null;
+  let rest = text;
+  if (!list) {
+    const name = (m ? m[1] : text).trim();
+    list = l.packs.find((p) => p.name === name);
+    if (!list) { list = { id: uid(), name, items: [] }; l.packs.push(list); }
+    rest = m ? m[2] : '';
+  }
+  state.packTarget = list.id;
+  for (const n of rest.split(/[、,，]+/).map((x) => x.trim()).filter(Boolean)) list.items.push({ id: uid(), name: n, done: false });
+  return { kind: 'pack', item: list };
+}
+
+function togglePack(id) {
+  const l = life();
+  if (id.startsWith('tt:')) {
+    const [, day, ...nameParts] = id.split(':');
+    const name = nameParts.join(':');
+    const rec = (l.packChecks[day] ||= {});
+    rec[name] = !rec[name];
+    // 過ぎた日のチェックは片づける
+    for (const k of Object.keys(l.packChecks)) if (k < state.today) delete l.packChecks[k];
+    return;
+  }
+  const [pid, iid] = id.split(':');
+  const it = l.packs.find((p) => p.id === pid)?.items.find((x) => x.id === iid);
+  if (it) it.done = !it.done;
+}
+
+// ---------- からだ（睡眠・体重） ----------
+
+function bodyDay(k) {
+  const b = life().body;
+  return (b[k] ||= {});
+}
+function sleepHours(rec) {
+  if (!rec?.bed || !rec?.wake) return null;
+  let m = toMinutes(rec.wake) - toMinutes(rec.bed);
+  if (m <= 0) m += 24 * 60;
+  return m / 60;
+}
+const sleepLabel = (h) => `${Math.floor(h)}時間${Math.round((h % 1) * 60) ? `${Math.round((h % 1) * 60)}分` : ''}`;
+
+function renderBody() {
+  const t = state.today;
+  const rec = life().body[t] || {};
+  const sh = sleepHours(rec);
+  const days = Array.from({ length: 14 }, (_, i) => addDays(t, i - 13));
+  const sleeps = days.map((k) => sleepHours(life().body[k]));
+  const weights = days.map((k) => life().body[k]?.weight ?? null);
+  const sVals = sleeps.filter((x) => x != null);
+  const wVals = weights.filter((x) => x != null);
+  const wMin = Math.min(...wVals) - 0.5;
+  const wMax = Math.max(...wVals) + 0.5;
+  const bars = (vals, fmt, scale) => `<div class="body-bars">${vals.map((v, i) => `<div class="body-bar ${days[i] === t ? 'today' : ''}" title="${shortDate(days[i])}${v != null ? `：${fmt(v)}` : ''}">
+    <span class="bb-track"><i style="height:${v == null ? 0 : Math.max(4, scale(v) * 100)}%"></i></span><small>${parseKey(days[i]).getDate()}</small></div>`).join('')}</div>`;
+  const wLast = wVals[wVals.length - 1];
+  return `
+    <section class="card body-today">
+      <div class="card-head">今日のからだ</div>
+      <div class="body-inputs">
+        <label><span>寝た時刻（ゆうべ）</span><input class="text" type="time" data-body="bed" value="${rec.bed || ''}"></label>
+        <label><span>起きた時刻</span><input class="text" type="time" data-body="wake" value="${rec.wake || ''}"></label>
+        <label><span>体重</span><span class="inline"><input class="text num-input" type="number" step="0.1" inputmode="decimal" data-body="weight" value="${rec.weight ?? ''}">kg</span></label>
+      </div>
+      ${sh != null ? `<div class="body-sleep">😴 <b>${sleepLabel(sh)}</b> 眠りました ${sh < 6 ? '<span class="tag">少なめ</span>' : sh >= 7 ? '<span class="tag today">たっぷり</span>' : ''}</div>` : ''}
+    </section>
+    <section class="card body-chart">
+      <div class="card-head">睡眠（2 週間）<span class="spacer"></span><span class="muted small">${sVals.length ? `平均 ${sleepLabel(sVals.reduce((a, b) => a + b, 0) / sVals.length)}` : ''}</span></div>
+      ${sVals.length ? bars(sleeps, sleepLabel, (v) => Math.min(1, v / 10)) : '<div class="muted small">寝た時刻と起きた時刻を入れると、ここにグラフが出ます</div>'}
+    </section>
+    <section class="card body-chart">
+      <div class="card-head">体重（2 週間）<span class="spacer"></span><span class="muted small">${wVals.length ? `いま ${wLast}kg${wVals.length > 1 ? `（${wLast - wVals[0] >= 0 ? '+' : ''}${(wLast - wVals[0]).toFixed(1)}）` : ''}` : ''}</span></div>
+      ${wVals.length ? bars(weights, (v) => `${v}kg`, (v) => (v - wMin) / Math.max(0.1, wMax - wMin)) : '<div class="muted small">体重を入れると、ここにグラフが出ます</div>'}
+    </section>`;
+}
+
+document.addEventListener('change', (e) => {
+  const f = e.target.closest?.('[data-body]');
+  if (!f) return;
+  checkpoint();
+  const rec = bodyDay(state.today);
+  const key = f.dataset.body;
+  if (key === 'weight') {
+    if (f.value) rec.weight = Number(f.value); else delete rec.weight;
+  } else if (f.value) rec[key] = f.value;
+  else delete rec[key];
+  save();
+  refresh();
+});
+
+Object.assign(LIFE_ACTIONS, {
+  'sub-new': () => openSubSheet(null),
+  'sub-open': (el) => { const x = life().money.subs.find((s) => s.id === el.dataset.id); if (x) openSubSheet(x); },
+  'pack-toggle': (el) => { togglePack(el.dataset.id); if (prefs().sound) chime(); save(); refresh(); },
+  'pack-reset': (el) => { const p = life().packs.find((x) => x.id === el.dataset.id); if (p) { p.items.forEach((x) => { x.done = false; }); save(); refresh(); } },
+  'pack-del': (el) => {
+    life().packs = life().packs.filter((x) => x.id !== el.dataset.id);
+    if (state.packTarget === el.dataset.id) state.packTarget = null;
+    save(); refresh(); renderAddbar();
+    toast('リストを消しました', { undo: true });
+  },
+  'pack-target': (el) => { state.packTarget = el.dataset.id || null; renderAddbar(); },
+});

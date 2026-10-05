@@ -445,6 +445,86 @@ const STYLES = [
       { id: 'pink', name: 'ピンク', colors: ['#f7d9e1', '#ffffff'] },
     ],
   },
+
+  // ---------- さらに追加：雰囲気がガラッと変わるもの ----------
+  {
+    id: 'retropc', name: 'レトロPC', desc: '昔のパソコンの画面。リストがひとつずつウィンドウになります',
+    variants: [
+      { id: 'teal', name: 'クラシック', colors: ['#008080', '#000080'] },
+      { id: 'rose', name: 'ローズ', colors: ['#a0566b', '#6b1e3a'] },
+      { id: 'sky', name: 'スカイ', colors: ['#3a6ea5', '#0a246a'] },
+    ],
+  },
+  {
+    id: 'led', name: '電光掲示板', desc: '駅の発車案内のような、黒い板に光る点の文字', dark: true,
+    variants: [
+      { id: 'amber', name: 'アンバー', colors: ['#0b0b0b', '#ffb000'] },
+      { id: 'green', name: 'グリーン', colors: ['#0b0b0b', '#46ff6e'] },
+      { id: 'white', name: 'ホワイト', colors: ['#0b0b0b', '#dfe9ff'] },
+    ],
+  },
+  {
+    id: 'stained', name: 'ステンドグラス', desc: 'タスクが 1 枚ずつ色ガラスに。黒い鉛の線でつながります', dark: true,
+    variants: [
+      { id: 'cathedral', name: '大聖堂', colors: ['#14101c', '#d4a017'] },
+      { id: 'modern', name: 'モダン', colors: ['#101418', '#3fb6c8'] },
+      { id: 'rose', name: 'バラ窓', colors: ['#1a0d14', '#e0457b'] },
+    ],
+  },
+  {
+    id: 'aqua', name: 'アクア', desc: 'ストライプの背景に、つやつやのジェルのボタン。見出しに 3 つの信号',
+    variants: [
+      { id: 'blue', name: 'ブルー', colors: ['#eef1f5', '#3b8ef0'] },
+      { id: 'graphite', name: 'グラファイト', colors: ['#eef0f2', '#8a95a5'] },
+      { id: 'lime', name: 'ライム', colors: ['#f0f5ee', '#4caf50'] },
+    ],
+  },
+  {
+    id: 'tatami', name: '和室', desc: '畳の床に、障子紙のカード。木の格子と明朝体',
+    variants: [
+      { id: 'day', name: '昼', colors: ['#c9c38a', '#fdfbf3'] },
+      { id: 'night', name: '行灯', colors: ['#3a3424', '#f6d48a'], dark: true },
+    ],
+  },
+  {
+    id: 'nightview', name: '夜景', desc: 'ビルの窓に明かりがともる、都会の夜', dark: true,
+    variants: [
+      { id: 'tokyo', name: 'ネオン', colors: ['#0a0c1e', '#ff4fa3'] },
+      { id: 'golden', name: '黄金', colors: ['#120d08', '#ffbf47'] },
+      { id: 'blue', name: 'ブルーアワー', colors: ['#0b1636', '#7cc4ff'] },
+    ],
+  },
+  {
+    id: 'clay', name: 'クレイ', desc: 'ねんどで作ったような、ぷっくりやわらかい立体',
+    variants: [
+      { id: 'pink', name: 'ピンク', colors: ['#fde8ef', '#f27aa0'] },
+      { id: 'mint', name: 'ミント', colors: ['#e3f7ef', '#3fbf8f'] },
+      { id: 'lavender', name: 'ラベンダー', colors: ['#ece8fb', '#8b74e8'] },
+      { id: 'peach', name: 'ピーチ', colors: ['#fdeee3', '#f39a5d'] },
+    ],
+  },
+  {
+    id: 'watercolor', name: '水彩', desc: '画用紙に水彩絵の具をにじませたような、やわらかい色',
+    variants: [
+      { id: 'spring', name: '春', colors: ['#fbf8f2', '#e7849b'] },
+      { id: 'ocean', name: '海', colors: ['#f6f9fa', '#4a90c2'] },
+      { id: 'autumn', name: '秋', colors: ['#fbf6ee', '#c8763a'] },
+    ],
+  },
+  {
+    id: 'beach', name: '海辺', desc: '空と海と砂浜。画面の下で波がゆっくり寄せては返します',
+    variants: [
+      { id: 'tropical', name: '南の島', colors: ['#bfeaf5', '#ff7f6a'] },
+      { id: 'sunset', name: '夕暮れ', colors: ['#ffd2b0', '#e8556d'] },
+    ],
+  },
+  {
+    id: 'snow', name: '雪', desc: '雪がしんしんと降る、静かな冬の画面。カードの上にも雪',
+    variants: [
+      { id: 'day', name: '雪の日', colors: ['#eef4fa', '#5b8bc4'] },
+      { id: 'night', name: '雪の夜', colors: ['#0f1a2e', '#a9c8ff'], dark: true },
+    ],
+  },
 ];
 
 // 設定のスタイル一覧で絞り込むための分類（1 つのスタイルは 1 つの分類だけに入れる）
@@ -459,6 +539,11 @@ const STYLE_CATEGORY = {
   blueprint: 'unique', museum: 'unique', botanical: 'unique', receipt: 'unique', origami: 'unique',
   board: 'bold', bento: 'bold', brutal: 'bold', planner: 'bold', kanban: 'bold', widget: 'bold',
   chat: 'bold', metro: 'bold', timeline: 'bold', cards: 'bold', magazine: 'bold', scrap: 'bold',
+  retropc: 'bold', led: 'bold', stained: 'bold',
+  aqua: 'unique', tatami: 'unique',
+  nightview: 'dark',
+  clay: 'cute', watercolor: 'cute', beach: 'cute',
+  snow: 'simple',
 };
 const STYLE_FILTERS = [
   { id: 'all', name: 'すべて' },

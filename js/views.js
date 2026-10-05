@@ -11,6 +11,7 @@ const VIEWS = [
   { id: 'school', label: '学校', icon: 'school', feature: 'school' },
   { id: 'someday', label: 'いつか', icon: 'star', feature: 'someday' },
   { id: 'life', label: 'くらし', icon: 'home', feature: 'life' },
+  { id: 'study', label: '単語帳', icon: 'layers', feature: 'study' },
   { id: 'calendar', label: 'カレンダー', icon: 'calendar' },
   { id: 'stats', label: '記録', icon: 'chart' },
   { id: 'focus', label: '集中', icon: 'timer' },
@@ -88,7 +89,7 @@ function renderSidebar() {
 }
 
 // iPhone：下のタブは 4 つ＋「その他」。よく使う順に並べ、残りは「その他」から開く
-const TOUCH_TAB_ORDER = ['today', 'todo', 'school', 'life', 'calendar', 'routine', 'someday', 'focus', 'stats'];
+const TOUCH_TAB_ORDER = ['today', 'todo', 'school', 'life', 'study', 'calendar', 'routine', 'someday', 'focus', 'stats'];
 
 function touchTabs() {
   const all = visibleViews();
@@ -198,6 +199,16 @@ function compactFold(id, title, count, inner, defaultOpen = false, link = '') {
   </details>`;
 }
 
+// 夕方からは、次の授業日の持ち物を今日の画面に出す
+function packFold() {
+  if (!prefs().features.life || !schoolOn() || !school().setup || new Date().getHours() < 15) return '';
+  const { day, items } = packTomorrow();
+  if (!items.length) return '';
+  const left = items.filter((x) => !packChecked(day, x.name)).length;
+  return compactFold('c-pack', `${relDate(day, state.today)}の持ち物`, left ? `あと ${left}` : 'OK',
+    `<div class="list">${items.map((x) => packItemRow(`tt:${day}:${x.name}`, x.name, packChecked(day, x.name), x.sub)).join('')}</div>`, left > 0);
+}
+
 function renderTodayCompact() {
   const t = state.today;
   const routines = state.data.routines.filter((r) => isScheduled(r, t));
@@ -231,6 +242,7 @@ function renderTodayCompact() {
   const todays = [...overdue, ...due, ...doneToday];
   if (todays.length) html += compactFold('c-todos', '今日の ToDo', `${doneToday.length}/${todays.length}`, list(todays.map((x) => todoRow(x, { context: 'today' }))));
   if (tomorrow.length) html += compactFold('c-tomorrow', '明日の予定', tomorrow.length, list(tomorrow.map((x) => todoRow(x))), new Date().getHours() >= 18);
+  html += packFold();
   const j = journalOf(t);
   html += compactFold('c-journal', '今日のひとこと', j.mood != null ? MOODS[j.mood] : (j.text ? '✏️' : ''), journalCard());
   return html;
@@ -266,6 +278,7 @@ function renderToday() {
   colB += section('今日の ToDo', todayList.map((x) => todoRow(x, { context: 'today' })), { count: `${doneToday.length}/${todayList.length}` });
   // 夕方以降は、明日の予定を最初から開いておく
   colB += fold('tomorrow', '明日の予定', tomorrow.length, tomorrow.map((x) => todoRow(x)), { defaultOpen: new Date().getHours() >= 18 });
+  colB += packFold();
   if (undated) {
     colB += `<div class="section"><div class="section-head"><span>期限なしの ToDo が ${undated} 件</span>
       <button class="link" data-act="view" data-view="todo">見る →</button></div></div>`;
@@ -671,7 +684,7 @@ function preserveFocus(container, fn) {
 function renderContent() {
   const render = {
     today: renderToday, todo: renderTodoView, routine: renderRoutineView,
-    school: renderSchoolView, someday: renderSomedayView, life: renderLifeView,
+    school: renderSchoolView, someday: renderSomedayView, life: renderLifeView, study: renderStudyView,
     calendar: renderCalendarView, stats: renderStatsView, focus: renderFocusView,
   }[state.view] || renderToday;
   const enter = lastView !== state.view;
@@ -764,6 +777,8 @@ function renderAddbar() {
       ${HORIZONS.map((h) => `<button type="button" class="chip ${state.newSomedayHorizon === h.id ? 'on' : ''}" data-sdhorizon="${h.id}">${h.name}</button>`).join('')}`;
   } else if (v === 'life') {
     lifeAddbar(input, opts, roomy);
+  } else if (v === 'study') {
+    studyAddbar(input, opts, roomy);
   } else if (v === 'school') {
     const subs = school().subjects;
     bar.hidden = !school().setup;

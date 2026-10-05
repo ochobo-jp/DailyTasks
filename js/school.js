@@ -217,7 +217,7 @@ function renderSchoolView() {
   left += fold('assign-done', '提出ずみ', doneAssign.length, doneAssign.slice(0, 50).map((x) => todoRow(x, { draggable: false, vt: false })));
 
   return `${head}${timetableCard()}
-    <div class="cols school-cols"><div class="col">${left}</div><div class="col">${attendanceCard()}</div></div>`;
+    <div class="cols school-cols"><div class="col">${left}</div><div class="col">${attendanceCard()}${gradesCard()}</div></div>`;
 }
 
 // ---------- マスの科目を選ぶ ----------
@@ -295,7 +295,10 @@ function openSubjectSheet(s) {
       ${field('欠席できる回数', `<div class="inline"><input type="number" class="text num-input" id="sMax" min="0" max="99" value="${s.maxAbsence ?? ''}" placeholder="—"><span class="small muted">回まで（空欄なら数えない）</span></div>`)}
       ${field('課題', `<div class="list sheet-list" id="sAssign"></div>
         <form class="sub-add" id="sAssignForm"><input class="text" id="sAssignInput" placeholder="課題を追加…（例：金曜までに レポート）" maxlength="200"></form>`, 'full')}
-      ${field('メモ（持ち物・テスト範囲など）', `<textarea class="text autosize" id="sNote" rows="2" maxlength="3000">${escapeHtml(s.note || '')}</textarea>`, 'full')}
+      ${field('持ち物（「、」で区切る）', `<input class="text wide-input" id="sItems" maxlength="200" value="${escapeHtml(s.items || '')}" placeholder="例：教科書、ノート、体操服">`, 'full')}
+      ${field('メモ（テスト範囲など）', `<textarea class="text autosize" id="sNote" rows="2" maxlength="3000">${escapeHtml(s.note || '')}</textarea>`, 'full')}
+      ${field('テストの点数', `<div class="grade-list">${gradeRows(s.id) || '<span class="muted small">まだありません</span>'}</div>
+        <button class="btn" id="sGrade">${ICON.plus}点数を記録</button>`, 'full')}
       ${history.length ? field('最近の出席', `<div class="att-history">${history.map((h) => `<span class="att-h ${h.s}" data-tip="${shortDate(h.k)} ${h.i + 1}限・${ATT[h.s].label}">${ATT[h.s].mark}<small>${shortDate(h.k)}</small></span>`).join('')}</div>`, 'full') : ''}
     </div>
     <div class="sheet-foot">
@@ -318,6 +321,8 @@ function openSubjectSheet(s) {
       commit();
     };
     $('#sNote', el).oninput = (e) => { s.note = e.target.value; autosize(e.target); save(); };
+    $('#sItems', el).oninput = (e) => { s.items = e.target.value; save(); };
+    $('#sGrade', el).onclick = () => openGradeSheet({ subjectId: s.id });
     el.addEventListener('click', (e) => {
       const c = e.target.closest('.swatch[data-color]');
       if (c) { s.color = c.dataset.color; $$('.swatch', el).forEach((x) => x.classList.toggle('on', x === c)); commit(); }
@@ -463,4 +468,87 @@ function ttCellMenu(d, i, x, y) {
     if (m === 'open') openSubjectSheet(sub);
     if (m === 'clear') { delete sc.timetable[`${d}-${i}`]; commit(); }
   });
+}
+
+// ---------- テストの点数 ----------
+
+const grades = () => (school().grades ||= []);
+
+function gradeRows(subjectId) {
+  return grades().filter((g) => g.subjectId === subjectId).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 8)
+    .map((g) => `<button class="grade-row" data-act="grade-open" data-id="${g.id}"><span>${escapeHtml(g.name || 'テスト')}</span><small>${shortDate(g.date)}</small><b>${g.score}<small>/${g.max}</small></b></button>`).join('');
+}
+
+function gradesCard() {
+  const subs = school().subjects.filter((s) => grades().some((g) => g.subjectId === s.id));
+  const rows = subs.map((s) => {
+    const list = grades().filter((g) => g.subjectId === s.id).sort((a, b) => (a.date < b.date ? -1 : 1));
+    const avg = list.reduce((sum, g) => sum + (g.score / g.max) * 100, 0) / list.length;
+    const last = list[list.length - 1];
+    const prev = list[list.length - 2];
+    const diff = prev ? Math.round((last.score / last.max) * 100 - (prev.score / prev.max) * 100) : null;
+    return `<div class="grade-sum" data-act="open-subject" data-id="${s.id}" style="--c:${s.color}">
+      <span class="subject-dot" style="background:${s.color}"></span><span class="gs-name">${escapeHtml(s.name)}</span>
+      <span class="gs-bar"><i style="width:${Math.round(avg)}%"></i></span>
+      <b>${Math.round(avg)}<small>点</small></b>
+      <small class="gs-diff ${diff > 0 ? 'up' : diff < 0 ? 'down' : ''}">${diff === null ? '' : diff > 0 ? `▲${diff}` : diff < 0 ? `▼${-diff}` : '±0'}</small>
+    </div>`;
+  }).join('');
+  return `<section class="card grades-card">
+    <div class="card-head">テストの点数<span class="spacer"></span><button class="mini-btn" data-act="grade-new" data-tip="点数を記録">${ICON.plus}</button></div>
+    ${rows || '<div class="muted small">「＋」から科目ごとのテストの点数を記録すると、平均と前回からの上がり下がりが出ます</div>'}
+    ${rows ? '<div class="muted small grade-note">平均は 100 点満点にそろえた値。前回との差つき</div>' : ''}
+  </section>`;
+}
+
+function openGradeSheet(g) {
+  const isNew = !g.id;
+  if (isNew) g = { id: uid(), subjectId: g.subjectId || school().subjects[0]?.id, name: '', score: '', max: 100, date: state.today };
+  openSheet(`
+    <div class="sheet-head"><h2>テストの点数</h2><span class="spacer"></span><button class="icon-btn" id="gClose" aria-label="閉じる">${ICON.close}</button></div>
+    ${field('科目', `<div class="chips">${school().subjects.map((s) => `<button class="chip subject-mini ${g.subjectId === s.id ? 'on' : ''}" data-gsub="${s.id}" style="--c:${s.color}"><i></i>${escapeHtml(s.name)}</button>`).join('')}</div>`)}
+    <div class="sheet-grid">
+      ${field('テストの名前', `<input class="text" id="gName" value="${escapeHtml(g.name)}" placeholder="例：中間テスト">`)}
+      ${field('点数', `<div class="inline"><input class="text num-input" type="number" inputmode="numeric" id="gScore" value="${g.score}"> / <input class="text num-input" type="number" inputmode="numeric" id="gMax" value="${g.max}"> 点</div>`)}
+      ${field('日付', `<input class="text" type="date" id="gDate" value="${g.date}">`)}
+    </div>
+    <div class="sheet-foot">${isNew ? '' : `<button class="btn danger" id="gDel">${ICON.trash}消す</button>`}<span class="spacer"></span><button class="btn primary" id="gSave">${isNew ? '記録する' : 'OK'}</button></div>`, (el) => {
+    const read = () => {
+      g.name = $('#gName', el).value.trim();
+      g.score = Number($('#gScore', el).value);
+      g.max = Number($('#gMax', el).value) || 100;
+      g.date = $('#gDate', el).value || state.today;
+    };
+    el.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-gsub]');
+      if (!b) return;
+      g.subjectId = b.dataset.gsub;
+      $$('[data-gsub]', el).forEach((x) => x.classList.toggle('on', x === b));
+    });
+    $('#gClose', el).onclick = closeSheet;
+    $('#gSave', el).onclick = () => {
+      read();
+      if (!g.subjectId || !($('#gScore', el).value !== '')) { toast('科目と点数を入れてください'); return; }
+      checkpoint();
+      if (isNew) grades().push(g);
+      save(); closeSheet(); refresh();
+    };
+    if (!isNew) $('#gDel', el).onclick = () => { checkpoint(); school().grades = grades().filter((x) => x !== g); save(); closeSheet(); refresh(); };
+    setTimeout(() => $(isNew ? '#gScore' : '#gName', el).focus(), 50);
+  });
+}
+
+// 明日（次の授業の日）の時間割から、持ち物をまとめる
+function packForDay(k) {
+  const items = [];
+  const seen = new Set();
+  for (const c of classesOn(k)) {
+    for (const raw of String(c.sub.items || '').split(/[、,，\n]+/)) {
+      const name = raw.trim();
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      items.push({ name, sub: c.sub });
+    }
+  }
+  return items;
 }
