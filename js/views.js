@@ -15,9 +15,8 @@ const VIEWS = [
   { id: 'focus', label: '集中', icon: 'timer' },
 ];
 
-// 使わない機能のタブは出さない。右パネルにタイマーがあるときは「集中」も出さない
-const visibleViews = () => VIEWS.filter((v) => (!v.feature || prefs().features[v.feature])
-  && (v.id !== 'focus' || state.layout !== 'xwide'));
+// 使わない機能のタブは出さない。「集中」は広い画面では集中モード（大きな表示）を開く
+const visibleViews = () => VIEWS.filter((v) => !v.feature || prefs().features[v.feature]);
 
 function greeting() {
   const h = new Date().getHours();
@@ -172,6 +171,7 @@ function renderRightPanel() {
   preserveFocus(rp, () => {
     rp.innerHTML = `
       ${weatherPanel()}
+      ${timerCard('panel')}
       ${journalCard()}
       ${somedayPanelCard()}
       <section class="card upcoming">
