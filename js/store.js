@@ -39,6 +39,10 @@ const DEFAULT_PREFS = {
   bgm: { on: false, sound: 'rain', volume: 0.6, duringBreak: false, tracks: [], shuffle: false },
   classNotify: true,      // 授業の 5 分前に通知
   tabs: null,             // iPhone の下のタブに並べる画面（null ならおすすめの順）
+  styleFavs: [],          // お気に入りのスタイル
+  styleRecent: [],        // 最近使ったスタイル（新しい順）
+  styleDaily: 'off',      // 日替わりスタイル：off / fav（お気に入りから）/ all（全部から）
+  styleDailyDay: null,    // 日替わりで最後に変えた日
   installHintClosed: false, // 「ホーム画面に追加」の案内を閉じた
   weather: { enabled: true, place: null, prompted: false },
   sound: true,

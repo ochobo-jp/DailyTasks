@@ -16,9 +16,11 @@ const SOUND_BASE = 'sounds/';
 const RECORDED = {
   rain: { loop: true, lowpass: 7000, files: [{ f: 'rain.mp3', gain: 1.8 }] },
   stream: { loop: true, files: [{ f: 'stream.mp3', gain: 24 }] },
-  waves: { loop: true, files: [{ f: 'waves.mp3', gain: 2.5 }] },
+  // 波：サーッという高い音（ノイズっぽさ）を削って、ザブーンという低い音を残す
+  waves: { loop: true, lowpass: 1700, files: [{ f: 'waves.mp3', gain: 2.6 }] },
   fire: { loop: true, files: [{ f: 'fire.mp3', gain: 3.5, from: 10, end: 54 }] },
-  forest: { loop: true, files: [{ f: 'forest.mp3', gain: 9 }] },
+  // 森：鳥の声を少し遠くに（小さく・やわらかく）して、にぎやかさを抑える
+  forest: { loop: true, lowpass: 2400, files: [{ f: 'forest.mp3', gain: 3.8 }] },
   insects: { loop: true, layers: [0, 9], files: [{ f: 'insects.mp3', gain: 3 }] },
   cafe: { loop: true, files: [{ f: 'cafe.mp3', gain: 0.65 }] },
   train: { loop: true, lowpass: 9000, files: [{ f: 'train.mp3', gain: 0.4 }] },
@@ -48,12 +50,13 @@ function playRecorded(life, def, firstOffset = null) {
   const ctx = actx();
   const out = ctx.createGain();
   if (def.lowpass) {
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = def.lowpass;
-    lp.Q.value = 0.5;
-    out.connect(lp);
-    lp.connect(life.dest);
+    // 2 段重ねて、境目から上をしっかり削る
+    const lp1 = ctx.createBiquadFilter();
+    const lp2 = ctx.createBiquadFilter();
+    for (const lp of [lp1, lp2]) { lp.type = 'lowpass'; lp.frequency.value = def.lowpass; lp.Q.value = 0.6; }
+    out.connect(lp1);
+    lp1.connect(lp2);
+    lp2.connect(life.dest);
   } else {
     out.connect(life.dest);
   }

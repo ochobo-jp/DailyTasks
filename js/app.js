@@ -883,6 +883,7 @@ function checkDayChange() {
     state.miniIndex = 0;
     if (followToday) { state.calSelected = k; state.calMonth = k.slice(0, 7); }
     state.calWeek = null;
+    dailyStyle();
     if (prefs().autoRollover) {
       const n = rollover();
       if (n) { save(); toast(`期限切れの ${n} 件を今日に移しました`, { undo: true }); }
@@ -926,7 +927,7 @@ window.api.onFocus(checkDayChange);
     const v = localStorage.getItem('view');
     if (VIEWS.some((x) => x.id === v)) state.view = v;
   } catch { /* 無視 */ }
-  applyAppearance();
+  if (!dailyStyle()) applyAppearance();
   restoreWeather();
   timerResetTo('focus');
   applyLayout();

@@ -91,13 +91,16 @@ function renderSidebar() {
 // iPhone：下のタブは 4 つ＋「その他」。よく使う順に並べ、残りは「その他」から開く
 const TOUCH_TAB_ORDER = ['today', 'todo', 'school', 'life', 'study', 'calendar', 'routine', 'someday', 'focus', 'stats'];
 
-function touchTabs() {
+// 並べるタブの数：iPhone は下に 4 つ、PC の狭い画面は上に 6 つ。残りは「その他」へ
+const tabMax = () => (IS_TOUCH ? 4 : 6);
+
+function touchTabs(max = tabMax()) {
   const all = visibleViews();
   const sorted = TOUCH_TAB_ORDER.map((id) => all.find((v) => v.id === id)).filter(Boolean);
-  if (sorted.length <= 5) return { main: sorted, more: [] };
-  // 設定で選んだ画面（4 つまで）を左から。残りは「その他」へ
-  const chosen = (prefs().tabs || []).map((id) => sorted.find((v) => v.id === id)).filter(Boolean).slice(0, 4);
-  const main = chosen.length ? chosen : sorted.slice(0, 4);
+  if (sorted.length <= max + 1) return { main: sorted, more: [] };
+  // 設定で選んだ画面を左から、足りない分はおすすめの順で
+  const chosen = (prefs().tabs || []).map((id) => sorted.find((v) => v.id === id)).filter(Boolean).slice(0, max);
+  const main = [...chosen, ...sorted.filter((v) => !chosen.includes(v))].slice(0, chosen.length ? chosen.length : max);
   const more = sorted.filter((v) => !main.includes(v));
   return more.length === 1 ? { main: [...main, ...more], more: [] } : { main, more };
 }
@@ -156,11 +159,14 @@ function renderTabbar() {
   const tb = $('#tabbar');
   if (state.layout !== 'compact') { tb.innerHTML = ''; return; }
   if (IS_TOUCH) { renderTouchTabbar(tb); return; }
-  tb.innerHTML = visibleViews().map((v) => {
+  const { main, more } = touchTabs();
+  const cur = more.find((v) => v.id === state.view);
+  tb.innerHTML = main.map((v) => {
     const on = state.view === v.id;
     return `<button class="tab ${on ? 'active' : ''}" data-act="view" data-view="${v.id}" ${on ? '' : `data-tip="${v.label}"`} aria-label="${v.label}">
       ${ICON[v.icon]}<span>${v.label}</span>${v.id === 'today' && navBadge('today') && !on ? '<i class="tab-dot"></i>' : ''}</button>`;
-  }).join('');
+  }).join('') + (more.length ? `<button class="tab ${cur ? 'active' : ''}" data-act="more-views" ${cur ? '' : 'data-tip="その他"'} aria-label="その他">
+      ${cur ? ICON[cur.icon] : ICON.more}<span>${cur ? cur.label : 'その他'}</span></button>` : '');
 }
 
 function renderRightPanel() {

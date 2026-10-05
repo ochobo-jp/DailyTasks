@@ -1,0 +1,2207 @@
+/* ============================================================
+   スタイル 61〜100
+   並び方を変えるものは .content の中だけにかける（シートやメニューは崩さない）
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   61. 縦書き：短冊が右から左へ
+   ------------------------------------------------------------ */
+
+[data-style="tategaki"] {
+  --font: "Hiragino Mincho ProN", "Yu Mincho", "BIZ UDPMincho Medium", serif;
+  --font-title: var(--font);
+  --font-num: var(--font);
+  --paper: #f4efe2;
+  --page-bg: var(--paper);
+  --noise-opacity: 0.14;
+  --ink-rgb: 40, 34, 28;
+  --accent-a: #b0302a;
+  --accent-b: #b0302a;
+  --grad: linear-gradient(var(--accent-a), var(--accent-a));
+  --glass: #fbf8ef;
+  --glass-soft: #fbf8ef;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(var(--ink-rgb), 0.2);
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.6);
+  --field-focus: #ffffff;
+  --sheet-bg: #fbf8ef;
+  --zen-bg: var(--paper);
+  --shadow: 0 2px 6px rgba(60, 40, 20, 0.08);
+  --shadow-pop: 0 18px 40px rgba(60, 40, 20, 0.2);
+  --tip-bg: #28221c;
+  --r-card: 2px; --r-item: 2px; --r-field: 2px;
+}
+[data-style="tategaki"][data-variant="ai"] { --paper: #e9edf3; --ink-rgb: 30, 44, 70; --accent-a: #24467a; --accent-b: #24467a; --glass: #f7f9fc; --sheet-bg: #f7f9fc; }
+[data-style="tategaki"][data-variant="sumi"] { --paper: #1a1917; --ink-rgb: 232, 226, 210; --accent-a: #e8e2d2; --accent-b: #e8e2d2; --on-accent: #1a1917; --glass: #23211e; --glass-strong: #2c2a26; --glass-hover: #2c2a26; --field: rgba(255, 255, 255, 0.06); --field-focus: rgba(255, 255, 255, 0.1); --sheet-bg: #23211e; --tip-bg: #e8e2d2; }
+
+@scope ([data-style="tategaki"]) to ([data-style]:not([data-style="tategaki"])) {
+  .content .list:has(> .item) { flex-direction: row-reverse; flex-wrap: nowrap; overflow-x: auto; gap: 10px; padding: 4px 2px 12px; align-items: stretch; scrollbar-width: thin; }
+  .content .list > .item {
+    writing-mode: vertical-rl; flex: 0 0 auto; min-height: 0; height: 240px; padding: 14px 10px; gap: 10px; align-items: center;
+    border: 1px solid var(--glass-border); box-shadow: var(--shadow);
+  }
+  .content .list > .item .title { font-size: 16px; line-height: 1.6; letter-spacing: 0.1em; }
+  .content .list > .item .meta { margin: 0; }
+  .content .list > .item .row-actions { display: none; }
+  .content .list > .item.done::after { content: "済"; position: absolute; left: 6px; bottom: 8px; writing-mode: horizontal-tb; width: 26px; height: 26px; display: grid; place-items: center; border: 2px solid var(--accent-a); border-radius: 50%; color: var(--accent-a); font-size: 13px; font-weight: 700; rotate: -12deg; }
+  .check { border: 1.5px solid rgba(var(--ink-rgb), 0.5); background: transparent; border-radius: 2px; }
+  .done .check { background: var(--accent-a); border-color: var(--accent-a); }
+  .check svg { stroke: var(--on-accent); }
+  .section-head > span:first-child { border-left: 3px solid var(--accent-a); padding-left: 8px; letter-spacing: 0.15em; }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; }
+  .sp-line { background: rgba(var(--ink-rgb), 0.3); }
+}
+
+/* ------------------------------------------------------------
+   62. 表計算：行番号とマス目と数式バー
+   ------------------------------------------------------------ */
+
+[data-style="sheet"] {
+  --font: "Calibri", "Segoe UI", -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-num: "Calibri", "Segoe UI", sans-serif;
+  --xl: #217346;
+  --grid: #d4d4d4;
+  --hdr: #f3f3f3;
+  --cellbg: #ffffff;
+  --page-bg:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 100% 24px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 72px 100%,
+    var(--cellbg);
+  --ink-rgb: 34, 34, 34;
+  --accent-a: var(--xl);
+  --accent-b: var(--xl);
+  --grad: linear-gradient(var(--xl), var(--xl));
+  --accent-soft: color-mix(in srgb, var(--xl) 14%, transparent);
+  --glass: var(--cellbg);
+  --glass-soft: var(--cellbg);
+  --glass-strong: var(--hdr);
+  --glass-hover: color-mix(in srgb, var(--xl) 6%, var(--cellbg));
+  --glass-border: var(--grid);
+  --highlight: transparent;
+  --field: var(--cellbg);
+  --field-focus: var(--cellbg);
+  --sheet-bg: var(--cellbg);
+  --zen-bg: var(--cellbg);
+  --shadow: none;
+  --shadow-pop: 0 6px 24px rgba(0, 0, 0, 0.2);
+  --tip-bg: #333333;
+  --r-card: 0; --r-item: 0; --r-chip: 2px; --r-check: 2px; --r-field: 0; --r-play: 2px;
+}
+[data-style="sheet"][data-variant="blue"] { --xl: #2b579a; }
+[data-style="sheet"][data-variant="dark"] { --xl: #6fd38f; --grid: #3c3c3c; --hdr: #2d2d2d; --cellbg: #1e1e1e; --ink-rgb: 220, 220, 220; --on-accent: #1e1e1e; --tip-bg: #6fd38f; }
+
+@scope ([data-style="sheet"]) to ([data-style]:not([data-style="sheet"])) {
+  .card:not(.sheet, .palette) { border: 1px solid var(--grid); }
+  .content .list { counter-reset: row; gap: 0; border: 1px solid var(--grid); border-left: 36px solid var(--hdr); position: relative; }
+  .content .list > .item { counter-increment: row; border: 0; border-bottom: 1px solid var(--grid); min-height: 34px; padding: 4px 8px; background: var(--cellbg); box-shadow: none; }
+  .content .list > .item:last-child { border-bottom: 0; }
+  .content .list > .item::before {
+    content: counter(row); position: absolute; left: -36px; width: 36px; top: 0; bottom: -1px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: rgba(var(--ink-rgb), 0.55); background: var(--hdr); border-bottom: 1px solid var(--grid); border-right: 1px solid var(--grid);
+  }
+  .content .list > .item:hover { outline: 2px solid var(--xl); outline-offset: -2px; background: var(--cellbg); }
+  .section-head { background: var(--hdr); border: 1px solid var(--grid); border-bottom: 0; padding: 3px 8px; margin: 0; font-size: 12px; font-weight: 600; }
+  .section-head > span:first-child::before { content: "▾ "; color: var(--xl); }
+  /* 数式バー */
+  .summary { position: relative; padding-top: 40px; }
+  .summary::before {
+    content: "fx　=COUNTIF(今日, \"済み\")"; position: absolute; left: 0; right: 0; top: 0; height: 28px;
+    display: flex; align-items: center; padding-left: 12px; gap: 8px;
+    font-family: "Consolas", monospace; font-size: 12px; color: rgba(var(--ink-rgb), 0.7);
+    border-bottom: 1px solid var(--grid); background: var(--hdr);
+  }
+  .check { width: 16px; height: 16px; border: 1px solid #8a8a8a; background: var(--cellbg); }
+  .done .check { background: var(--xl); border-color: var(--xl); }
+  .check svg { stroke: var(--on-accent); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .nav-item.active { background: var(--xl); color: var(--on-accent); box-shadow: none; }
+  .nav-item.active svg, .nav-item.active .badge, .add-btn svg { color: var(--on-accent); }
+  .tab.active { background: var(--cellbg); box-shadow: inset 0 -3px 0 var(--xl); }
+  .tab.active svg { color: var(--xl); }
+  .sp-line { background: var(--xl); height: 3px; }
+}
+
+/* ------------------------------------------------------------
+   63. 路線図：太い路線と白い駅
+   ------------------------------------------------------------ */
+
+[data-style="subway"] {
+  --font: "Hiragino Sans", "Segoe UI", "Yu Gothic UI", sans-serif;
+  --font-num: "Segoe UI", "Hiragino Sans", sans-serif;
+  --l1: #f39700; --l2: #e60012; --l3: #9caeb7; --l4: #00a7db; --l5: #009944; --l6: #d7c447;
+  --station: #ffffff;
+  --page-bg: #f4f5f7;
+  --ink-rgb: 30, 32, 38;
+  --accent-a: var(--l1);
+  --accent-b: var(--l1);
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(0, 0, 0, 0.07);
+  --highlight: transparent;
+  --field: rgba(0, 0, 0, 0.04);
+  --field-focus: rgba(0, 0, 0, 0.06);
+  --sheet-bg: #ffffff;
+  --zen-bg: #f4f5f7;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-pop: 0 18px 40px rgba(0, 0, 0, 0.18);
+  --tip-bg: #1e2026;
+  --r-card: 14px; --r-item: 10px;
+}
+[data-style="subway"][data-variant="london"] { --l1: #dc241f; --l2: #0019a8; --l3: #00782a; --l4: #ffd300; --l5: #9b0056; --l6: #00a4a7; --page-bg: #ffffff; }
+[data-style="subway"][data-variant="night"] { --station: #14161c; --page-bg: #14161c; --ink-rgb: 230, 232, 238; --l1: #00a7db; --accent-a: #00a7db; --accent-b: #00a7db;
+  --glass: #1d2028; --glass-soft: #1d2028; --glass-strong: #262a34; --glass-hover: #262a34; --glass-border: rgba(255, 255, 255, 0.06); --field: rgba(255, 255, 255, 0.06); --field-focus: rgba(255, 255, 255, 0.1); --sheet-bg: #1d2028; --tip-bg: #00a7db; --on-accent: #14161c; }
+
+@scope ([data-style="subway"]) to ([data-style]:not([data-style="subway"])) {
+  .section { --line: var(--l1); }
+  .section:nth-child(6n+2) { --line: var(--l2); }
+  .section:nth-child(6n+3) { --line: var(--l3); }
+  .section:nth-child(6n+4) { --line: var(--l4); }
+  .section:nth-child(6n+5) { --line: var(--l5); }
+  .section:nth-child(6n+6) { --line: var(--l6); }
+  .content .list { position: relative; gap: 10px; padding-left: 42px; }
+  .content .list::before { content: ""; position: absolute; left: 14px; top: -6px; bottom: -6px; width: 10px; border-radius: 5px; background: var(--line, var(--l1)); }
+  .content .list > .item { overflow: visible; border: 1px solid var(--glass-border); }
+  .content .list > .item::before {
+    content: ""; position: absolute; left: -35px; top: 50%; width: 20px; height: 20px; margin-top: -10px; border-radius: 50%;
+    background: var(--station); border: 5px solid var(--line, var(--l1)); box-sizing: border-box;
+  }
+  .content .list > .item.done::before { background: var(--line, var(--l1)); }
+  .content .list > .item .title { font-weight: 700; }
+  .section-head > span:first-child::before {
+    content: ""; display: inline-block; width: 20px; height: 20px; margin-right: 8px; vertical-align: -5px;
+    border-radius: 50%; background: var(--station); border: 5px solid var(--line, var(--l1)); box-sizing: border-box;
+  }
+  .check { border-radius: 50%; }
+  .done .check { background: var(--line, var(--l1)); border-color: var(--line, var(--l1)); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; }
+  .sp-line { background: var(--l1); height: 6px; border-radius: 3px; }
+}
+
+/* ------------------------------------------------------------
+   64. すごろく：番号つきのマスを進む
+   ------------------------------------------------------------ */
+
+[data-style="sugoroku"] {
+  --font: "Hiragino Maru Gothic ProN", "HGMaruGothicMPRO", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --font-num: "Arial Black", "Hiragino Maru Gothic ProN", sans-serif;
+  --s1: #ff6b4a; --s2: #ffb703; --s3: #4cc9f0; --s4: #57cc99; --s5: #c77dff;
+  --page-bg: radial-gradient(rgba(255, 107, 74, 0.12) 2px, transparent 2.5px) 0 0 / 22px 22px, #fff6d6;
+  --ink-rgb: 70, 50, 30;
+  --accent-a: #ff6b4a;
+  --accent-b: #ffb703;
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgb(var(--ink-rgb));
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #fffdf5;
+  --zen-bg: #fff6d6;
+  --shadow: 0 4px 0 rgba(70, 50, 30, 0.25);
+  --shadow-pop: 0 18px 40px rgba(70, 50, 30, 0.25);
+  --tip-bg: #46321e;
+  --r-card: 20px; --r-item: 14px;
+}
+[data-style="sugoroku"][data-variant="forest"] { --s1: #4f8a3a; --s2: #a7c957; --s3: #6a994e; --s4: #f2cc8f; --s5: #e07a5f; --page-bg: radial-gradient(rgba(79, 138, 58, 0.14) 2px, transparent 2.5px) 0 0 / 22px 22px, #e9f3dc; --accent-a: #4f8a3a; --accent-b: #a7c957; }
+
+@scope ([data-style="sugoroku"]) to ([data-style]:not([data-style="sugoroku"])) {
+  .card:not(.sheet, .palette) { border: 3px solid var(--glass-border); }
+  .content .list:has(> .item) { display: grid; grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); gap: 20px 22px; counter-reset: sq; padding: 6px 4px; }
+  .layout-compact .content .list:has(> .item) { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .content .list > .item {
+    counter-increment: sq; aspect-ratio: 1 / 1; min-height: 0;
+    flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center;
+    padding: 24px 8px 8px; overflow: visible;
+    border: 3px solid var(--glass-border); border-radius: 14px; box-shadow: 0 4px 0 rgba(var(--ink-rgb), 0.35);
+    background: var(--sq, var(--s1));
+  }
+  .content .list > .item:nth-child(5n+2) { --sq: var(--s2); }
+  .content .list > .item:nth-child(5n+3) { --sq: var(--s3); }
+  .content .list > .item:nth-child(5n+4) { --sq: var(--s4); }
+  .content .list > .item:nth-child(5n+5) { --sq: var(--s5); }
+  .content .list > .item:hover { background: var(--sq, var(--s1)); translate: 0 -2px; }
+  .content .list > .item::before { content: counter(sq); position: absolute; top: 4px; left: 9px; font-family: var(--font-num); font-size: 17px; color: rgba(255, 255, 255, 0.95); text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); }
+  .content .list > .item:first-child::before { content: "スタート"; font-family: var(--font); font-size: 11px; font-weight: 800; }
+  .content .list > .item:last-child:not(:first-child) { box-shadow: 0 0 0 4px #ffd60a, 0 4px 0 rgba(var(--ink-rgb), 0.35); }
+  .content .list > .item:last-child:not(:first-child)::before { content: "ゴール"; font-family: var(--font); font-size: 11px; font-weight: 800; }
+  .content .list > .item:not(:last-child)::after { content: "▶"; position: absolute; right: -19px; top: 50%; translate: 0 -50%; font-size: 13px; color: rgb(var(--ink-rgb)); }
+  .content .list > .item .body { width: 100%; align-items: center; }
+  .content .list > .item .title { font-size: 13px; font-weight: 800; color: #ffffff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35); }
+  .content .list > .item .meta { justify-content: center; }
+  .content .list > .item .meta, .content .list > .item .row-actions { display: none; }
+  .content .list > .item .check { border: 2.5px solid #ffffff; background: rgba(255, 255, 255, 0.3); }
+  .content .list > .item.done { background: color-mix(in srgb, var(--sq, var(--s1)) 35%, #ffffff); }
+  .done .check { background: #ffffff; }
+  .check svg { stroke: var(--sq, var(--accent-a)); }
+  .section-head > span:first-child { background: #ffffff; border: 2.5px solid var(--glass-border); border-radius: 999px; padding: 2px 12px; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--accent-a); color: #ffffff; box-shadow: 0 3px 0 rgba(var(--ink-rgb), 0.35); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+  .sp-line { background: var(--s3); height: 5px; }
+}
+
+/* ------------------------------------------------------------
+   65. 本棚：タスクは背表紙
+   ------------------------------------------------------------ */
+
+[data-style="bookshelf"] {
+  --font: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif;
+  --font-title: var(--font);
+  --wood: #7a4a24;
+  --wall: #d9c3a0;
+  --page-bg: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.03) 0 2px, transparent 2px 40px), var(--wall);
+  --noise-opacity: 0.12;
+  --ink-rgb: 40, 28, 18;
+  --accent-a: #8c2f39;
+  --accent-b: #c9a26a;
+  --glass: #f6ead6;
+  --glass-soft: #f6ead6;
+  --glass-strong: #fffaf0;
+  --glass-hover: #fffaf0;
+  --glass-border: rgba(var(--ink-rgb), 0.15);
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.6);
+  --field-focus: #ffffff;
+  --sheet-bg: #f8eedc;
+  --zen-bg: var(--wall);
+  --shadow: 0 4px 10px rgba(60, 40, 20, 0.15);
+  --shadow-pop: 0 18px 40px rgba(60, 40, 20, 0.3);
+  --tip-bg: #281c12;
+  --r-card: 6px; --r-item: 3px;
+  --b1: #8c2f39; --b2: #2f4f6f; --b3: #3f6b46; --b4: #c9a26a; --b5: #5a3e6b; --b6: #b55a2c; --b7: #2b2b2b;
+}
+[data-style="bookshelf"][data-variant="walnut"] { --wood: #2a1c14; --wall: #3a2a20; --ink-rgb: 236, 224, 204; --glass: #46342a; --glass-soft: #46342a; --glass-strong: #523e32; --glass-hover: #523e32; --field: rgba(255, 255, 255, 0.07); --field-focus: rgba(255, 255, 255, 0.11); --sheet-bg: #3f2f25; --tip-bg: #c9a26a; --accent-a: #c9a26a; --on-accent: #2a1c14; }
+
+@scope ([data-style="bookshelf"]) to ([data-style]:not([data-style="bookshelf"])) {
+  .content .list:has(> .item) {
+    flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 3px;
+    padding: 12px 12px 0; border-bottom: 14px solid var(--wood);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.04));
+    box-shadow: 0 8px 10px -4px rgba(0, 0, 0, 0.35); border-radius: 4px 4px 0 0;
+  }
+  .content .list > .item {
+    writing-mode: vertical-rl; flex: 0 0 auto; width: var(--bw, 52px); height: var(--bh, 196px); min-height: 0;
+    padding: 26px 6px 12px; gap: 8px; align-items: center;
+    border: 0; border-radius: 3px 3px 0 0; color: #fbf3e4; box-shadow: none;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.22), transparent 16%, transparent 80%, rgba(0, 0, 0, 0.25)), var(--spine, var(--b1));
+  }
+  .content .list > .item:nth-child(7n+2) { --spine: var(--b2); --bh: 176px; --bw: 46px; }
+  .content .list > .item:nth-child(7n+3) { --spine: var(--b3); --bh: 214px; --bw: 58px; }
+  .content .list > .item:nth-child(7n+4) { --spine: var(--b4); --bh: 186px; --bw: 50px; color: #2b1d10; }
+  .content .list > .item:nth-child(7n+5) { --spine: var(--b5); --bh: 204px; --bw: 54px; }
+  .content .list > .item:nth-child(7n+6) { --spine: var(--b6); --bh: 170px; --bw: 48px; }
+  .content .list > .item:nth-child(7n+7) { --spine: var(--b7); --bh: 220px; --bw: 56px; }
+  .content .list > .item:hover { background: linear-gradient(90deg, rgba(0, 0, 0, 0.22), transparent 16%, transparent 80%, rgba(0, 0, 0, 0.25)), var(--spine, var(--b1)); translate: 0 -6px; }
+  .content .list > .item::before { content: ""; position: absolute; left: 4px; right: 4px; top: 10px; height: 6px; border-top: 1.5px solid rgba(255, 220, 150, 0.8); border-bottom: 1.5px solid rgba(255, 220, 150, 0.8); }
+  .content .list > .item .title { font-size: 14px; letter-spacing: 0.12em; font-weight: 700; color: inherit; }
+  .content .list > .item .meta, .content .list > .item .row-actions { display: none; }
+  .content .list > .item .check { width: 22px; height: 22px; border: 2px solid rgba(255, 255, 255, 0.7); background: transparent; border-radius: 50%; }
+  .content .list > .item.done { opacity: 0.55; }
+  .content .list > .item.done .check { background: rgba(255, 255, 255, 0.85); }
+  .content .list > .item .check svg { stroke: var(--spine, var(--b1)); }
+  .section-head > span:first-child { background: linear-gradient(180deg, #e9d08f, #b8923f); color: #2b1d10; padding: 2px 12px; border-radius: 2px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); font-size: 12px; }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; }
+  .sp-line { background: var(--b1); }
+}
+
+/* ------------------------------------------------------------
+   66. 原稿用紙：マス目に 1 文字ずつ
+   ------------------------------------------------------------ */
+
+[data-style="genko"] {
+  --font: "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
+  --font-title: var(--font);
+  --font-num: var(--font);
+  --cell: 26px;
+  --rule: #c4553e;
+  --paper: #fbf8f1;
+  --page-bg: var(--paper);
+  --ink-rgb: 40, 30, 24;
+  --accent-a: var(--rule);
+  --accent-b: var(--rule);
+  --grad: linear-gradient(var(--rule), var(--rule));
+  --glass: #fffdf7;
+  --glass-soft: #fffdf7;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: color-mix(in srgb, var(--rule) 60%, transparent);
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #fffdf7;
+  --zen-bg: var(--paper);
+  --shadow: none;
+  --shadow-pop: 0 18px 40px rgba(60, 40, 20, 0.2);
+  --tip-bg: #281e18;
+  --r-card: 0; --r-item: 0; --r-check: 0; --r-field: 0;
+}
+[data-style="genko"][data-variant="green"] { --rule: #4c8a5a; --paper: #f8faf4; }
+
+@scope ([data-style="genko"]) to ([data-style]:not([data-style="genko"])) {
+  .card:not(.sheet, .palette) { border: 2px solid var(--glass-border); }
+  .content .list { gap: 8px; }
+  .content .list > .item {
+    border: 0; box-shadow: inset 0 0 0 1.5px var(--glass-border); padding: 6px 8px 6px 4px; min-height: calc(var(--cell) * 2 + 12px);
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--rule) 45%, transparent) 1px, transparent 1px) 4px 6px / var(--cell) var(--cell),
+      linear-gradient(color-mix(in srgb, var(--rule) 45%, transparent) 1px, transparent 1px) 4px 6px / var(--cell) var(--cell),
+      #fffdf7;
+  }
+  .content .list > .item .check { width: calc(var(--cell) - 4px); height: calc(var(--cell) - 4px); margin: 2px; }
+  .content .list > .item .title { font-size: 17px; line-height: var(--cell); letter-spacing: calc(var(--cell) - 17px); }
+  .content .list > .item .meta { margin-top: 2px; line-height: var(--cell); }
+  .check { border: 1.5px solid var(--glass-border); background: transparent; }
+  .done .check { background: var(--rule); }
+  .check svg { stroke: #ffffff; }
+  .item.done .title { text-decoration: none; color: rgba(var(--ink-rgb), 0.45); }
+  .section-head { justify-content: center; }
+  .section-head > span:first-child { letter-spacing: 0.5em; font-size: 15px; }
+  .page-head h1 { letter-spacing: 0.4em; }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; }
+  .sp-line { background: var(--glass-border); }
+}
+
+/* ------------------------------------------------------------
+   67. SNS：タスクは投稿、済んだら赤いハート
+   ------------------------------------------------------------ */
+
+[data-style="sns"] {
+  --font: -apple-system, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --brand: #1d9bf0;
+  --page-bg: #ffffff;
+  --ink-rgb: 15, 20, 25;
+  --accent-a: var(--brand);
+  --accent-b: #7856ff;
+  --grad: linear-gradient(var(--brand), var(--brand));
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #f7f9f9;
+  --glass-hover: #f7f9f9;
+  --glass-border: #eff3f4;
+  --highlight: transparent;
+  --field: #eff3f4;
+  --field-focus: #ffffff;
+  --sheet-bg: #ffffff;
+  --zen-bg: #ffffff;
+  --shadow: none;
+  --shadow-pop: 0 0 15px rgba(101, 119, 134, 0.2), 0 0 3px 1px rgba(101, 119, 134, 0.15);
+  --tip-bg: #0f1419;
+  --r-card: 16px; --r-item: 0; --r-chip: 999px; --r-field: 999px;
+}
+[data-style="sns"][data-variant="dim"] { --page-bg: #15202b; --ink-rgb: 247, 249, 249; --glass: #15202b; --glass-soft: #15202b; --glass-strong: #1e2732; --glass-hover: #1e2732; --glass-border: #38444d; --field: #273340; --field-focus: #15202b; --sheet-bg: #15202b; --zen-bg: #15202b; --tip-bg: #1d9bf0; }
+[data-style="sns"][data-variant="pink"] { --brand: #e1306c; --accent-b: #f77737; --page-bg: #fff5f8; --glass-hover: #fff0f5; --glass-strong: #fff0f5; }
+
+@scope ([data-style="sns"]) to ([data-style]:not([data-style="sns"])) {
+  .content > .view { max-width: 660px; margin: 0 auto; }
+  .card:not(.sheet, .palette) { border: 1px solid var(--glass-border); }
+  .content .list { gap: 0; border: 1px solid var(--glass-border); border-radius: 16px; overflow: hidden; }
+  .content .list > .item { border: 0; border-bottom: 1px solid var(--glass-border); border-radius: 0; padding: 12px 52px 12px 66px; min-height: 78px; align-items: flex-start; background: var(--glass); }
+  .content .list > .item:last-child { border-bottom: 0; }
+  .content .list > .item::before { content: ""; position: absolute; left: 14px; top: 12px; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); }
+  .content .list > .item .title::before { content: "あなた  @me · 今日"; display: block; font-size: 12.5px; color: rgba(var(--ink-rgb), 0.55); font-weight: 400; margin-bottom: 2px; text-decoration: none; }
+  .content .list > .item .meta::after { content: "💬　🔁　🤍"; margin-left: auto; letter-spacing: 6px; font-size: 12px; }
+  .content .list > .item.done .meta::after { content: "💬　🔁　❤️"; }
+  .content .list > .item .check { position: absolute; right: 14px; top: 14px; width: 26px; height: 26px; border-radius: 50%; }
+  .content .list > .item .row-actions { position: absolute; right: 8px; bottom: 6px; }
+  .done .check { background: #f91880; border-color: #f91880; }
+  .item.done .title { text-decoration: none; }
+  .section-head { font-size: 18px; font-weight: 800; color: rgb(var(--ink-rgb)); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .nav-item.active { background: var(--brand); color: #ffffff; box-shadow: none; }
+  .nav-item.active svg, .nav-item.active .badge { color: #ffffff; }
+  .nav-item { border-radius: 999px; }
+  .tab.active { background: transparent; box-shadow: inset 0 -3px 0 var(--brand); }
+  .tab.active svg { color: var(--brand); }
+  .sp-line { background: var(--brand); }
+}
+
+/* ------------------------------------------------------------
+   68. チケット：搭乗券と切り取り線
+   ------------------------------------------------------------ */
+
+[data-style="ticket"] {
+  --font: "Segoe UI", -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-num: "Bahnschrift", "Segoe UI", sans-serif;
+  --brand: #0b5cad;
+  --page-bg: linear-gradient(160deg, #dfe9f3, #f3f6fa);
+  --ink-rgb: 20, 30, 45;
+  --accent-a: var(--brand);
+  --accent-b: var(--brand);
+  --grad: linear-gradient(var(--brand), var(--brand));
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.8);
+  --field-focus: #ffffff;
+  --sheet-bg: #ffffff;
+  --zen-bg: #dfe9f3;
+  --shadow: 0 6px 18px rgba(20, 30, 45, 0.1);
+  --shadow-pop: 0 18px 40px rgba(20, 30, 45, 0.25);
+  --tip-bg: #141e2d;
+  --r-card: 16px; --r-item: 10px;
+}
+[data-style="ticket"][data-variant="sunset"] { --brand: #e0662a; --page-bg: linear-gradient(160deg, #fdeee0, #fff7ef); }
+[data-style="ticket"][data-variant="night"] { --brand: #f2b134; --page-bg: linear-gradient(160deg, #10141f, #1b2233); --ink-rgb: 230, 236, 246; --on-accent: #10141f;
+  --glass: #1f2636; --glass-soft: #1f2636; --glass-strong: #283149; --glass-hover: #283149; --field: rgba(255, 255, 255, 0.07); --field-focus: rgba(255, 255, 255, 0.11); --sheet-bg: #1f2636; --tip-bg: #f2b134; }
+
+@scope ([data-style="ticket"]) to ([data-style]:not([data-style="ticket"])) {
+  .content .list { gap: 12px; filter: drop-shadow(0 4px 8px rgba(20, 30, 45, 0.12)); }
+  .content .list > .item {
+    padding: 14px 14px 14px 96px; min-height: 80px; border: 0; box-shadow: none;
+    background: linear-gradient(90deg, var(--brand) 0 80px, var(--glass) 80px);
+    -webkit-mask: radial-gradient(circle 9px at 80px 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 9px at 80px 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+    mask: radial-gradient(circle 9px at 80px 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 9px at 80px 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+  }
+  .content .list > .item::before { content: "BOARDING\A PASS"; white-space: pre; position: absolute; left: 12px; top: 12px; color: rgba(255, 255, 255, 0.95); font-size: 9px; line-height: 1.3; letter-spacing: 0.16em; font-weight: 800; }
+  .content .list > .item::after { content: ""; position: absolute; left: 80px; top: 12px; bottom: 12px; border-left: 2px dashed rgba(var(--ink-rgb), 0.2); }
+  .content .list > .item .check { position: absolute; left: 12px; bottom: 12px; border: 2px solid #ffffff; background: transparent; }
+  .content .list > .item.done .check { background: #ffffff; }
+  .content .list > .item .check svg { stroke: var(--brand); }
+  .content .list > .item .title { font-size: 15px; font-weight: 700; }
+  .content .list > .item .meta::before { content: "GATE 7"; font-family: var(--font-num); letter-spacing: 0.1em; color: var(--brand); font-weight: 700; }
+  .content .list > .item.done { opacity: 0.6; }
+  .section-head > span:first-child { font-family: var(--font-num); letter-spacing: 0.08em; text-transform: uppercase; }
+  .section-head > span:first-child::before { content: "✈ "; color: var(--brand); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { color: var(--on-accent); box-shadow: none; }
+  .sp-line { background: var(--brand); }
+}
+
+/* ------------------------------------------------------------
+   69. 切手：ギザギザのふちと消印
+   ------------------------------------------------------------ */
+
+[data-style="stamp"] {
+  --font: "Hiragino Maru Gothic ProN", "Yu Gothic UI", sans-serif;
+  --font-title: "Georgia", "Hiragino Mincho ProN", serif;
+  --album: #efe6d4;
+  --st1: #f2b8a2; --st2: #a9cfe8; --st3: #b8dcb0; --st4: #f5d58a; --st5: #d4b8e8;
+  --page-bg: linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px) 0 0 / 100% 34px, var(--album);
+  --noise-opacity: 0.12;
+  --ink-rgb: 50, 40, 30;
+  --accent-a: #b73a3a;
+  --accent-b: #b73a3a;
+  --glass: #fffdf8;
+  --glass-soft: #fffdf8;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(var(--ink-rgb), 0.12);
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.7);
+  --field-focus: #ffffff;
+  --sheet-bg: #fbf7ee;
+  --zen-bg: var(--album);
+  --shadow: 0 3px 8px rgba(60, 40, 20, 0.12);
+  --shadow-pop: 0 18px 40px rgba(60, 40, 20, 0.25);
+  --tip-bg: #32281e;
+  --r-card: 4px; --r-item: 0;
+}
+[data-style="stamp"][data-variant="pastel"] { --album: #f4eef7; --accent-a: #7a5cc9; --accent-b: #7a5cc9; --ink-rgb: 50, 40, 70; }
+
+@scope ([data-style="stamp"]) to ([data-style]:not([data-style="stamp"])) {
+  .content .list:has(> .item) { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 18px; padding: 6px 2px; }
+  .layout-compact .content .list:has(> .item) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .content .list > .item {
+    flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 6px; min-height: 160px; padding: 18px 16px 16px;
+    border: 0; box-shadow: none; filter: drop-shadow(0 3px 4px rgba(60, 40, 20, 0.2));
+    background: linear-gradient(180deg, #fffdf8 0 46%, var(--st, var(--st1)) 46%);
+    -webkit-mask: linear-gradient(#000 0 0) center / calc(100% - 12px) calc(100% - 12px) no-repeat, radial-gradient(circle 4.5px, #0000 96%, #000) -6px -6px / 12px 12px;
+    mask: linear-gradient(#000 0 0) center / calc(100% - 12px) calc(100% - 12px) no-repeat, radial-gradient(circle 4.5px, #0000 96%, #000) -6px -6px / 12px 12px;
+  }
+  .content .list > .item:nth-child(5n+2) { --st: var(--st2); }
+  .content .list > .item:nth-child(5n+3) { --st: var(--st3); }
+  .content .list > .item:nth-child(5n+4) { --st: var(--st4); }
+  .content .list > .item:nth-child(5n+5) { --st: var(--st5); }
+  .content .list > .item:hover { background: linear-gradient(180deg, #fffdf8 0 46%, var(--st, var(--st1)) 46%); }
+  .content .list > .item::after { content: "84"; position: absolute; right: 16px; top: 14px; font-family: var(--font-title); font-size: 15px; font-weight: 700; color: var(--accent-a); }
+  .content .list > .item .title { font-size: 13.5px; font-weight: 700; padding-right: 22px; }
+  .content .list > .item .meta { display: none; }
+  .content .list > .item .row-actions { position: absolute; right: 10px; bottom: 10px; }
+  .content .list > .item .check { margin-top: auto; background: rgba(255, 255, 255, 0.8); border: 2px solid rgba(var(--ink-rgb), 0.35); }
+  .content .list > .item.done::before {
+    content: "済"; position: absolute; right: 8px; top: 34%; width: 66px; height: 66px; border-radius: 50%;
+    border: 3px solid rgba(40, 40, 70, 0.5); display: grid; place-items: center; rotate: -14deg;
+    color: rgba(40, 40, 70, 0.55); font-size: 22px; font-weight: 800;
+    background: repeating-linear-gradient(0deg, transparent 0 7px, rgba(40, 40, 70, 0.18) 7px 9px);
+  }
+  .done .check { background: var(--accent-a); border-color: var(--accent-a); }
+  .section-head > span:first-child { font-family: var(--font-title); font-style: italic; color: var(--accent-a); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; }
+  .sp-line { background: var(--accent-a); }
+}
+
+/* ------------------------------------------------------------
+   70. レコード：回るレコードと曲目リスト
+   ------------------------------------------------------------ */
+
+[data-style="vinyl"] {
+  --font: "Futura", "Century Gothic", "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-num: "Futura", "Century Gothic", "Segoe UI", sans-serif;
+  --label: #ff5a36;
+  --page-bg: radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--label) 18%, transparent), transparent 55%), #121212;
+  --ink-rgb: 240, 236, 230;
+  --accent-a: var(--label);
+  --accent-b: var(--label);
+  --on-accent: #121212;
+  --grad: linear-gradient(var(--label), var(--label));
+  --accent-soft: color-mix(in srgb, var(--label) 16%, transparent);
+  --glass: #1c1c1c;
+  --glass-soft: #181818;
+  --glass-strong: #262626;
+  --glass-hover: #222222;
+  --glass-border: #2c2c2c;
+  --highlight: transparent;
+  --field: #202020;
+  --field-focus: #262626;
+  --sheet-bg: #191919;
+  --zen-bg: #121212;
+  --shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+  --shadow-pop: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --tip-bg: var(--label);
+  --r-card: 6px; --r-item: 4px;
+}
+[data-style="vinyl"][data-variant="jazz"] { --label: #d9a441; --page-bg: radial-gradient(ellipse at 20% 0%, rgba(217, 164, 65, 0.16), transparent 55%), #1a1410; }
+[data-style="vinyl"][data-variant="pink"] { --label: #ff6fb0; --page-bg: radial-gradient(ellipse at 20% 0%, rgba(255, 111, 176, 0.16), transparent 55%), #1c1218; }
+
+@scope ([data-style="vinyl"]) to ([data-style]:not([data-style="vinyl"])) {
+  /* 今日のまとめのリングが、溝のあるレコードになって回る */
+  .summary .ring-wrap { border-radius: 50%; background:
+      radial-gradient(circle, var(--label) 0 17%, #111 17.5% 19%, transparent 19.5%),
+      repeating-radial-gradient(circle, #0c0c0c 0 2px, #1d1d1d 2px 3px);
+    box-shadow: 0 0 0 2px #000, 0 6px 16px rgba(0, 0, 0, 0.5);
+    animation: spin 6s linear infinite; }
+  .summary .ring-wrap svg { opacity: 0.35; }
+  .ring-label { color: #121212; font-weight: 800; }
+  .content .list { counter-reset: trk; gap: 0; }
+  .content .list > .item { counter-increment: trk; padding-left: 50px; border: 0; border-bottom: 1px solid var(--glass-border); background: transparent; box-shadow: none; }
+  .content .list > .item::before { content: "A" counter(trk); position: absolute; left: 12px; top: 50%; translate: 0 -50%; font-family: var(--font-num); font-size: 13px; color: var(--label); font-weight: 700; }
+  .content .list > .item:hover { background: var(--glass-hover); }
+  .content .list > .item .meta::after { content: "3:4" counter(trk); margin-left: auto; font-family: var(--font-num); color: rgba(var(--ink-rgb), 0.4); }
+  .section-head > span:first-child { text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: var(--label); }
+  .section-head > span:first-child::before { content: "SIDE ─ "; }
+  .check { border-radius: 50%; border: 1.5px solid rgba(var(--ink-rgb), 0.35); background: transparent; }
+  .done .check { background: var(--label); border-color: var(--label); }
+  .check svg { stroke: var(--on-accent); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--label); color: var(--on-accent); box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg, .play-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: var(--label); }
+}
+@keyframes spin { to { rotate: 360deg; } }
+
+/* ------------------------------------------------------------
+   71. 3D：画面がななめに傾き、カードに厚み
+   ------------------------------------------------------------ */
+
+[data-style="tilt"] {
+  --font: "Segoe UI Variable Display", -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --base: #e8f6f1;
+  --edge: #19a383;
+  --page-bg: linear-gradient(160deg, var(--base), color-mix(in srgb, var(--base) 70%, #fff));
+  --ink-rgb: 22, 40, 36;
+  --accent-a: var(--edge);
+  --accent-b: color-mix(in srgb, var(--edge) 60%, #fff);
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: color-mix(in srgb, var(--edge) 7%, #fff);
+  --field-focus: #ffffff;
+  --sheet-bg: #ffffff;
+  --zen-bg: var(--base);
+  /* 何枚も重ねた影で、厚みのある板に */
+  --depth: 1px 1px 0 color-mix(in srgb, var(--edge) 70%, #000), 2px 2px 0 color-mix(in srgb, var(--edge) 70%, #000), 3px 3px 0 color-mix(in srgb, var(--edge) 70%, #000), 4px 4px 0 color-mix(in srgb, var(--edge) 70%, #000), 5px 5px 0 color-mix(in srgb, var(--edge) 70%, #000), 6px 6px 0 color-mix(in srgb, var(--edge) 70%, #000), 14px 16px 24px rgba(0, 0, 0, 0.18);
+  --shadow: var(--depth);
+  --shadow-pop: 0 24px 60px rgba(0, 0, 0, 0.25);
+  --tip-bg: #16282a;
+  --r-card: 14px; --r-item: 10px;
+}
+[data-style="tilt"][data-variant="violet"] { --base: #efeaff; --edge: #7a4ff0; --ink-rgb: 40, 26, 80; }
+[data-style="tilt"][data-variant="dark"] { --base: #16161e; --edge: #ff4f7b; --ink-rgb: 236, 236, 246; --glass: #23232e; --glass-soft: #23232e; --glass-strong: #2c2c3a; --glass-hover: #2c2c3a; --field: rgba(255, 255, 255, 0.07); --field-focus: rgba(255, 255, 255, 0.11); --sheet-bg: #23232e; --tip-bg: #ff4f7b; --page-bg: radial-gradient(ellipse at 30% 0%, rgba(255, 79, 123, 0.18), transparent 60%), #16161e; }
+
+@scope ([data-style="tilt"]) to ([data-style]:not([data-style="tilt"])) {
+  .content { perspective: 1600px; }
+  .content > .view { transform: rotateX(10deg) rotateZ(-2deg); transform-origin: 50% 0; padding-bottom: 40px; }
+  .layout-compact .content > .view { transform: rotateX(6deg) rotateZ(-1.5deg); }
+  .card:not(.sheet, .palette), .content .list > .item { border: 0; box-shadow: var(--depth); }
+  .content .list { gap: 14px; }
+  .content .list > .item:hover { translate: -2px -2px; }
+  .check { border: 2px solid var(--edge); background: transparent; }
+  .done .check { background: var(--edge); }
+  .page-head h1, .summary-title { font-weight: 800; text-shadow: 2px 2px 0 color-mix(in srgb, var(--edge) 40%, transparent); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--edge); color: #fff; box-shadow: 3px 3px 0 color-mix(in srgb, var(--edge) 60%, #000); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff; }
+  .sp-line { background: var(--edge); }
+}
+
+/* ------------------------------------------------------------
+   72. バブル：まんまるのシャボン玉
+   ------------------------------------------------------------ */
+
+[data-style="bubble"] {
+  --font: "Hiragino Maru Gothic ProN", "Segoe UI", "Yu Gothic UI", sans-serif;
+  --sky: #e6f6ff;
+  --tone: #2fa8e0;
+  --page-bg: radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.9), transparent 30%), linear-gradient(180deg, var(--sky), color-mix(in srgb, var(--sky) 60%, #fff));
+  --ink-rgb: 26, 52, 72;
+  --accent-a: var(--tone);
+  --accent-b: color-mix(in srgb, var(--tone) 50%, #fff);
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-soft: rgba(255, 255, 255, 0.5);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --highlight: #ffffff;
+  --backdrop: blur(8px);
+  --field: rgba(255, 255, 255, 0.75);
+  --field-focus: #ffffff;
+  --sheet-bg: rgba(250, 253, 255, 0.97);
+  --zen-bg: var(--sky);
+  --shadow: 0 8px 20px color-mix(in srgb, var(--tone) 15%, transparent);
+  --shadow-pop: 0 20px 50px color-mix(in srgb, var(--tone) 25%, transparent);
+  --tip-bg: #1a3448;
+  --r-card: 28px; --r-item: 50%;
+}
+[data-style="bubble"][data-variant="candy"] { --sky: #fff0f6; --tone: #ff5fa2; --ink-rgb: 80, 30, 56; }
+[data-style="bubble"][data-variant="night"] { --sky: #0e1024; --tone: #7b8cff; --ink-rgb: 230, 234, 255; --glass: rgba(255, 255, 255, 0.08); --glass-soft: rgba(255, 255, 255, 0.05); --glass-strong: rgba(255, 255, 255, 0.14); --glass-hover: rgba(255, 255, 255, 0.12); --glass-border: rgba(255, 255, 255, 0.2); --highlight: rgba(255, 255, 255, 0.3); --field: rgba(255, 255, 255, 0.08); --field-focus: rgba(255, 255, 255, 0.12); --sheet-bg: rgba(20, 22, 48, 0.97); --zen-bg: #0e1024; --tip-bg: #7b8cff; --page-bg: radial-gradient(circle at 80% 10%, rgba(123, 140, 255, 0.25), transparent 35%), #0e1024; }
+
+@scope ([data-style="bubble"]) to ([data-style]:not([data-style="bubble"])) {
+  .content .list:has(> .item) { flex-direction: row; flex-wrap: wrap; gap: 14px; justify-content: center; padding: 8px 0; }
+  .content .list > .item {
+    width: 132px; height: 132px; min-height: 0; padding: 18px; border-radius: 50%;
+    flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center;
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0 8%, transparent 9%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.35), color-mix(in srgb, var(--tone) 28%, transparent) 70%, color-mix(in srgb, var(--tone) 55%, transparent));
+    box-shadow: inset -8px -10px 20px color-mix(in srgb, var(--tone) 25%, transparent), 0 10px 22px color-mix(in srgb, var(--tone) 20%, transparent);
+    animation: bob 5s ease-in-out infinite;
+  }
+  .content .list > .item:nth-child(3n+2) { width: 118px; height: 118px; animation-delay: -1.5s; }
+  .content .list > .item:nth-child(3n+3) { width: 146px; height: 146px; animation-delay: -3s; }
+  .content .list > .item .body { align-items: center; width: 100%; }
+  .content .list > .item .title { font-size: 12.5px; font-weight: 700; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .content .list > .item .meta, .content .list > .item .row-actions { display: none; }
+  .content .list > .item.done { opacity: 0.45; scale: 0.9; }
+  .check { border: 2px solid color-mix(in srgb, var(--tone) 60%, transparent); background: rgba(255, 255, 255, 0.6); }
+  .done .check { background: var(--tone); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; }
+  .sp-line { background: var(--tone); }
+}
+@keyframes bob { 50% { translate: 0 -6px; } }
+
+/* ------------------------------------------------------------
+   73. コラージュ：切り抜いた紙を貼り合わせる
+   ------------------------------------------------------------ */
+
+[data-style="collage"] {
+  --font: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+  --font-title: "Impact", "Arial Black", "Hiragino Sans", sans-serif;
+  --base: #e9e4da;
+  --page-bg: var(--base);
+  --noise-opacity: 0.22;
+  --ink-rgb: 20, 20, 20;
+  --accent-a: #e2383f;
+  --accent-b: #2954d8;
+  --p1: #fffdf6; --p2: #f6e27a; --p3: #ffd1dc; --p4: #d4e7ff; --p5: #ffffff;
+  --glass: #fffdf6;
+  --glass-soft: #fffdf6;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #fbf8f0;
+  --zen-bg: var(--base);
+  --shadow: 2px 3px 0 rgba(0, 0, 0, 0.18);
+  --shadow-pop: 0 18px 40px rgba(0, 0, 0, 0.25);
+  --tip-bg: #141414;
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-field: 0;
+}
+[data-style="collage"][data-variant="zine"] { --base: #f2f2f2; --accent-a: #111111; --accent-b: #111111; --p2: #eeeeee; --p3: #dddddd; --p4: #ffffff; }
+
+@scope ([data-style="collage"]) to ([data-style]:not([data-style="collage"])) {
+  .content .list { gap: 12px; }
+  .content .list > .item {
+    border: 0; background: var(--paper, var(--p1)); box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.18);
+    rotate: -0.8deg;
+    clip-path: polygon(0 4%, 3% 0, 22% 3%, 41% 0, 63% 2%, 82% 0, 100% 3%, 99% 34%, 100% 66%, 98% 100%, 76% 97%, 52% 100%, 31% 97%, 9% 100%, 0 95%, 1% 52%);
+  }
+  .content .list > .item:nth-child(5n+2) { --paper: var(--p2); rotate: 0.9deg; }
+  .content .list > .item:nth-child(5n+3) { --paper: var(--p3); rotate: -1.4deg; }
+  .content .list > .item:nth-child(5n+4) { --paper: var(--p4); rotate: 1.2deg; }
+  .content .list > .item:nth-child(5n+5) { --paper: var(--p5); rotate: -0.4deg; background-image: repeating-linear-gradient(0deg, transparent 0 15px, rgba(0, 0, 0, 0.06) 15px 16px); }
+  .content .list > .item:nth-child(3n+1) .title { font-family: "Georgia", "Hiragino Mincho ProN", serif; }
+  .content .list > .item:nth-child(3n+2) .title { font-weight: 800; }
+  .content .list > .item:hover { rotate: 0deg; background: var(--paper, var(--p1)); }
+  /* 見出しは 1 文字ずつ切り抜いたような帯 */
+  .section-head > span:first-child { font-family: var(--font-title); background: #111111; color: #ffffff; padding: 2px 10px; rotate: -2deg; display: inline-block; letter-spacing: 0.06em; box-shadow: 4px 4px 0 var(--accent-a); }
+  .page-head h1 { font-family: var(--font-title); background: var(--accent-a); color: #ffffff; padding: 0 10px; rotate: -1.5deg; display: inline-flex; }
+  .check { border: 2px solid #111111; background: #ffffff; border-radius: 0; }
+  .done .check { background: var(--accent-a); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: #111111; color: #ffffff; box-shadow: 3px 3px 0 var(--accent-a); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+  .sp-line { background: #111111; }
+}
+
+/* ------------------------------------------------------------
+   74. ポスター：特大の番号と色のブロック
+   ------------------------------------------------------------ */
+
+[data-style="poster"] {
+  --font: "Helvetica Neue", "Arial", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-title: "Arial Black", "Helvetica Neue", "Hiragino Sans", sans-serif;
+  --font-num: "Arial Black", "Helvetica Neue", sans-serif;
+  --paper: #f2ede4;
+  --hot: #e63946;
+  --page-bg: var(--paper);
+  --ink-rgb: 17, 17, 17;
+  --accent-a: var(--hot);
+  --accent-b: var(--hot);
+  --grad: linear-gradient(var(--hot), var(--hot));
+  --glass: transparent;
+  --glass-soft: transparent;
+  --glass-strong: rgba(0, 0, 0, 0.06);
+  --glass-hover: rgba(0, 0, 0, 0.04);
+  --glass-border: rgb(var(--ink-rgb));
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.7);
+  --field-focus: #ffffff;
+  --sheet-bg: var(--paper);
+  --zen-bg: var(--paper);
+  --shadow: none;
+  --shadow-pop: 10px 10px 0 rgb(var(--ink-rgb));
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-check: 0; --r-field: 0; --r-play: 0;
+}
+[data-style="poster"][data-variant="blue"] { --paper: #eef2f6; --hot: #1d4ed8; }
+[data-style="poster"][data-variant="black"] { --paper: #111111; --hot: #ffd60a; --ink-rgb: 245, 245, 245; --on-accent: #111111; }
+
+@scope ([data-style="poster"]) to ([data-style]:not([data-style="poster"])) {
+  .page-head h1 { font-family: var(--font-title); font-size: 64px; line-height: 0.9; letter-spacing: -0.04em; }
+  .layout-compact .page-head h1 { font-size: 40px; }
+  .titlebar .date { font-family: var(--font-title); letter-spacing: -0.03em; }
+  .content .list { counter-reset: big; gap: 6px; }
+  .content .list > .item { counter-increment: big; min-height: 84px; padding: 14px 16px 14px 92px; border: 0; background: var(--blk, var(--hot)); color: #ffffff; box-shadow: none; overflow: hidden; }
+  .content .list > .item:nth-child(3n+2) { --blk: rgb(var(--ink-rgb)); }
+  :scope[data-variant="black"] .content .list > .item:nth-child(3n+2) { --blk: #2a2a2a; }
+  .content .list > .item:nth-child(3n+3) { --blk: color-mix(in srgb, var(--hot) 55%, var(--paper)); color: rgb(var(--ink-rgb)); }
+  .content .list > .item::before { content: counter(big, decimal-leading-zero); position: absolute; left: 10px; top: 50%; translate: 0 -52%; font-family: var(--font-num); font-size: 58px; line-height: 1; letter-spacing: -0.05em; color: rgba(255, 255, 255, 0.92); }
+  .content .list > .item:nth-child(3n+3)::before { color: rgb(var(--ink-rgb)); }
+  .content .list > .item .title { font-family: var(--font-title); font-size: 18px; line-height: 1.15; text-transform: uppercase; }
+  .content .list > .item .meta, .content .list > .item .meta-ic { color: inherit; opacity: 0.85; }
+  .content .list > .item .tag { background: rgba(0, 0, 0, 0.18); color: inherit; }
+  .content .list > .item:hover { background: var(--blk, var(--hot)); filter: brightness(1.06); }
+  .content .list > .item.done { opacity: 0.4; }
+  .check { border: 3px solid currentColor; background: transparent; width: 28px; height: 28px; }
+  .done .check { background: currentColor; }
+  .check svg { stroke: var(--blk, var(--hot)); stroke-width: 4; }
+  .section-head { font-family: var(--font-title); font-size: 22px; letter-spacing: -0.02em; text-transform: uppercase; color: rgb(var(--ink-rgb)); }
+  .card:not(.sheet, .palette) { border: 4px solid var(--glass-border); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: rgb(var(--ink-rgb)); color: var(--paper); box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: var(--paper); }
+  .tip, .toast { color: var(--paper); }
+  .sp-line { background: var(--hot); height: 6px; }
+}
+
+/* ------------------------------------------------------------
+   75. コックピット：計器と照準のマーク
+   ------------------------------------------------------------ */
+
+[data-style="hud"] {
+  --font: "Bahnschrift", "Consolas", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-title: "Bahnschrift", "Consolas", sans-serif;
+  --font-num: "Consolas", "Bahnschrift", monospace;
+  --hud: #35e0ff;
+  --page-bg:
+    radial-gradient(ellipse at 50% 120%, color-mix(in srgb, var(--hud) 14%, transparent), transparent 60%),
+    linear-gradient(color-mix(in srgb, var(--hud) 6%, transparent) 1px, transparent 1px) 0 0 / 100% 40px,
+    #06121c;
+  --ink-rgb: 200, 245, 255;
+  --accent-a: var(--hud);
+  --accent-b: var(--hud);
+  --on-accent: #06121c;
+  --grad: linear-gradient(var(--hud), var(--hud));
+  --accent-soft: color-mix(in srgb, var(--hud) 14%, transparent);
+  --glass: color-mix(in srgb, var(--hud) 4%, transparent);
+  --glass-soft: transparent;
+  --glass-strong: color-mix(in srgb, var(--hud) 12%, transparent);
+  --glass-hover: color-mix(in srgb, var(--hud) 8%, transparent);
+  --glass-border: color-mix(in srgb, var(--hud) 30%, transparent);
+  --highlight: transparent;
+  --field: color-mix(in srgb, var(--hud) 6%, transparent);
+  --field-focus: color-mix(in srgb, var(--hud) 10%, transparent);
+  --sheet-bg: #081a26;
+  --zen-bg: rgba(6, 18, 28, 0.94);
+  --shadow: none;
+  --shadow-pop: 0 0 0 1px var(--hud), 0 0 40px color-mix(in srgb, var(--hud) 20%, transparent);
+  --tip-bg: var(--hud);
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-check: 0; --r-field: 0; --r-play: 50%;
+  --corner: linear-gradient(var(--hud), var(--hud));
+}
+[data-style="hud"][data-variant="orange"] { --hud: #ff9b3d; --ink-rgb: 255, 232, 210; --page-bg: radial-gradient(ellipse at 50% 120%, rgba(255, 155, 61, 0.14), transparent 60%), linear-gradient(rgba(255, 155, 61, 0.06) 1px, transparent 1px) 0 0 / 100% 40px, #140b05; --sheet-bg: #1c1008; }
+[data-style="hud"][data-variant="red"] { --hud: #ff4466; --ink-rgb: 255, 220, 228; --page-bg: radial-gradient(ellipse at 50% 120%, rgba(255, 68, 102, 0.14), transparent 60%), linear-gradient(rgba(255, 68, 102, 0.06) 1px, transparent 1px) 0 0 / 100% 40px, #14070a; --sheet-bg: #1c0a0e; }
+
+@scope ([data-style="hud"]) to ([data-style]:not([data-style="hud"])) {
+  /* カードの 4 つの角に、照準のような L 字 */
+  .card:not(.sheet, .palette), .section {
+    border: 1px solid color-mix(in srgb, var(--hud) 14%, transparent);
+    background:
+      var(--corner) top left / 16px 2px no-repeat, var(--corner) top left / 2px 16px no-repeat,
+      var(--corner) top right / 16px 2px no-repeat, var(--corner) top right / 2px 16px no-repeat,
+      var(--corner) bottom left / 16px 2px no-repeat, var(--corner) bottom left / 2px 16px no-repeat,
+      var(--corner) bottom right / 16px 2px no-repeat, var(--corner) bottom right / 2px 16px no-repeat,
+      var(--glass);
+  }
+  .section { padding: 10px 12px; margin-bottom: 14px; }
+  .content .list { gap: 4px; counter-reset: hud; }
+  .content .list > .item { counter-increment: hud; border: 0; border-left: 2px solid color-mix(in srgb, var(--hud) 40%, transparent); background: color-mix(in srgb, var(--hud) 3%, transparent); box-shadow: none; }
+  .content .list > .item:hover { border-left-color: var(--hud); background: var(--glass-hover); }
+  .content .list > .item .title::before { content: "[" counter(hud, decimal-leading-zero) "] "; font-family: var(--font-num); color: var(--hud); font-size: 12px; }
+  .section-head { text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: var(--hud); }
+  .section-head > span:first-child::before { content: "◢ "; }
+  .page-head h1, .titlebar .date, .summary-title, .timer-time { letter-spacing: 0.08em; text-shadow: 0 0 10px color-mix(in srgb, var(--hud) 50%, transparent); }
+  .check { border: 1px solid var(--hud); background: transparent; transform: rotate(45deg) scale(0.8); }
+  .check svg { transform: rotate(-45deg); stroke: var(--on-accent); }
+  .done .check { background: var(--hud); box-shadow: 0 0 10px var(--hud); }
+  .ring-bar, .timer-bar { filter: drop-shadow(0 0 5px var(--hud)); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--hud); color: var(--on-accent); box-shadow: 0 0 12px color-mix(in srgb, var(--hud) 45%, transparent); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg, .play-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: var(--hud); box-shadow: 0 0 6px var(--hud); }
+}
+
+/* ------------------------------------------------------------
+   76. リバース：左右と上下が反対
+   ------------------------------------------------------------ */
+
+[data-style="reverse"] {
+  --font: "Segoe UI Variable Text", -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --page: #fff4f0;
+  --page-bg: var(--page);
+  --ink-rgb: 52, 30, 26;
+  --accent-a: #ff6b57;
+  --accent-b: #ffa36c;
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #fffaf8;
+  --glass-border: rgba(var(--ink-rgb), 0.08);
+  --highlight: transparent;
+  --field: rgba(var(--ink-rgb), 0.04);
+  --field-focus: rgba(var(--ink-rgb), 0.07);
+  --sheet-bg: #ffffff;
+  --zen-bg: var(--page);
+  --shadow: 0 2px 8px rgba(80, 40, 30, 0.06);
+  --shadow-pop: 0 18px 40px rgba(80, 40, 30, 0.2);
+  --tip-bg: #341e1a;
+  --r-card: 18px; --r-item: 12px;
+}
+[data-style="reverse"][data-variant="teal"] { --page: #effaf8; --ink-rgb: 20, 48, 46; --accent-a: #0f9b8e; --accent-b: #6fd6c6; }
+[data-style="reverse"][data-variant="dark"] { --page: #17181c; --ink-rgb: 236, 236, 240; --accent-a: #ffb454; --accent-b: #ff7a59; --on-accent: #17181c; --glass: #212228; --glass-soft: #212228; --glass-strong: #2a2b32; --glass-hover: #2a2b32; --glass-border: rgba(255, 255, 255, 0.06); --field: rgba(255, 255, 255, 0.06); --field-focus: rgba(255, 255, 255, 0.1); --sheet-bg: #212228; --tip-bg: #ffb454; }
+
+@scope ([data-style="reverse"]) to ([data-style]:not([data-style="reverse"])) {
+  /* 広い画面：メニューは右、右パネルは左 */
+  .layout-wide .shell { grid-template-columns: minmax(0, 1fr) 210px; }
+  .layout-wide .sidebar { order: 2; }
+  .layout-xwide .shell { grid-template-columns: 320px minmax(0, 1fr) 230px; }
+  .layout-xwide .rightpanel { order: -1; }
+  .layout-xwide .sidebar { order: 3; }
+  /* 追加欄は上、タブ（PC の狭い画面）は下 */
+  .main .addbar { order: -1; }
+  .main .tabbar { order: 5; }
+  /* 行のチェックは右 */
+  .content .list > .item { flex-direction: row-reverse; text-align: right; }
+  .content .list > .item .meta { justify-content: flex-end; }
+  .content .list > .item .row-actions { order: 3; }
+  .titlebar { flex-direction: row-reverse; }
+  .titlebar .tb-left { text-align: right; }
+  .section-head { flex-direction: row-reverse; }
+  .page-head { flex-direction: row-reverse; text-align: right; }
+  .card:not(.sheet, .palette), .item { border: 1px solid var(--glass-border); }
+  .check { border: 2px solid var(--accent-a); background: transparent; }
+  .done .check { background: var(--accent-a); }
+  .check svg { stroke: var(--on-accent); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { color: var(--on-accent); }
+  .nav-item.active { box-shadow: inset -3px 0 0 var(--accent-a); }
+  .sp-line { background: var(--accent-a); }
+}
+
+/* ------------------------------------------------------------
+   77. 手紙：タスクは封筒
+   ------------------------------------------------------------ */
+
+[data-style="letter"] {
+  --font: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif;
+  --font-title: "Georgia", "Hiragino Mincho ProN", serif;
+  --desk: #f6f1e7;
+  --red: #c8102e;
+  --blue: #1f3f8f;
+  --env: #fdf8ec;
+  --page-bg: var(--desk);
+  --noise-opacity: 0.12;
+  --ink-rgb: 44, 36, 30;
+  --accent-a: var(--red);
+  --accent-b: var(--blue);
+  --glass: var(--env);
+  --glass-soft: var(--env);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(var(--ink-rgb), 0.12);
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #fdf9f0;
+  --zen-bg: var(--desk);
+  --shadow: 0 3px 10px rgba(60, 40, 20, 0.12);
+  --shadow-pop: 0 18px 40px rgba(60, 40, 20, 0.25);
+  --tip-bg: #2c241e;
+  --r-card: 4px; --r-item: 4px;
+}
+[data-style="letter"][data-variant="rose"] { --desk: #fbeef0; --red: #b3476a; --blue: #c98aa3; --env: #fffafb; }
+
+@scope ([data-style="letter"]) to ([data-style]:not([data-style="letter"])) {
+  /* ふちはエアメールのしま */
+  .card:not(.sheet, .palette, .addbar) { border: 6px solid transparent; border-image: repeating-linear-gradient(-45deg, var(--red) 0 10px, #ffffff 10px 16px, var(--blue) 16px 26px, #ffffff 26px 32px) 6; }
+  .content .list { gap: 14px; }
+  /* 封筒：上に三角のふた、右上に切手 */
+  .content .list > .item {
+    padding: 34px 70px 14px 16px; min-height: 92px; border: 1px solid var(--glass-border); background: var(--env); overflow: hidden;
+  }
+  .content .list > .item::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 26px;
+    background: linear-gradient(to bottom right, transparent 49%, rgba(var(--ink-rgb), 0.12) 50%, color-mix(in srgb, var(--env) 92%, #000) 51%) left / 50.5% 100% no-repeat,
+      linear-gradient(to bottom left, transparent 49%, rgba(var(--ink-rgb), 0.12) 50%, color-mix(in srgb, var(--env) 92%, #000) 51%) right / 50.5% 100% no-repeat;
+    transform: scaleY(-1); transform-origin: top;
+    top: 26px;
+  }
+  .content .list > .item::after { content: ""; position: absolute; right: 12px; top: 10px; width: 40px; height: 48px; background: linear-gradient(135deg, var(--red), var(--blue)); outline: 3px dotted #ffffff; outline-offset: -3px; }
+  .content .list > .item.done::before { transform: none; top: 0; opacity: 0.8; }
+  .content .list > .item.done { opacity: 0.7; }
+  .content .list > .item .title { font-size: 15px; }
+  .content .list > .item .meta::before { content: "〒"; color: var(--red); }
+  .check { border: 1.5px solid var(--red); background: transparent; border-radius: 50%; }
+  .done .check { background: var(--red); }
+  .section-head > span:first-child { font-family: var(--font-title); font-style: italic; color: var(--red); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; }
+  .sp-line { background: repeating-linear-gradient(90deg, var(--red) 0 8px, var(--blue) 8px 16px); }
+}
+
+/* ------------------------------------------------------------
+   78. 日めくり：とじ具と赤い帯
+   ------------------------------------------------------------ */
+
+[data-style="tearoff"] {
+  --font: "Hiragino Sans", "Segoe UI", "Yu Gothic UI", sans-serif;
+  --font-num: "Georgia", "Times New Roman", serif;
+  --band: #d62828;
+  --wall: #f3f1ec;
+  --page-bg: var(--wall);
+  --ink-rgb: 34, 30, 28;
+  --accent-a: var(--band);
+  --accent-b: var(--band);
+  --grad: linear-gradient(var(--band), var(--band));
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(var(--ink-rgb), 0.08);
+  --highlight: transparent;
+  --field: rgba(var(--ink-rgb), 0.04);
+  --field-focus: rgba(var(--ink-rgb), 0.06);
+  --sheet-bg: #ffffff;
+  --zen-bg: var(--wall);
+  --shadow: 0 1px 0 #e6e2da, 0 2px 0 #ffffff, 0 3px 0 #e6e2da, 0 4px 0 #ffffff, 0 5px 0 #e0dbd2, 0 10px 18px rgba(0, 0, 0, 0.1);
+  --shadow-pop: 0 18px 40px rgba(0, 0, 0, 0.2);
+  --tip-bg: #221e1c;
+  --r-card: 4px; --r-item: 0;
+}
+[data-style="tearoff"][data-variant="navy"] { --band: #1f3a68; --wall: #eef0f4; }
+
+@scope ([data-style="tearoff"]) to ([data-style]:not([data-style="tearoff"])) {
+  /* リストのかたまりが、1 冊の日めくり */
+  .section { background: #ffffff; box-shadow: var(--shadow); padding: 0 0 8px; margin-bottom: 22px; position: relative; border-radius: 4px; }
+  .section::before {
+    content: ""; position: absolute; left: 0; right: 0; top: -10px; height: 16px; border-radius: 4px 4px 0 0;
+    background: radial-gradient(circle 4px at 25% 8px, #e8e3da 0 3px, #555 3.5px 4px, transparent 4.5px), radial-gradient(circle 4px at 75% 8px, #e8e3da 0 3px, #555 3.5px 4px, transparent 4.5px), #2a2a2a;
+  }
+  .section > .section-head { background: var(--band); color: #ffffff; padding: 10px 12px 8px; margin: 0 0 4px; }
+  .section > .section-head .count, .section > .section-head .link { color: rgba(255, 255, 255, 0.85); }
+  .section > .section-head > span:first-child { font-family: var(--font-num); font-size: 17px; font-weight: 700; }
+  .content .list { gap: 0; padding: 0 10px; }
+  .content .list > .item { border: 0; border-bottom: 1px dashed rgba(var(--ink-rgb), 0.15); background: transparent; box-shadow: none; }
+  .content .list > .item:last-child { border-bottom: 0; }
+  .check { border: 1.5px solid rgba(var(--ink-rgb), 0.4); background: transparent; border-radius: 3px; }
+  .done .check { background: var(--band); border-color: var(--band); }
+  .page-head h1, .summary-title { font-family: var(--font-num); }
+  .titlebar .date { font-family: var(--font-num); color: var(--band); }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; }
+  .sp-line { background: var(--band); }
+}
+
+/* ============================================================
+   個性派（79〜86）
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   79. ビデオ：走査線と色ずれ、右上に ● REC
+   ------------------------------------------------------------ */
+
+[data-style="vhs"] {
+  --font: "VCR OSD Mono", "Consolas", "BIZ UDGothic", "MS Gothic", monospace;
+  --font-title: var(--font);
+  --font-num: var(--font);
+  --screen: #0a0f3a;
+  --page-bg: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.25) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, color-mix(in srgb, var(--screen) 70%, #4a5cff), var(--screen) 75%);
+  --ink-rgb: 255, 255, 255;
+  --accent-a: #ffffff;
+  --accent-b: #ffffff;
+  --on-accent: var(--screen);
+  --grad: linear-gradient(#fff, #fff);
+  --accent-soft: rgba(255, 255, 255, 0.14);
+  --glass: rgba(0, 0, 0, 0.25);
+  --glass-soft: rgba(0, 0, 0, 0.15);
+  --glass-strong: rgba(255, 255, 255, 0.14);
+  --glass-hover: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --highlight: transparent;
+  --field: rgba(0, 0, 0, 0.3);
+  --field-focus: rgba(0, 0, 0, 0.4);
+  --sheet-bg: color-mix(in srgb, var(--screen) 92%, #000);
+  --zen-bg: var(--screen);
+  --shadow: none;
+  --shadow-pop: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --tip-bg: #ffffff;
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-check: 0; --r-field: 0; --r-play: 0;
+}
+[data-style="vhs"][data-variant="black"] { --screen: #050505; --accent-a: #7dff7a; --accent-b: #7dff7a; --ink-rgb: 200, 255, 200; }
+
+@scope ([data-style="vhs"]) to ([data-style]:not([data-style="vhs"])) {
+  .title, .page-head h1, .titlebar .date, .summary-title, .section-head, .timer-time { text-shadow: 2px 0 rgba(255, 40, 80, 0.7), -2px 0 rgba(40, 200, 255, 0.7); text-transform: uppercase; }
+  .titlebar .date::after { content: "  ● REC"; color: #ff3344; animation: blink 1.2s steps(1) infinite; font-size: 0.6em; text-shadow: none; }
+  .page-head h1::before { content: "▶ PLAY  "; font-size: 0.6em; }
+  .card:not(.sheet, .palette), .item { border: 1px solid var(--glass-border); }
+  .content .list > .item .meta::after { content: "SP  0:00:" counter(vhs, decimal-leading-zero); margin-left: auto; opacity: 0.6; }
+  .content .list { counter-reset: vhs; }
+  .content .list > .item { counter-increment: vhs; }
+  .check { border: 2px solid var(--accent-a); background: transparent; }
+  .done .check { background: var(--accent-a); }
+  .check svg { stroke: var(--on-accent); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--accent-a); color: var(--on-accent); box-shadow: none; text-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg, .play-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: var(--accent-a); }
+}
+html[data-style="vhs"] body::after { content: ""; position: fixed; left: 0; right: 0; height: 6px; top: 0; z-index: -1; pointer-events: none; background: rgba(255, 255, 255, 0.08); animation: tracking 7s linear infinite; }
+@keyframes tracking { from { top: -2%; } to { top: 102%; } }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ------------------------------------------------------------
+   80. 宝の地図：羊皮紙と点線の道
+   ------------------------------------------------------------ */
+
+[data-style="treasure"] {
+  --font: "Georgia", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-title: "Papyrus", "Georgia", "Hiragino Mincho ProN", serif;
+  --parch: #e8d3a5;
+  --x: #9b2f1f;
+  --page-bg: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(110, 70, 20, 0.45)), var(--parch);
+  --noise-opacity: 0.3;
+  --ink-rgb: 64, 40, 18;
+  --accent-a: var(--x);
+  --accent-b: var(--x);
+  --grad: linear-gradient(var(--x), var(--x));
+  --glass: rgba(255, 245, 220, 0.4);
+  --glass-soft: transparent;
+  --glass-strong: rgba(255, 245, 220, 0.7);
+  --glass-hover: rgba(255, 245, 220, 0.6);
+  --glass-border: rgba(var(--ink-rgb), 0.35);
+  --highlight: transparent;
+  --field: rgba(255, 245, 220, 0.6);
+  --field-focus: rgba(255, 245, 220, 0.85);
+  --sheet-bg: #eddcb5;
+  --zen-bg: var(--parch);
+  --shadow: none;
+  --shadow-pop: 0 18px 44px rgba(64, 40, 18, 0.35);
+  --tip-bg: #40281a;
+  --r-card: 6px; --r-item: 2px;
+}
+[data-style="treasure"][data-variant="night"] { --parch: #2a2016; --x: #e8c37a; --ink-rgb: 232, 206, 160; --on-accent: #2a2016; --glass: rgba(255, 220, 160, 0.05); --glass-strong: rgba(255, 220, 160, 0.12); --glass-hover: rgba(255, 220, 160, 0.09); --field: rgba(255, 220, 160, 0.07); --field-focus: rgba(255, 220, 160, 0.12); --sheet-bg: #32271b; --tip-bg: #e8c37a; --page-bg: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55)), var(--parch); }
+
+/* 方位磁針の透かし */
+html[data-style="treasure"] body::after { content: "✵"; position: fixed; right: 4%; bottom: 6%; z-index: -1; pointer-events: none; font-size: 180px; line-height: 1; color: rgba(var(--ink-rgb), 0.08); }
+
+@scope ([data-style="treasure"]) to ([data-style]:not([data-style="treasure"])) {
+  .card:not(.sheet, .palette) { border: 1px solid var(--glass-border); }
+  .content .list { gap: 10px; padding-left: 30px; position: relative; }
+  .content .list::before { content: ""; position: absolute; left: 12px; top: 6px; bottom: 6px; border-left: 3px dashed var(--x); }
+  .content .list > .item { border: 0; background: var(--glass); box-shadow: none; overflow: visible; }
+  .content .list > .item::before { content: "•"; position: absolute; left: -26px; top: 50%; translate: 0 -50%; font-size: 22px; color: var(--x); }
+  .content .list > .item.done::before { content: "✕"; font-size: 20px; font-weight: 800; }
+  .content .list > .item:last-child::after { content: "💰"; position: absolute; left: -31px; bottom: -22px; font-size: 18px; }
+  .check { border: 1.5px solid rgba(var(--ink-rgb), 0.6); background: transparent; border-radius: 50%; }
+  .done .check { background: var(--x); border-color: var(--x); }
+  .check svg { stroke: var(--on-accent); }
+  .section-head > span:first-child, .page-head h1, .summary-title { font-family: var(--font-title); }
+  .section-head > span:first-child { font-size: 16px; letter-spacing: 0.04em; }
+  .chip.on, .btn.primary, .add-btn, .play-btn { box-shadow: none; color: var(--on-accent); }
+  .sp-line { background: repeating-linear-gradient(90deg, var(--x) 0 6px, transparent 6px 10px); }
+}
+
+/* ------------------------------------------------------------
+   81. ブロック：上にポッチのならぶおもちゃのブロック
+   ------------------------------------------------------------ */
+
+[data-style="block"] {
+  --font: "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-title: "Arial Black", "Segoe UI", "Hiragino Sans", sans-serif;
+  --c1: #d01012; --c2: #0055bf; --c3: #f2cd37; --c4: #237841; --c5: #fe8a18;
+  --base: #f2f2f2;
+  --page-bg: radial-gradient(circle at 12px 12px, rgba(0, 0, 0, 0.06) 0 7px, transparent 7.5px) 0 0 / 24px 24px, var(--base);
+  --ink-rgb: 26, 26, 26;
+  --accent-a: var(--c1);
+  --accent-b: var(--c2);
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(0, 0, 0, 0.15);
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #fafafa;
+  --zen-bg: var(--base);
+  --shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.18), 0 3px 0 rgba(0, 0, 0, 0.15);
+  --shadow-pop: 0 18px 40px rgba(0, 0, 0, 0.25);
+  --tip-bg: #1a1a1a;
+  --r-card: 6px; --r-item: 5px;
+}
+[data-style="block"][data-variant="pastel"] { --c1: #f28fb0; --c2: #7fb2f0; --c3: #f7dc8a; --c4: #8fd4a6; --c5: #f8b88b; --base: #fdf6f0; }
+
+@scope ([data-style="block"]) to ([data-style]:not([data-style="block"])) {
+  .card:not(.sheet, .palette, .addbar), .content .list > .item { position: relative; overflow: visible; margin-top: 10px; }
+  /* ポッチ：上のふちに丸をならべる */
+  .card:not(.sp-card, .sheet, .palette, .addbar)::before, .content .list > .item::before {
+    content: ""; position: absolute; left: 10px; right: 10px; top: -9px; height: 10px; pointer-events: none;
+    background: radial-gradient(ellipse 9px 7px at 50% 70%, var(--knob, #ffffff) 0 92%, transparent 96%) 0 0 / 30px 10px repeat-x;
+    filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.15));
+  }
+  .card:not(.sheet, .palette, .addbar) { border: 0; box-shadow: var(--shadow); }
+  .content .list { gap: 14px; }
+  .content .list > .item { border: 0; background: var(--brick, var(--c1)); --knob: var(--brick, var(--c1)); color: #ffffff; box-shadow: var(--shadow); }
+  .content .list > .item:nth-child(5n+2) { --brick: var(--c2); }
+  .content .list > .item:nth-child(5n+3) { --brick: var(--c3); color: #3a2f00; }
+  .content .list > .item:nth-child(5n+4) { --brick: var(--c4); }
+  .content .list > .item:nth-child(5n+5) { --brick: var(--c5); }
+  .content .list > .item:hover { background: var(--brick, var(--c1)); filter: brightness(1.05); }
+  .content .list > .item .meta, .content .list > .item .meta-ic { color: inherit; opacity: 0.85; }
+  .content .list > .item .tag { background: rgba(0, 0, 0, 0.18); color: inherit; }
+  .content .list > .item .title { font-weight: 700; }
+  .check { border: 0; background: rgba(255, 255, 255, 0.85); box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15); }
+  .done .check { background: #ffffff; }
+  .check svg { stroke: var(--brick, var(--c1)); stroke-width: 3.5; }
+  .section-head > span:first-child { font-family: var(--font-title); text-transform: uppercase; letter-spacing: 0.02em; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--c1); color: #ffffff; box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+  .sp-line { background: var(--c2); }
+}
+
+/* ------------------------------------------------------------
+   82. カセット：ラベルと 2 つのリール
+   ------------------------------------------------------------ */
+
+[data-style="cassette"] {
+  --font: "Segoe Print", "Comic Sans MS", "Hiragino Maru Gothic ProN", "Yu Gothic UI", sans-serif;
+  --font-title: "Bahnschrift", "Segoe UI", "Hiragino Sans", sans-serif;
+  --body: #1b1b1e;
+  --stripe: #ff6f3c;
+  --page-bg: linear-gradient(160deg, #26262b, #141416);
+  --ink-rgb: 30, 30, 34;
+  --accent-a: var(--stripe);
+  --accent-b: #ffc145;
+  --glass: #f4efe2;
+  --glass-soft: #f4efe2;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: #f4efe2;
+  --field-focus: #ffffff;
+  --sheet-bg: #f4efe2;
+  --zen-bg: #1b1b1e;
+  --shadow: 0 0 0 8px var(--body), 0 10px 24px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --tip-bg: #f4efe2;
+  --r-card: 10px; --r-item: 6px;
+}
+[data-style="cassette"][data-variant="clear"] { --body: rgba(140, 200, 210, 0.35); --stripe: #7fe0d0; --page-bg: linear-gradient(160deg, #2a3442, #161c24); }
+
+@scope ([data-style="cassette"]) to ([data-style]:not([data-style="cassette"])) {
+  .titlebar, .page-head, .sidebar .sb-date, .sidebar, .section-head { color: #f4efe2; }
+  .titlebar button, .titlebar .icon-btn { color: #f4efe2; }
+  .sidebar .nav-item, .sidebar .list-item { color: #e6dfcf; }
+  .card:not(.sheet, .palette) { border: 0; }
+  .content .list { gap: 22px; padding: 10px 10px; }
+  .content .list > .item {
+    min-height: 96px; padding: 12px 14px 40px 16px; border: 0; box-shadow: var(--shadow);
+    background:
+      radial-gradient(circle 13px at 30% calc(100% - 20px), var(--body) 0 6px, #e8e2d2 6.5px 10px, var(--body) 10.5px 13px, transparent 13.5px),
+      radial-gradient(circle 13px at 70% calc(100% - 20px), var(--body) 0 6px, #e8e2d2 6.5px 10px, var(--body) 10.5px 13px, transparent 13.5px),
+      linear-gradient(var(--stripe), var(--stripe)) 0 8px / 100% 5px no-repeat,
+      repeating-linear-gradient(0deg, transparent 0 21px, rgba(0, 0, 0, 0.08) 21px 22px),
+      #f4efe2;
+  }
+  .content .list > .item:nth-child(even) { --stripe: var(--accent-b); }
+  .content .list > .item .title { font-size: 15px; }
+  .content .list > .item .meta::before { content: "A面"; font-family: var(--font-title); font-weight: 700; color: var(--stripe); }
+  .check { border: 2px solid #3a3a3e; background: transparent; }
+  .done .check { background: var(--stripe); border-color: var(--stripe); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--stripe); color: #1b1b1e; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: #1b1b1e; }
+  .sp-line { background: var(--stripe); }
+}
+
+/* ------------------------------------------------------------
+   83. バウハウス：原色と幾何学
+   ------------------------------------------------------------ */
+
+[data-style="bauhaus"] {
+  --font: "Futura", "Century Gothic", "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-title: "Futura", "Century Gothic", "Arial Black", sans-serif;
+  --red: #e2312d; --blue: #1f4f9c; --yellow: #f2c12e;
+  --paper: #f1ece1;
+  --page-bg:
+    radial-gradient(circle at 98% 42%, var(--yellow) 0 70px, transparent 71px),
+    conic-gradient(from 180deg at 0 100%, var(--blue) 0 90deg, transparent 90deg) 0 100% / 160px 160px no-repeat,
+    linear-gradient(var(--red), var(--red)) 96% 92% / 70px 70px no-repeat,
+    var(--paper);
+  --ink-rgb: 20, 20, 20;
+  --accent-a: var(--red);
+  --accent-b: var(--blue);
+  --grad: linear-gradient(var(--red), var(--red));
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgb(var(--ink-rgb));
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: var(--paper);
+  --zen-bg: var(--paper);
+  --shadow: none;
+  --shadow-pop: 8px 8px 0 rgb(var(--ink-rgb));
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-field: 0;
+}
+[data-style="bauhaus"][data-variant="night"] { --paper: #141414; --ink-rgb: 240, 236, 228; --on-accent: #141414; --glass: #1f1f1f; --glass-soft: #1f1f1f; --glass-strong: #2a2a2a; --glass-hover: #2a2a2a; --field: #1f1f1f; --field-focus: #2a2a2a; --tip-bg: #f2c12e; }
+
+@scope ([data-style="bauhaus"]) to ([data-style]:not([data-style="bauhaus"])) {
+  .card:not(.sheet, .palette) { border: 3px solid var(--glass-border); }
+  .content .list { gap: 8px; }
+  .content .list > .item { border: 3px solid var(--glass-border); box-shadow: none; padding-left: 56px; overflow: hidden; }
+  /* 左に、丸・四角・三角の色の形 */
+  .content .list > .item::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 42px; background: var(--red); }
+  .content .list > .item:nth-child(3n+2)::before { background: radial-gradient(circle at 50% 50%, var(--yellow) 0 15px, transparent 15.5px), var(--blue); }
+  .content .list > .item:nth-child(3n+3)::before { background: conic-gradient(from 135deg at 50% 0, var(--yellow) 0 90deg, transparent 90deg) 0 50% / 100% 100% no-repeat, rgb(var(--ink-rgb)); }
+  .check { border: 3px solid var(--glass-border); background: transparent; }
+  .content .list > .item:nth-child(odd) .check { border-radius: 50%; }
+  .done .check { background: var(--red); }
+  .section-head > span:first-child { font-family: var(--font-title); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; }
+  .page-head h1, .summary-title { font-family: var(--font-title); text-transform: uppercase; font-weight: 700; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--blue); color: #ffffff; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+  .tip, .toast { color: var(--paper); }
+  .sp-line { background: var(--red); height: 5px; }
+}
+
+/* ------------------------------------------------------------
+   84. メンフィス：くねくね線と三角と水玉
+   ------------------------------------------------------------ */
+
+[data-style="memphis"] {
+  --font: "Hiragino Maru Gothic ProN", "Segoe UI", "Yu Gothic UI", sans-serif;
+  --font-title: "Arial Black", "Hiragino Maru Gothic ProN", sans-serif;
+  --m1: #ff4f8b; --m2: #2ec4b6; --m3: #ffd23f; --m4: #6a4cff;
+  --base: #fff8ec;
+  --page-bg:
+    radial-gradient(circle at 20px 20px, color-mix(in srgb, var(--m4) 45%, transparent) 0 2.5px, transparent 3px) 0 0 / 72px 72px,
+    linear-gradient(135deg, transparent 0 46%, color-mix(in srgb, var(--m2) 40%, transparent) 46% 54%, transparent 54%) 40px 46px / 24px 24px no-repeat,
+    conic-gradient(from 150deg at 50% 0, color-mix(in srgb, var(--m1) 30%, transparent) 0 60deg, transparent 60deg) 0 0 / 160px 150px,
+    radial-gradient(circle at 110px 100px, transparent 0 7px, color-mix(in srgb, var(--m3) 70%, transparent) 7.5px 10px, transparent 10.5px) 0 0 / 160px 150px,
+    var(--base);
+  --ink-rgb: 26, 20, 40;
+  --accent-a: var(--m1);
+  --accent-b: var(--m2);
+  --glass: #ffffff;
+  --glass-soft: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgb(var(--ink-rgb));
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #fffdf8;
+  --zen-bg: var(--base);
+  --shadow: 6px 6px 0 var(--m3);
+  --shadow-pop: 10px 10px 0 var(--m1);
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 12px; --r-item: 8px;
+}
+[data-style="memphis"][data-variant="mint"] { --m1: #2ec4b6; --m2: #ff9f1c; --m3: #cbf3f0; --m4: #ff4f8b; --base: #effaf6; }
+
+@scope ([data-style="memphis"]) to ([data-style]:not([data-style="memphis"])) {
+  .card:not(.sheet, .palette), .content .list > .item { border: 2.5px solid var(--glass-border); }
+  .content .list { gap: 12px; }
+  .content .list > .item { box-shadow: 4px 4px 0 var(--pop, var(--m1)); }
+  .content .list > .item:nth-child(4n+2) { --pop: var(--m2); }
+  .content .list > .item:nth-child(4n+3) { --pop: var(--m3); }
+  .content .list > .item:nth-child(4n+4) { --pop: var(--m4); }
+  .section-head > span:first-child { font-family: var(--font-title); background: var(--m3); padding: 2px 10px; border: 2.5px solid var(--glass-border); rotate: -2deg; display: inline-block; }
+  .section-head > span:first-child::after { content: " 〰"; color: var(--m1); }
+  .check { border: 2.5px solid var(--glass-border); background: #ffffff; }
+  .done .check { background: var(--m1); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--m1); color: #ffffff; box-shadow: 3px 3px 0 var(--glass-border); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+  .sp-line { background: repeating-linear-gradient(90deg, var(--m1) 0 6px, var(--m2) 6px 12px); height: 4px; }
+}
+
+/* ------------------------------------------------------------
+   85. アールデコ：黒と金の扇
+   ------------------------------------------------------------ */
+
+[data-style="artdeco"] {
+  --font: "Didot", "Bodoni MT", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-title: "Didot", "Bodoni MT", "Georgia", serif;
+  --gold: #d4af37;
+  --base: #0e0e0e;
+  --page-bg:
+    radial-gradient(circle at 50% 100%, transparent 0 18px, color-mix(in srgb, var(--gold) 22%, transparent) 18.5px 19.5px, transparent 20px 28px, color-mix(in srgb, var(--gold) 16%, transparent) 28.5px 29.5px, transparent 30px) 0 0 / 60px 32px,
+    var(--base);
+  --ink-rgb: 240, 230, 200;
+  --accent-a: var(--gold);
+  --accent-b: var(--gold);
+  --on-accent: var(--base);
+  --grad: linear-gradient(90deg, #a07c2c, var(--gold), #f3df9b, var(--gold));
+  --accent-soft: color-mix(in srgb, var(--gold) 14%, transparent);
+  --glass: color-mix(in srgb, var(--base) 92%, #fff);
+  --glass-soft: var(--base);
+  --glass-strong: color-mix(in srgb, var(--gold) 14%, var(--base));
+  --glass-hover: color-mix(in srgb, var(--gold) 7%, var(--base));
+  --glass-border: var(--gold);
+  --highlight: transparent;
+  --field: color-mix(in srgb, var(--base) 90%, #fff);
+  --field-focus: color-mix(in srgb, var(--base) 85%, #fff);
+  --sheet-bg: color-mix(in srgb, var(--base) 95%, #fff);
+  --zen-bg: var(--base);
+  --shadow: none;
+  --shadow-pop: 0 0 0 1px var(--gold), 0 20px 60px rgba(0, 0, 0, 0.7);
+  --tip-bg: var(--gold);
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-check: 0; --r-field: 0;
+}
+[data-style="artdeco"][data-variant="emerald"] { --base: #06201a; }
+
+@scope ([data-style="artdeco"]) to ([data-style]:not([data-style="artdeco"])) {
+  .card:not(.sheet, .palette) { border: 1px solid var(--gold); outline: 1px solid color-mix(in srgb, var(--gold) 50%, transparent); outline-offset: 4px; }
+  .content .list { gap: 0; }
+  .content .list > .item { border: 0; border-bottom: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); background: transparent; box-shadow: none; }
+  .section-head { justify-content: center; color: var(--gold); text-transform: uppercase; letter-spacing: 0.35em; font-size: 11px; }
+  .section-head > span:first-child::before { content: "◆ ◇ "; letter-spacing: 0.2em; }
+  .section-head > span:first-child::after { content: " ◇ ◆"; letter-spacing: 0.2em; }
+  .page-head h1, .titlebar .date, .summary-title { font-family: var(--font-title); letter-spacing: 0.12em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .check { border: 1px solid var(--gold); background: transparent; rotate: 45deg; width: 16px; height: 16px; }
+  .check svg { rotate: -45deg; stroke: var(--on-accent); }
+  .done .check { background: var(--gold); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--grad); color: var(--on-accent); box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: var(--grad); }
+}
+
+/* ------------------------------------------------------------
+   86. デニム：ステッチと革のタグ
+   ------------------------------------------------------------ */
+
+[data-style="denim"] {
+  --font: "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-title: "Rockwell", "Georgia", "Hiragino Mincho ProN", serif;
+  --indigo: #24365a;
+  --thread: #e8a14a;
+  --leather: #8a5a34;
+  --page-bg:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 5px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 4px),
+    var(--indigo);
+  --noise-opacity: 0.25;
+  --ink-rgb: 236, 240, 248;
+  --accent-a: var(--thread);
+  --accent-b: var(--thread);
+  --on-accent: #1d2a44;
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-soft: rgba(255, 255, 255, 0.04);
+  --glass-strong: rgba(255, 255, 255, 0.12);
+  --glass-hover: rgba(255, 255, 255, 0.09);
+  --glass-border: transparent;
+  --highlight: transparent;
+  --field: rgba(0, 0, 0, 0.18);
+  --field-focus: rgba(0, 0, 0, 0.25);
+  --sheet-bg: color-mix(in srgb, var(--indigo) 94%, #000);
+  --zen-bg: var(--indigo);
+  --shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  --shadow-pop: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --tip-bg: var(--thread);
+  --r-card: 12px; --r-item: 8px;
+}
+[data-style="denim"][data-variant="light"] { --indigo: #6f8fb8; --ink-rgb: 255, 255, 255; }
+
+@scope ([data-style="denim"]) to ([data-style]:not([data-style="denim"])) {
+  /* オレンジのステッチ（少し内側に点線） */
+  .card:not(.sheet, .palette), .content .list > .item { outline: 2px dashed var(--thread); outline-offset: -6px; }
+  .content .list { gap: 10px; }
+  .content .list > .item { padding: 12px 14px; }
+  /* 見出しは革のタグ */
+  .section-head > span:first-child {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--leather) 85%, #fff), var(--leather)); color: #fbe9d0;
+    padding: 4px 14px; border-radius: 4px; font-family: var(--font-title); letter-spacing: 0.06em;
+    outline: 1.5px dashed rgba(251, 233, 208, 0.7); outline-offset: -4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  .section-head .count { color: #fbe9d0; }
+  .check { border: 2px solid var(--thread); background: transparent; }
+  .done .check { background: radial-gradient(circle at 40% 35%, #f4e2bf, #b98a3e 70%); border-color: #b98a3e; }
+  .check svg { stroke: #3a2a14; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--thread); color: var(--on-accent); box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: var(--thread); }
+}
+
+/* ============================================================
+   かわいい（87〜92）
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   87. ガチャ：上半分が色、下半分が透明のカプセル
+   ------------------------------------------------------------ */
+
+[data-style="capsule"] {
+  --font: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --g1: #ff5d5d; --g2: #3fb6ff; --g3: #ffc93c; --g4: #4cd18a; --g5: #b07cff;
+  --base: #fff4e0;
+  --page-bg: radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.9), transparent 40%), var(--base);
+  --ink-rgb: 60, 44, 40;
+  --accent-a: var(--g1);
+  --accent-b: var(--g2);
+  --glass: rgba(255, 255, 255, 0.85);
+  --glass-soft: rgba(255, 255, 255, 0.6);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(var(--ink-rgb), 0.12);
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #fffaf0;
+  --zen-bg: var(--base);
+  --shadow: 0 6px 16px rgba(120, 80, 40, 0.12);
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 24px; --r-item: 999px; --r-chip: 999px; --r-field: 999px;
+}
+[data-style="capsule"][data-variant="pastel"] { --g1: #b48cff; --g2: #8fd3ff; --g3: #ffd98f; --g4: #9fe6bd; --g5: #ffa8c8; --base: #f6f1ff; }
+
+@scope ([data-style="capsule"]) to ([data-style]:not([data-style="capsule"])) {
+  .content .list { gap: 10px; }
+  .content .list > .item {
+    border: 2px solid color-mix(in srgb, var(--cap, var(--g1)) 60%, #000 0%); box-shadow: var(--shadow);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--cap, var(--g1)) 75%, #fff) 0 50%, rgba(255, 255, 255, 0.7) 50% 100%);
+    padding-left: 18px; padding-right: 18px;
+  }
+  .content .list > .item::after { content: ""; position: absolute; left: 18px; right: 18px; top: calc(50% - 1px); height: 2px; background: color-mix(in srgb, var(--cap, var(--g1)) 60%, #fff); pointer-events: none; opacity: 0.5; }
+  .content .list > .item::before { content: ""; position: absolute; left: 22%; top: 5px; width: 28%; height: 5px; border-radius: 99px; background: rgba(255, 255, 255, 0.7); pointer-events: none; }
+  .content .list > .item:nth-child(5n+2) { --cap: var(--g2); }
+  .content .list > .item:nth-child(5n+3) { --cap: var(--g3); }
+  .content .list > .item:nth-child(5n+4) { --cap: var(--g4); }
+  .content .list > .item:nth-child(5n+5) { --cap: var(--g5); }
+  .content .list > .item .title { font-weight: 700; }
+  .check { border: 2px solid var(--cap, var(--g1)); background: #ffffff; border-radius: 50%; }
+  .done .check { background: var(--cap, var(--g1)); }
+  .section-head > span:first-child::before { content: "● "; color: var(--g1); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--g1); color: #ffffff; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+}
+
+/* ------------------------------------------------------------
+   88. スイーツ：とろりクリームとカラースプレー
+   ------------------------------------------------------------ */
+
+[data-style="sweets"] {
+  --font: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --cream: #ffffff;
+  --sauce: #ff6f91;
+  --base: #fff1f4;
+  --page-bg:
+    radial-gradient(ellipse 5px 2px at 20px 24px, #ff9fb8 0 90%, transparent) 0 0 / 110px 96px,
+    radial-gradient(ellipse 2px 5px at 70px 60px, #8fd0ff 0 90%, transparent) 0 0 / 110px 96px,
+    radial-gradient(ellipse 4px 2px at 48px 84px, #ffd36b 0 90%, transparent) 0 0 / 110px 96px,
+    radial-gradient(ellipse 2px 4px at 96px 18px, #a8e6a1 0 90%, transparent) 0 0 / 110px 96px,
+    var(--base);
+  --ink-rgb: 90, 50, 60;
+  --accent-a: var(--sauce);
+  --accent-b: color-mix(in srgb, var(--sauce) 70%, #fff);
+  --glass: #fffafb;
+  --glass-soft: #fffafb;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: color-mix(in srgb, var(--sauce) 25%, transparent);
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #fff8fa;
+  --zen-bg: var(--base);
+  --shadow: 0 6px 16px color-mix(in srgb, var(--sauce) 18%, transparent);
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 22px; --r-item: 16px;
+}
+[data-style="sweets"][data-variant="choco"] { --sauce: #7b4a2f; --base: #f7ede4; --ink-rgb: 70, 42, 26; }
+[data-style="sweets"][data-variant="matcha"] { --sauce: #6b9a3e; --base: #f2f6e8; --ink-rgb: 44, 60, 30; }
+
+@scope ([data-style="sweets"]) to ([data-style]:not([data-style="sweets"])) {
+  /* カードの上ふちから垂れるソース */
+  .card:not(.sp-card, .sheet, .palette, .addbar) { position: relative; padding-top: 22px; border: 0; }
+  .card:not(.sp-card, .sheet, .palette, .addbar)::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 22px; pointer-events: none; border-radius: var(--r-card) var(--r-card) 0 0;
+    background:
+      radial-gradient(circle 9px at 14% 13px, var(--sauce) 0 98%, transparent) ,
+      radial-gradient(circle 7px at 38% 11px, var(--sauce) 0 98%, transparent),
+      radial-gradient(circle 10px at 63% 14px, var(--sauce) 0 98%, transparent),
+      radial-gradient(circle 6px at 86% 10px, var(--sauce) 0 98%, transparent),
+      linear-gradient(var(--sauce), var(--sauce)) 0 0 / 100% 9px no-repeat;
+  }
+  .content .list > .item { border: 2px solid var(--glass-border); }
+  .content .list > .item.done .title::after { content: " 🍓"; }
+  :scope[data-variant="choco"] .content .list > .item.done .title::after { content: " 🍫"; }
+  :scope[data-variant="matcha"] .content .list > .item.done .title::after { content: " 🍵"; }
+  .check { border: 2px solid var(--sauce); background: #ffffff; border-radius: 50%; }
+  .done .check { background: var(--sauce); }
+  .section-head > span:first-child::before { content: "♡ "; color: var(--sauce); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--sauce); color: #ffffff; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+}
+
+/* ------------------------------------------------------------
+   89. フェルト：ふちをざくざく縫ったフェルト
+   ------------------------------------------------------------ */
+
+[data-style="felt"] {
+  --font: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --felt: #c8423b;
+  --base: #f3e6d8;
+  --page-bg: var(--base);
+  --noise-opacity: 0.55;
+  --ink-rgb: 74, 48, 36;
+  --accent-a: var(--felt);
+  --accent-b: var(--felt);
+  --glass: color-mix(in srgb, var(--base) 50%, #fff);
+  --glass-soft: transparent;
+  --glass-strong: #fffaf2;
+  --glass-hover: #fffaf2;
+  --glass-border: transparent;
+  --field: #fffaf2;
+  --field-focus: #ffffff;
+  --sheet-bg: #f8eee2;
+  --zen-bg: var(--base);
+  --shadow: 0 3px 0 rgba(74, 48, 36, 0.12), 0 6px 14px rgba(74, 48, 36, 0.12);
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 18px; --r-item: 14px;
+}
+[data-style="felt"][data-variant="green"] { --felt: #4f8a4a; --base: #e7eedc; --ink-rgb: 40, 58, 36; }
+
+@scope ([data-style="felt"]) to ([data-style]:not([data-style="felt"])) {
+  .card:not(.sheet, .palette), .content .list > .item { outline: 2px dashed color-mix(in srgb, var(--felt) 65%, #fff); outline-offset: -7px; }
+  .content .list { gap: 10px; }
+  .content .list > .item { padding: 13px 16px; }
+  .content .list > .item:nth-child(3n+2) { background: color-mix(in srgb, var(--felt) 10%, #fff8ef); }
+  .content .list > .item:nth-child(3n+3) { background: color-mix(in srgb, #e9b949 14%, #fff8ef); }
+  .section-head > span:first-child { background: var(--felt); color: #fff8ef; padding: 4px 14px; border-radius: 999px; outline: 1.5px dashed rgba(255, 248, 239, 0.8); outline-offset: -4px; }
+  .section-head .count { color: rgb(var(--ink-rgb)); }
+  /* ボタンのようなチェック */
+  .check { border: 0; background: radial-gradient(circle at 35% 40%, rgba(var(--ink-rgb), 0.35) 0 1.5px, transparent 2px), radial-gradient(circle at 65% 40%, rgba(var(--ink-rgb), 0.35) 0 1.5px, transparent 2px), radial-gradient(circle at 35% 65%, rgba(var(--ink-rgb), 0.35) 0 1.5px, transparent 2px), radial-gradient(circle at 65% 65%, rgba(var(--ink-rgb), 0.35) 0 1.5px, transparent 2px), #f2dcc4; border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(var(--ink-rgb), 0.2); }
+  .done .check { background: var(--felt); }
+  .check svg { stroke: #fff8ef; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--felt); color: #fff8ef; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff8ef; }
+}
+
+/* ------------------------------------------------------------
+   90. 花畑：草原と小さな花。済んだら花が咲く
+   ------------------------------------------------------------ */
+
+[data-style="garden"] {
+  --font: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --petal: #ff7fa8;
+  --leaf: #6fbf5b;
+  --base: #eef8e4;
+  --page-bg:
+    radial-gradient(circle at 30px 30px, var(--petal) 0 3px, transparent 3.5px) 0 0 / 90px 90px,
+    radial-gradient(circle at 70px 60px, #ffffff 0 3px, transparent 3.5px) 0 0 / 90px 90px,
+    radial-gradient(circle at 50px 80px, #ffd94a 0 2.5px, transparent 3px) 0 0 / 120px 120px,
+    linear-gradient(180deg, #f6fbef 0, var(--base) 55%, color-mix(in srgb, var(--leaf) 40%, var(--base)) 100%);
+  --ink-rgb: 46, 70, 40;
+  --accent-a: var(--petal);
+  --accent-b: var(--leaf);
+  --glass: rgba(255, 255, 255, 0.82);
+  --glass-soft: rgba(255, 255, 255, 0.55);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: color-mix(in srgb, var(--leaf) 30%, transparent);
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #f8fcf3;
+  --zen-bg: var(--base);
+  --shadow: 0 4px 14px rgba(70, 110, 50, 0.12);
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 20px; --r-item: 14px;
+}
+[data-style="garden"][data-variant="sunflower"] { --petal: #f2b705; --base: #f4f8df; }
+
+/* 下のふちの草 */
+html[data-style="garden"] body::after { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 40px; z-index: -1; pointer-events: none; background: conic-gradient(from -20deg at 50% 0, transparent 0 140deg, var(--leaf) 140deg 220deg, transparent 220deg) 0 0 / 14px 40px; opacity: 0.55; }
+
+@scope ([data-style="garden"]) to ([data-style]:not([data-style="garden"])) {
+  .content .list > .item { border: 1.5px solid var(--glass-border); }
+  .content .list > .item.done { background: color-mix(in srgb, var(--petal) 10%, #fff); }
+  .content .list > .item.done .title::before { content: "✿ "; color: var(--petal); }
+  .check { border: 2px solid var(--leaf); background: #ffffff; border-radius: 50%; }
+  .done .check { background: var(--petal); border-color: var(--petal); }
+  .section-head > span:first-child::before { content: "❀ "; color: var(--petal); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--leaf); color: #ffffff; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+  .sp-line { background: var(--petal); }
+}
+
+/* ------------------------------------------------------------
+   91. 雲の上：青空ともくもく雲
+   ------------------------------------------------------------ */
+
+[data-style="cloudsky"] {
+  --font: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --sky: #bfe3ff;
+  --sky2: #eaf6ff;
+  --blue: #3a8fe0;
+  --page-bg:
+    radial-gradient(ellipse 120px 50px at 15% 22%, #ffffff 60%, transparent 62%),
+    radial-gradient(ellipse 80px 44px at 22% 18%, #ffffff 60%, transparent 62%),
+    radial-gradient(ellipse 150px 55px at 80% 70%, #ffffff 60%, transparent 62%),
+    radial-gradient(ellipse 90px 50px at 74% 65%, #ffffff 60%, transparent 62%),
+    radial-gradient(ellipse 100px 40px at 55% 92%, rgba(255, 255, 255, 0.8) 60%, transparent 62%),
+    linear-gradient(180deg, var(--sky), var(--sky2));
+  --ink-rgb: 40, 70, 110;
+  --accent-a: var(--blue);
+  --accent-b: color-mix(in srgb, var(--blue) 60%, #fff);
+  --glass: rgba(255, 255, 255, 0.88);
+  --glass-soft: rgba(255, 255, 255, 0.6);
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #f6fbff;
+  --zen-bg: var(--sky);
+  --shadow: 0 10px 24px rgba(60, 120, 190, 0.15), inset 0 -6px 12px rgba(160, 200, 240, 0.25);
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 34px; --r-item: 28px; --r-chip: 999px;
+}
+[data-style="cloudsky"][data-variant="pink"] { --sky: #ffd9e4; --sky2: #fff1d6; --blue: #ff7aa2; --ink-rgb: 110, 60, 80; }
+
+@scope ([data-style="cloudsky"]) to ([data-style]:not([data-style="cloudsky"])) {
+  /* 雲のでこぼこ：上ふちに丸をいくつか */
+  .card:not(.sp-card, .sheet, .palette, .addbar) { position: relative; overflow: visible; margin-top: 14px; }
+  .card:not(.sp-card, .sheet, .palette, .addbar)::before {
+    content: ""; position: absolute; left: 20px; top: -16px; width: 120px; height: 34px; pointer-events: none;
+    background: radial-gradient(circle 20px at 25px 22px, var(--glass) 0 98%, transparent), radial-gradient(circle 26px at 70px 26px, var(--glass) 0 98%, transparent);
+  }
+  .content .list { gap: 10px; }
+  .content .list > .item { border: 0; }
+  .check { border: 2px solid var(--accent-b); background: #ffffff; border-radius: 50%; }
+  .done .check { background: var(--blue); border-color: var(--blue); }
+  .section-head > span:first-child::before { content: "☁ "; color: var(--accent-b); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--blue); color: #ffffff; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+}
+
+/* ------------------------------------------------------------
+   92. ゆめかわ：ピンク・水色・ラベンダーと ✦
+   ------------------------------------------------------------ */
+
+[data-style="yumekawa"] {
+  --font: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", sans-serif;
+  --font-title: var(--font);
+  --y1: #ffc6ec; --y2: #c9b8ff; --y3: #b8f0ee;
+  --deep: #b48cff;
+  --page-bg:
+    radial-gradient(circle at 12% 20%, rgba(255, 255, 255, 0.9) 0 1.5px, transparent 2px) 0 0 / 70px 70px,
+    radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.8) 0 1px, transparent 1.5px) 0 0 / 45px 45px,
+    linear-gradient(135deg, var(--y1), var(--y2) 50%, var(--y3));
+  --ink-rgb: 92, 66, 128;
+  --accent-a: #ff8fd0;
+  --accent-b: var(--deep);
+  --grad: linear-gradient(135deg, #ff8fd0, var(--deep), #6fd6e8);
+  --glass: rgba(255, 255, 255, 0.6);
+  --glass-soft: rgba(255, 255, 255, 0.35);
+  --glass-strong: rgba(255, 255, 255, 0.85);
+  --glass-hover: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --field: rgba(255, 255, 255, 0.7);
+  --field-focus: rgba(255, 255, 255, 0.9);
+  --sheet-bg: #fbf3ff;
+  --zen-bg: var(--y2);
+  --shadow: 0 8px 22px rgba(180, 140, 255, 0.22);
+  --tip-bg: var(--deep);
+  --r-card: 24px; --r-item: 18px; --r-chip: 999px;
+}
+[data-style="yumekawa"][data-variant="mermaid"] { --y1: #b8f0ee; --y2: #bcd9ff; --y3: #e4c9ff; --deep: #5fb8e8; --ink-rgb: 52, 80, 120; }
+
+@scope ([data-style="yumekawa"]) to ([data-style]:not([data-style="yumekawa"])) {
+  .card:not(.sheet, .palette), .content .list > .item { border: 1.5px solid var(--glass-border); }
+  .content .list > .item.done .title::after { content: " ✦"; color: var(--deep); }
+  .page-head h1, .summary-title { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .page-head h1::after { content: " ✦"; color: #ff8fd0; }
+  .section-head > span:first-child::before { content: "✧ "; color: var(--deep); }
+  .check { border: 2px solid var(--deep); background: rgba(255, 255, 255, 0.8); border-radius: 50%; }
+  .done .check { background: var(--grad); border-color: transparent; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--grad); color: #ffffff; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #ffffff; }
+  .sp-line { background: var(--grad); }
+}
+
+/* ============================================================
+   ダーク（93〜97）
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   93. ゴシック：紅と黒、飾り枠、ろうそく
+   ------------------------------------------------------------ */
+
+[data-style="gothic"] {
+  --font: "Garamond", "Georgia", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-title: "Old English Text MT", "Garamond", "Hiragino Mincho ProN", serif;
+  --blood: #b3122e;
+  --base: #0f0809;
+  --page-bg:
+    radial-gradient(circle at 50% 110%, color-mix(in srgb, #ff9a3c 22%, transparent), transparent 45%),
+    radial-gradient(ellipse at 50% 0, color-mix(in srgb, var(--blood) 22%, transparent), transparent 60%),
+    var(--base);
+  --ink-rgb: 232, 214, 214;
+  --accent-a: var(--blood);
+  --accent-b: var(--blood);
+  --grad: linear-gradient(var(--blood), var(--blood));
+  --accent-soft: color-mix(in srgb, var(--blood) 22%, transparent);
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-soft: transparent;
+  --glass-strong: color-mix(in srgb, var(--blood) 22%, var(--base));
+  --glass-hover: color-mix(in srgb, var(--blood) 10%, var(--base));
+  --glass-border: color-mix(in srgb, var(--blood) 55%, transparent);
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.04);
+  --field-focus: rgba(255, 255, 255, 0.07);
+  --sheet-bg: color-mix(in srgb, var(--base) 92%, #fff);
+  --zen-bg: var(--base);
+  --shadow: none;
+  --shadow-pop: 0 0 40px color-mix(in srgb, var(--blood) 30%, transparent);
+  --tip-bg: var(--blood);
+  --r-card: 2px; --r-item: 2px; --r-chip: 2px; --r-field: 2px;
+}
+[data-style="gothic"][data-variant="violet"] { --blood: #8e44ad; --base: #0d0812; }
+
+@scope ([data-style="gothic"]) to ([data-style]:not([data-style="gothic"])) {
+  .card:not(.sheet, .palette) { border: 1px solid var(--glass-border); outline: 1px solid color-mix(in srgb, var(--blood) 25%, transparent); outline-offset: 3px; }
+  .content .list { gap: 0; }
+  .content .list > .item { border: 0; border-bottom: 1px solid color-mix(in srgb, var(--blood) 25%, transparent); background: transparent; box-shadow: none; }
+  .content .list > .item:hover { background: var(--glass-hover); }
+  .section-head { justify-content: center; color: var(--blood); letter-spacing: 0.2em; }
+  .section-head > span:first-child::before { content: "❦ "; }
+  .section-head > span:first-child::after { content: " ❧"; }
+  .page-head h1, .summary-title { font-family: var(--font-title); text-shadow: 0 0 18px color-mix(in srgb, var(--blood) 70%, transparent); }
+  .titlebar .date::before { content: "🕯 "; animation: flicker 3s infinite; display: inline-block; }
+  .check { border: 1px solid var(--blood); background: transparent; rotate: 45deg; width: 15px; height: 15px; }
+  .check svg { rotate: -45deg; }
+  .done .check { background: var(--blood); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--blood); color: #fff; box-shadow: 0 0 14px color-mix(in srgb, var(--blood) 45%, transparent); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff; }
+  .sp-line { background: var(--blood); }
+}
+@keyframes flicker { 0%, 100% { opacity: 1; } 40% { opacity: 0.75; } 45% { opacity: 1; } 70% { opacity: 0.85; } }
+
+/* ------------------------------------------------------------
+   94. 花火：夜空に花火が開く
+   ------------------------------------------------------------ */
+
+[data-style="fireworks"] {
+  --font: "Hiragino Sans", "Segoe UI", "Yu Gothic UI", sans-serif;
+  --fw1: #ff7b47; --fw2: #ffd36b; --fw3: #6bd0ff; --fw4: #ff6bd5;
+  --base: #070b1f;
+  --page-bg: radial-gradient(circle at 10% 30%, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.5px) 0 0 / 80px 80px, linear-gradient(180deg, var(--base), color-mix(in srgb, var(--base) 75%, #3a2a60));
+  --ink-rgb: 236, 238, 255;
+  --accent-a: var(--fw1);
+  --accent-b: var(--fw2);
+  --grad: linear-gradient(135deg, var(--fw1), var(--fw2));
+  --on-accent: #1a0d06;
+  --glass: color-mix(in srgb, var(--base) 82%, #6070a0);
+  --glass-soft: color-mix(in srgb, var(--base) 88%, #6070a0);
+  --glass-strong: rgba(255, 255, 255, 0.13);
+  --glass-hover: color-mix(in srgb, var(--base) 74%, #6070a0);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --field: rgba(255, 255, 255, 0.06);
+  --field-focus: rgba(255, 255, 255, 0.1);
+  --sheet-bg: color-mix(in srgb, var(--base) 90%, #fff);
+  --zen-bg: var(--base);
+  --shadow: none;
+  --tip-bg: var(--fw2);
+}
+[data-style="fireworks"][data-variant="gold"] { --fw1: #ffd36b; --fw2: #ffb347; --fw3: #fff1c2; --fw4: #ff9a3c; --base: #0b0906; }
+
+/* 背景で、3 か所に順番に花火が開いて消える */
+html[data-style="fireworks"] body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    repeating-conic-gradient(from 0deg at 20% 25%, var(--fw1) 0 1deg, transparent 1deg 12deg),
+    repeating-conic-gradient(from 7deg at 78% 18%, var(--fw3) 0 1deg, transparent 1deg 10deg),
+    repeating-conic-gradient(from 3deg at 62% 62%, var(--fw4) 0 1deg, transparent 1deg 11deg);
+  -webkit-mask: radial-gradient(circle at 20% 25%, transparent 0 20px, #000 21px 90px, transparent 110px), radial-gradient(circle at 78% 18%, transparent 0 16px, #000 17px 70px, transparent 86px), radial-gradient(circle at 62% 62%, transparent 0 18px, #000 19px 80px, transparent 98px);
+  mask: radial-gradient(circle at 20% 25%, transparent 0 20px, #000 21px 90px, transparent 110px), radial-gradient(circle at 78% 18%, transparent 0 16px, #000 17px 70px, transparent 86px), radial-gradient(circle at 62% 62%, transparent 0 18px, #000 19px 80px, transparent 98px);
+  animation: fw 6s ease-out infinite;
+}
+@keyframes fw { 0% { opacity: 0; } 8% { opacity: 0.4; } 40% { opacity: 0.1; } 60%, 100% { opacity: 0; } }
+
+@scope ([data-style="fireworks"]) to ([data-style]:not([data-style="fireworks"])) {
+  .content .list > .item { border: 1px solid var(--glass-border); }
+  .content .list > .item.done { box-shadow: 0 0 0 1px color-mix(in srgb, var(--fw2) 40%, transparent), 0 0 18px color-mix(in srgb, var(--fw1) 25%, transparent); }
+  .content .list > .item.done .title::after { content: " ✺"; color: var(--fw2); }
+  .check { border: 2px solid var(--fw2); background: transparent; border-radius: 50%; }
+  .done .check { background: var(--grad); border-color: transparent; }
+  .check svg { stroke: var(--on-accent); }
+  .page-head h1 { text-shadow: 0 0 20px color-mix(in srgb, var(--fw1) 60%, transparent); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--grad); color: var(--on-accent); box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+}
+
+/* ------------------------------------------------------------
+   95. 雨の窓：にじむ街の明かりと雨つぶ
+   ------------------------------------------------------------ */
+
+[data-style="rainwindow"] {
+  --font: "Hiragino Sans", "Segoe UI", "Yu Gothic UI", sans-serif;
+  --lamp: #ffb86b;
+  --base: #0d1218;
+  --page-bg:
+    radial-gradient(circle at 15% 70%, color-mix(in srgb, var(--lamp) 45%, transparent) 0 30px, transparent 60px),
+    radial-gradient(circle at 35% 82%, color-mix(in srgb, #ff6b6b 35%, transparent) 0 20px, transparent 45px),
+    radial-gradient(circle at 62% 75%, color-mix(in srgb, var(--lamp) 35%, transparent) 0 26px, transparent 55px),
+    radial-gradient(circle at 85% 68%, color-mix(in srgb, #6bc6ff 35%, transparent) 0 22px, transparent 50px),
+    radial-gradient(circle at 50% 90%, color-mix(in srgb, var(--lamp) 25%, transparent) 0 40px, transparent 90px),
+    linear-gradient(180deg, var(--base), color-mix(in srgb, var(--base) 80%, var(--lamp)));
+  --ink-rgb: 230, 236, 244;
+  --accent-a: var(--lamp);
+  --accent-b: var(--lamp);
+  --on-accent: #1a1208;
+  --glass: rgba(20, 28, 38, 0.55);
+  --glass-soft: rgba(20, 28, 38, 0.35);
+  --glass-strong: rgba(40, 52, 66, 0.75);
+  --glass-hover: rgba(40, 52, 66, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --field: rgba(0, 0, 0, 0.25);
+  --field-focus: rgba(0, 0, 0, 0.35);
+  --sheet-bg: color-mix(in srgb, var(--base) 92%, #fff);
+  --zen-bg: var(--base);
+  --tip-bg: var(--lamp);
+}
+[data-style="rainwindow"][data-variant="blue"] { --lamp: #7fb5ff; --base: #0a1020; --on-accent: #08101e; }
+
+/* 窓の雨つぶ（すこしずつ流れる） */
+html[data-style="rainwindow"] body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.6;
+  background:
+    radial-gradient(ellipse 3px 4px at 20px 30px, rgba(255, 255, 255, 0.55), transparent 70%) 0 0 / 90px 110px,
+    radial-gradient(ellipse 2px 3px at 60px 80px, rgba(255, 255, 255, 0.45), transparent 70%) 0 0 / 70px 130px,
+    radial-gradient(ellipse 4px 6px at 40px 50px, rgba(255, 255, 255, 0.4), transparent 70%) 0 0 / 150px 170px;
+  animation: trickle 18s linear infinite;
+}
+@keyframes trickle { from { background-position: 0 0, 0 0, 0 0; } to { background-position: 0 110px, 0 260px, 0 170px; } }
+
+@scope ([data-style="rainwindow"]) to ([data-style]:not([data-style="rainwindow"])) {
+  .card:not(.sheet, .palette), .content .list > .item { border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
+  .check { border: 1.5px solid color-mix(in srgb, var(--lamp) 70%, transparent); background: transparent; border-radius: 50%; }
+  .done .check { background: var(--lamp); border-color: var(--lamp); }
+  .check svg { stroke: var(--on-accent); }
+  .page-head h1 { text-shadow: 0 0 22px color-mix(in srgb, var(--lamp) 45%, transparent); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--lamp); color: var(--on-accent); box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: var(--lamp); }
+}
+
+/* ------------------------------------------------------------
+   96. 墨：黒い紙に白い筆あと、済んだら朱の印
+   ------------------------------------------------------------ */
+
+[data-style="inkwash"] {
+  --font: "Hiragino Mincho ProN", "Yu Mincho", "BIZ UDPMincho", serif;
+  --font-title: "HGSeikaishotaiPRO", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --base: #111110;
+  --ink: #e9e4d8;
+  --shu: #d0402a;
+  --page-bg: radial-gradient(ellipse at 80% 10%, rgba(233, 228, 216, 0.06), transparent 50%), var(--base);
+  --noise-opacity: 0.35;
+  --ink-rgb: 233, 228, 216;
+  --accent-a: var(--shu);
+  --accent-b: var(--shu);
+  --grad: linear-gradient(var(--shu), var(--shu));
+  --glass: transparent;
+  --glass-soft: transparent;
+  --glass-strong: rgba(233, 228, 216, 0.1);
+  --glass-hover: rgba(233, 228, 216, 0.05);
+  --glass-border: rgba(233, 228, 216, 0.15);
+  --highlight: transparent;
+  --field: rgba(233, 228, 216, 0.05);
+  --field-focus: rgba(233, 228, 216, 0.09);
+  --sheet-bg: color-mix(in srgb, var(--base) 94%, #fff);
+  --zen-bg: var(--base);
+  --shadow: none;
+  --tip-bg: var(--ink);
+  --r-card: 0; --r-item: 0; --r-chip: 2px;
+}
+[data-style="inkwash"][data-variant="navy"] { --base: #0f1522; }
+
+@scope ([data-style="inkwash"]) to ([data-style]:not([data-style="inkwash"])) {
+  .card:not(.sheet, .palette) { border: 0; }
+  /* 筆でさっと引いた線 */
+  .content .list > .item, .card:not(.sheet, .palette, .addbar) { background-image: linear-gradient(90deg, transparent, rgba(233, 228, 216, 0.55) 6%, rgba(233, 228, 216, 0.35) 70%, transparent); background-size: 100% 2px; background-repeat: no-repeat; background-position: 0 100%; }
+  .content .list { gap: 2px; }
+  .content .list > .item { border: 0; box-shadow: none; }
+  .content .list > .item.done::after { content: "済"; position: absolute; right: 14px; top: 50%; translate: 0 -50%; rotate: -8deg; width: 28px; height: 28px; display: grid; place-items: center; border: 2px solid var(--shu); color: var(--shu); font-weight: 700; font-size: 15px; border-radius: 4px; pointer-events: none; opacity: 0.9; }
+  .section-head > span:first-child, .page-head h1, .summary-title { font-family: var(--font-title); }
+  .section-head > span:first-child { font-size: 17px; }
+  .page-head h1 { font-size: 30px; }
+  .check { border: 1.5px solid rgba(233, 228, 216, 0.6); background: transparent; border-radius: 50%; }
+  .done .check { background: var(--shu); border-color: var(--shu); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--shu); color: #fff6ee; box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: #fff6ee; }
+  .tip, .toast, .toast button { color: var(--base); }
+  .sp-line { background: var(--shu); }
+}
+
+/* ------------------------------------------------------------
+   97. 白黒映画：グレイン、上下に黒い帯
+   ------------------------------------------------------------ */
+
+[data-style="film"] {
+  --font: "Georgia", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-title: "Didot", "Georgia", "Hiragino Mincho ProN", serif;
+  --base: #141414;
+  --light: #e8e8e8;
+  --page-bg: radial-gradient(ellipse at center, color-mix(in srgb, var(--base) 70%, var(--light)), var(--base) 75%);
+  --noise-opacity: 0.6;
+  --ink-rgb: 232, 232, 232;
+  --accent-a: var(--light);
+  --accent-b: var(--light);
+  --on-accent: var(--base);
+  --grad: linear-gradient(var(--light), var(--light));
+  --accent-soft: rgba(255, 255, 255, 0.12);
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-soft: transparent;
+  --glass-strong: rgba(255, 255, 255, 0.14);
+  --glass-hover: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.05);
+  --field-focus: rgba(255, 255, 255, 0.09);
+  --sheet-bg: color-mix(in srgb, var(--base) 92%, #fff);
+  --zen-bg: var(--base);
+  --shadow: none;
+  --tip-bg: var(--light);
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-field: 0;
+}
+[data-style="film"][data-variant="sepia"] { --base: #1c150e; --light: #e6d3b0; --ink-rgb: 230, 211, 176; }
+
+/* 上下の黒い帯とフィルムのちらつき */
+html[data-style="film"] body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; box-shadow: inset 0 18px 0 #000, inset 0 -18px 0 #000; }
+html[data-style="film"] body::before { animation: grain 0.6s steps(3) infinite; }
+@keyframes grain { 0% { background-position: 0 0; } 33% { background-position: -60px 40px; } 66% { background-position: 50px -30px; } }
+
+@scope ([data-style="film"]) to ([data-style]:not([data-style="film"])) {
+  .titlebar { margin-top: 0; }
+  .card:not(.sheet, .palette), .content .list > .item { border: 1px solid var(--glass-border); }
+  .page-head h1, .summary-title { font-family: var(--font-title); letter-spacing: 0.1em; text-transform: uppercase; }
+  .page-head h1::before { content: "— "; }
+  .page-head h1::after { content: " —"; }
+  .section-head { justify-content: center; letter-spacing: 0.25em; }
+  .content .list > .item.done .title::after { content: "  THE END"; font-size: 10px; letter-spacing: 0.2em; opacity: 0.7; }
+  .check { border: 1.5px solid var(--light); background: transparent; }
+  .done .check { background: var(--light); }
+  .check svg { stroke: var(--on-accent); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--light); color: var(--on-accent); box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg { color: var(--on-accent); }
+  .tip, .toast, .toast button { color: var(--on-accent); }
+  .sp-line { background: var(--light); }
+}
+
+/* ============================================================
+   シンプル（98〜100）
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   98. 大理石：白い石の筋と細い金の線
+   ------------------------------------------------------------ */
+
+[data-style="marble"] {
+  --font: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif;
+  --font-title: "Didot", "Georgia", "Hiragino Mincho ProN", serif;
+  --stone: #f4f2ef;
+  --vein: rgba(120, 120, 130, 0.16);
+  --gold: #b8975a;
+  --page-bg:
+    linear-gradient(115deg, transparent 30%, var(--vein) 31%, transparent 32.5%, transparent 58%, var(--vein) 58.6%, transparent 60%),
+    linear-gradient(35deg, transparent 45%, var(--vein) 45.5%, transparent 46.5%, transparent 75%, var(--vein) 75.4%, transparent 76.5%),
+    radial-gradient(ellipse at 20% 80%, rgba(150, 150, 160, 0.12), transparent 40%),
+    var(--stone);
+  --ink-rgb: 40, 38, 36;
+  --accent-a: var(--gold);
+  --accent-b: var(--gold);
+  --grad: linear-gradient(90deg, #a0814a, var(--gold), #d9c08a);
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-soft: rgba(255, 255, 255, 0.4);
+  --glass-strong: #ffffff;
+  --glass-hover: rgba(255, 255, 255, 0.9);
+  --glass-border: color-mix(in srgb, var(--gold) 45%, transparent);
+  --highlight: transparent;
+  --field: rgba(255, 255, 255, 0.85);
+  --field-focus: #ffffff;
+  --sheet-bg: #faf9f7;
+  --zen-bg: var(--stone);
+  --shadow: 0 4px 18px rgba(40, 38, 36, 0.06);
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 4px; --r-item: 3px;
+}
+[data-style="marble"][data-variant="black"] { --stone: #161616; --vein: rgba(255, 255, 255, 0.045); --gold: #c9a96e; --ink-rgb: 236, 232, 224; --on-accent: #161616; --glass: rgba(255, 255, 255, 0.04); --glass-soft: transparent; --glass-strong: rgba(255, 255, 255, 0.1); --glass-hover: rgba(255, 255, 255, 0.07); --field: rgba(255, 255, 255, 0.05); --field-focus: rgba(255, 255, 255, 0.09); --sheet-bg: #1d1d1d; --tip-bg: var(--gold); --shadow: none; }
+
+@scope ([data-style="marble"]) to ([data-style]:not([data-style="marble"])) {
+  .card:not(.sheet, .palette), .content .list > .item { border: 1px solid var(--glass-border); }
+  .page-head h1, .summary-title { font-family: var(--font-title); letter-spacing: 0.06em; }
+  .section-head > span:first-child { letter-spacing: 0.15em; }
+  .section-head::after { content: ""; flex: 1; height: 1px; background: var(--glass-border); margin-left: 10px; align-self: center; }
+  .check { border: 1px solid var(--gold); background: transparent; border-radius: 50%; }
+  .done .check { background: var(--gold); }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--grad); color: #ffffff; box-shadow: none; }
+  :scope[data-variant="black"] :is(.chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active) { color: var(--on-accent); }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: inherit; }
+  .tip, .toast, .toast button { color: var(--stone); }
+  .sp-line { background: var(--grad); }
+}
+
+/* ------------------------------------------------------------
+   99. 木：木目の机に白い紙
+   ------------------------------------------------------------ */
+
+[data-style="wood"] {
+  --font: "Hiragino Sans", "Segoe UI", "Yu Gothic UI", sans-serif;
+  --wood: #e3c9a3;
+  --grain: rgba(122, 82, 48, 0.12);
+  --brown: #7a5230;
+  --page-bg:
+    repeating-linear-gradient(90deg, transparent 0 22px, var(--grain) 22px 23px, transparent 23px 51px, var(--grain) 51px 53px, transparent 53px 88px),
+    repeating-radial-gradient(ellipse 600px 40px at 30% 50%, transparent 0 12px, var(--grain) 12px 13px),
+    var(--wood);
+  --noise-opacity: 0.35;
+  --ink-rgb: 52, 40, 30;
+  --accent-a: var(--brown);
+  --accent-b: var(--brown);
+  --glass: #fffdf8;
+  --glass-soft: #fffdf8;
+  --glass-strong: #ffffff;
+  --glass-hover: #ffffff;
+  --glass-border: rgba(122, 82, 48, 0.12);
+  --highlight: transparent;
+  --field: #ffffff;
+  --field-focus: #ffffff;
+  --sheet-bg: #fffaf2;
+  --zen-bg: var(--wood);
+  --shadow: 0 2px 2px rgba(60, 40, 20, 0.12), 0 8px 18px rgba(60, 40, 20, 0.15);
+  --tip-bg: rgb(var(--ink-rgb));
+  --r-card: 4px; --r-item: 3px;
+}
+[data-style="wood"][data-variant="dark"] { --wood: #4a3426; --grain: rgba(0, 0, 0, 0.18); --brown: #e2b77a; --on-accent: #2b1d12; --tip-bg: #e2b77a; }
+
+@scope ([data-style="wood"]) to ([data-style]:not([data-style="wood"])) {
+  /* 机の上は暗い木でも、紙は白いので文字は濃いまま */
+  :scope[data-variant="dark"] .titlebar, :scope[data-variant="dark"] .page-head, :scope[data-variant="dark"] .sidebar, :scope[data-variant="dark"] .section-head { color: #f3e4cf; }
+  :scope[data-variant="dark"] .sidebar .nav-item, :scope[data-variant="dark"] .sidebar .list-item { color: #ead7bc; }
+  :scope[data-variant="dark"] .titlebar button { color: #f3e4cf; }
+  .card:not(.sheet, .palette), .content .list > .item { border: 1px solid var(--glass-border); }
+  .content .list { gap: 6px; }
+  .check { border: 1.5px solid rgba(122, 82, 48, 0.5); background: transparent; }
+  .done .check { background: #7a5230; border-color: #7a5230; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: var(--brown); color: var(--on-accent, #fffaf2); box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge { color: inherit; }
+  .sp-line { background: #7a5230; }
+}
+
+/* ------------------------------------------------------------
+   100. 電子ペーパー：白と黒だけ、動きなし
+   ------------------------------------------------------------ */
+
+[data-style="eink"] {
+  --font: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-title: "BIZ UDPMincho", "Hiragino Mincho ProN", serif;
+  --paper: #f2f2ee;
+  --page-bg: var(--paper);
+  --noise-opacity: 0;
+  --ink-rgb: 34, 34, 34;
+  --accent-a: #222222;
+  --accent-b: #222222;
+  --on-accent: var(--paper);
+  --grad: linear-gradient(#222, #222);
+  --accent-soft: rgba(0, 0, 0, 0.08);
+  --glass: transparent;
+  --glass-soft: transparent;
+  --glass-strong: rgba(0, 0, 0, 0.08);
+  --glass-hover: rgba(0, 0, 0, 0.04);
+  --glass-border: #222222;
+  --highlight: transparent;
+  --field: transparent;
+  --field-focus: rgba(0, 0, 0, 0.04);
+  --sheet-bg: var(--paper);
+  --zen-bg: var(--paper);
+  --shadow: none;
+  --shadow-pop: 0 0 0 2px #222;
+  --tip-bg: #222222;
+  --r-card: 0; --r-item: 0; --r-chip: 0; --r-check: 0; --r-field: 0; --r-play: 0;
+}
+[data-style="eink"][data-variant="warm"] { --paper: #efe9dc; --ink-rgb: 42, 38, 32; }
+
+@scope ([data-style="eink"]) to ([data-style]:not([data-style="eink"])) {
+  :scope *, :scope *::before, :scope *::after { transition: none !important; animation: none !important; }
+  .card:not(.sheet, .palette) { border: 1.5px solid #222; box-shadow: none; backdrop-filter: none; }
+  .content .list { gap: 0; }
+  .content .list > .item { border: 0; border-bottom: 1px solid #222; background: transparent; box-shadow: none; }
+  .content .list > .item:hover { background: rgba(0, 0, 0, 0.04); }
+  .content .list > .item.done .title { text-decoration: line-through; }
+  .page-head h1, .summary-title { font-family: var(--font-title); }
+  .check { border: 1.5px solid #222; background: transparent; }
+  .done .check { background: #222; }
+  .check svg { stroke: var(--paper); }
+  .chip, .btn { border: 1px solid #222; }
+  .chip.on, .btn.primary, .add-btn, .play-btn, .tab.active, .nav-item.active { background: #222; color: var(--paper); box-shadow: none; }
+  .nav-item.active svg, .tab.active svg, .nav-item.active .badge, .add-btn svg, .play-btn svg { color: var(--paper); }
+  .tip, .toast, .toast button { color: var(--paper); }
+  .sp-line { background: #222; }
+}

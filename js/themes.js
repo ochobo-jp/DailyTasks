@@ -547,6 +547,8 @@ const STYLE_CATEGORY = {
 };
 const STYLE_FILTERS = [
   { id: 'all', name: 'すべて' },
+  { id: 'fav', name: '★ お気に入り' },
+  { id: 'recent', name: '最近' },
   { id: 'simple', name: 'シンプル' },
   { id: 'cute', name: 'かわいい' },
   { id: 'dark', name: 'ダーク' },
@@ -584,6 +586,7 @@ function applyAppearance() {
 function setStyle(styleId, variantId) {
   const p = prefs();
   const style = styleById(styleId);
+  if (p.style !== style.id) p.styleRecent = [p.style, ...(p.styleRecent || []).filter((x) => x !== p.style && x !== style.id)].slice(0, 12);
   p.style = style.id;
   // 前に選んでいた色が新しいスタイルにもあれば引き継ぐ
   p.variant = variantOf(style, variantId || p.variant).id;
@@ -651,24 +654,71 @@ function styleSummary() {
     ${variantSwatches(style, variant.id)}`;
 }
 
-// スタイルの一覧（絞り込みつき）。押すとすぐ全体に反映される
-function styleGalleryGrid(filter) {
+// スタイルの一覧（絞り込み・検索つき）。押すとすぐ全体に反映される
+const kana = (t) => String(t).toLowerCase().replace(/[\u30a1-\u30f6]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60));
+function styleList(filter = 'all', query = '') {
+  const p = prefs();
+  let list = IS_TOUCH ? [styleById('ios'), ...STYLES.filter((s) => s.id !== 'ios')] : STYLES;
+  if (filter === 'fav') list = list.filter((s) => (p.styleFavs || []).includes(s.id));
+  else if (filter === 'recent') list = (p.styleRecent || []).map((id) => STYLES.find((s) => s.id === id)).filter(Boolean);
+  else if (filter !== 'all') list = list.filter((s) => STYLE_CATEGORY[s.id] === filter);
+  const q = kana(query.trim());
+  if (q) {
+    const cat = (s) => (STYLE_FILTERS.find((f) => f.id === STYLE_CATEGORY[s.id]) || {}).name || '';
+    list = list.filter((s) => q.split(/\s+/).every((w) => kana([s.name, s.desc, cat(s), s.id, ...s.variants.map((v) => v.name)].join(' ')).includes(w)));
+  }
+  return list;
+}
+const styleFilterCount = (id) => styleList(id).length;
+
+function styleGalleryGrid(filter, query = '') {
   const p = prefs();
   const current = styleById(p.style);
-  let list = IS_TOUCH ? [styleById('ios'), ...STYLES.filter((s) => s.id !== 'ios')] : STYLES;
-  if (filter !== 'all') list = list.filter((s) => STYLE_CATEGORY[s.id] === filter);
+  const list = styleList(filter, query);
+  if (!list.length) {
+    const msg = query ? '見つかりませんでした' : filter === 'fav' ? 'スタイルの ☆ を押すと、ここに集まります' : 'まだほかのスタイルを使っていません';
+    return `<div class="style-empty">${msg}</div>`;
+  }
+  const favs = p.styleFavs || [];
   return list.map((s) => {
     const v = s.id === current.id ? variantOf(s, p.variant) : s.variants[0];
-    return `<button class="style-tile ${s.id === current.id ? 'on' : ''}" data-pick-style="${s.id}">
+    const fav = favs.includes(s.id);
+    return `<div class="style-tile ${s.id === current.id ? 'on' : ''}" data-pick-style="${s.id}" role="button" tabindex="0" title="${s.desc}">
       ${stylePreview(s, v)}
-      <span class="st-name">${s.name}<i class="st-dots">${s.variants.map((x) => `<i style="background:${x.colors[1]}"></i>`).join('')}</i></span>
-    </button>`;
+      <span class="st-name"><span class="st-label">${s.name}</span><i class="st-dots">${s.variants.map((x) => `<i style="background:${x.colors[1]}"></i>`).join('')}</i></span>
+      <button class="st-fav ${fav ? 'on' : ''}" data-fav-style="${s.id}" aria-label="${fav ? 'お気に入りから外す' : 'お気に入りに入れる'}">${fav ? '★' : '☆'}</button>
+    </div>`;
   }).join('');
 }
 
-function randomStyle() {
+function toggleStyleFav(id) {
   const p = prefs();
-  const others = STYLES.filter((s) => s.id !== p.style);
+  const favs = p.styleFavs || [];
+  p.styleFavs = favs.includes(id) ? favs.filter((x) => x !== id) : [...favs, id];
+  save();
+  return p.styleFavs.includes(id);
+}
+
+// 日替わりスタイル：日付が変わったら、お気に入り（または全部）から 1 つ選ぶ
+function dailyStyle() {
+  const p = prefs();
+  if (!p.styleDaily || p.styleDaily === 'off' || p.styleDailyDay === state.today) return false;
+  const favs = (p.styleFavs || []).filter((id) => STYLES.some((s) => s.id === id));
+  const pool = p.styleDaily === 'fav' && favs.length >= 2 ? favs.map(styleById) : STYLES;
+  // 日付から決めるので、同じ日はいつ開いても同じスタイル
+  let h = 0;
+  for (const c of state.today) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  let s = pool[h % pool.length];
+  if (s.id === p.style && pool.length > 1) s = pool[(h + 1) % pool.length];
+  p.styleDailyDay = state.today;
+  setStyle(s.id, s.variants[(h >> 4) % s.variants.length].id);
+  return true;
+}
+
+function randomStyle(pool = STYLES) {
+  const p = prefs();
+  let others = pool.filter((s) => s.id !== p.style);
+  if (!others.length) others = STYLES.filter((s) => s.id !== p.style);
   const s = others[Math.floor(Math.random() * others.length)];
   const v = s.variants[Math.floor(Math.random() * s.variants.length)];
   setStyle(s.id, v.id);

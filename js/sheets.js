@@ -375,23 +375,56 @@ function openStyleGallery(filter = state.styleFilter || 'all') {
       <button class="btn" id="sgRandom">🎲 おまかせ</button>
       <button class="icon-btn" id="sgClose" aria-label="閉じる">${ICON.close}</button>
     </div>
-    <div class="style-filters">${STYLE_FILTERS.map((f) => `<button class="chip ${f.id === filter ? 'on' : ''}" data-sfilter="${f.id}">${f.name}</button>`).join('')}</div>
+    <label class="style-search">${ICON.search}<input id="sgSearch" type="search" placeholder="さがす（例：夜、和、レトロ、紙）" autocomplete="off"></label>
+    <div class="style-filters">${STYLE_FILTERS.map((f) => `<button class="chip ${f.id === filter ? 'on' : ''}" data-sfilter="${f.id}">${f.name}<small>${styleFilterCount(f.id)}</small></button>`).join('')}</div>
     <div class="style-grid gallery" id="sgGrid">${styleGalleryGrid(filter)}</div>
+    <div class="style-daily">
+      <span>日替わりスタイル</span>
+      <div class="seg" id="sgDaily">${[['off', 'しない'], ['fav', 'お気に入りから'], ['all', '全部から']].map(([id, name]) => `<button class="${(p.styleDaily || 'off') === id ? 'on' : ''}" data-daily="${id}">${name}</button>`).join('')}</div>
+    </div>
     <div class="style-dock" id="sgDock">${styleDock()}</div>`, (el) => {
+    const query = () => $('#sgSearch', el).value;
+    const regrid = () => { $('#sgGrid', el).innerHTML = styleGalleryGrid(state.styleFilter, query()); };
+    const recount = () => $$('[data-sfilter]', el).forEach((x) => { x.querySelector('small').textContent = styleFilterCount(x.dataset.sfilter); });
     const repaint = () => {
-      $('#sgGrid', el).innerHTML = styleGalleryGrid(state.styleFilter);
+      regrid();
       $('#sgDock', el).innerHTML = styleDock();
+      recount();
       renderAll();
     };
     $('#sgClose', el).onclick = closeSheet;
     $('#sgBack', el).onclick = () => openSettings();
-    $('#sgRandom', el).onclick = () => { randomStyle(); repaint(); };
+    // 「おまかせ」は、いま見ている絞り込みの中から選ぶ
+    $('#sgRandom', el).onclick = () => { randomStyle(styleList(state.styleFilter, query())); repaint(); };
+    $('#sgSearch', el).addEventListener('input', regrid);
+    el.addEventListener('keydown', (e) => {
+      const t = e.target.closest('.style-tile[data-pick-style]');
+      if (t && e.target === t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); }
+    });
     el.addEventListener('click', (e) => {
+      const fav = e.target.closest('[data-fav-style]');
+      if (fav) {
+        const on = toggleStyleFav(fav.dataset.favStyle);
+        toast(on ? 'お気に入りに入れました' : 'お気に入りから外しました');
+        regrid();
+        recount();
+        return;
+      }
+      const d = e.target.closest('[data-daily]');
+      if (d) {
+        p.styleDaily = d.dataset.daily;
+        p.styleDailyDay = state.today; // 今日は今のまま。明日から変える
+        save();
+        $$('[data-daily]', el).forEach((x) => x.classList.toggle('on', x === d));
+        if (d.dataset.daily === 'fav' && (p.styleFavs || []).length < 2) toast('お気に入りが 2 つ以上になるまでは、全部から選びます');
+        else if (d.dataset.daily !== 'off') toast('明日から毎日スタイルが変わります');
+        return;
+      }
       const f = e.target.closest('[data-sfilter]');
       if (f) {
         state.styleFilter = f.dataset.sfilter;
         $$('[data-sfilter]', el).forEach((x) => x.classList.toggle('on', x === f));
-        $('#sgGrid', el).innerHTML = styleGalleryGrid(state.styleFilter);
+        regrid();
         $('#sgGrid', el).scrollIntoView({ block: 'nearest' });
       }
       const st = e.target.closest('[data-pick-style]');
@@ -454,6 +487,7 @@ function openSettings() {
         ${row('最前面に固定', 'ほかのウィンドウより常に手前に表示', sw('swTop', s.alwaysOnTop))}
         ${row('PC起動時に開く', 'Windows にサインインしたら自動で起動', sw('swLogin', s.openAtLogin))}
         ${row('全画面', 'F11 キーでも切り替えられます', `<button class="btn" id="fullBtn">${ICON.expand}切り替え</button>`)}
+        ${tabPickerRow()}
       </div>`}
       <div class="setting-group">
         <h3>タスク</h3>
@@ -529,6 +563,7 @@ function openSettings() {
     if (IS_WEB) {
       bindWebAppGroup(el);
     } else {
+      bindTabPicker(el);
       $('#swTop', el).onclick = async (e) => { s.alwaysOnTop = await window.api.setAlwaysOnTop(!s.alwaysOnTop); setSwitch(e.currentTarget, s.alwaysOnTop); renderTitlebar(); };
       $('#swLogin', el).onclick = async (e) => { s.openAtLogin = await window.api.setOpenAtLogin(!s.openAtLogin); setSwitch(e.currentTarget, s.openAtLogin); };
       $('#fullBtn', el).onclick = () => window.api.toggleFullScreen();
@@ -572,15 +607,20 @@ function webAppGroup() {
   const install = window.api.ios && !window.api.standalone
     ? settingRow('ホーム画面に追加', 'アイコンから全画面で開けて、下の Safari のバーが消えます。オフラインでも使えます', `<button class="btn" id="installBtn">やり方</button>`)
     : '';
-  const tabs = IS_TOUCH && visibleViews().length > 5
-    ? settingRow('下のタブ', '並べる画面を 4 つまで選べます。残りは「その他」から開きます', '') + `<div class="tab-picker" id="tabPicker">${tabPickerHtml()}</div>`
-    : '';
   return `<div class="setting-group">
     <h3>この端末</h3>
     ${install}
-    ${tabs}
+    ${tabPickerRow()}
     ${settingRow('通知', `<span id="notifyDesc">${notifyStatusText()}</span>`, perm === 'default' ? `<button class="btn" id="notifyBtn">${ICON.bell}許可する</button>` : '')}
   </div>`;
+}
+
+// 下のタブ（iPhone は 4 つ）/ せまいウィンドウの上のタブ（PC は 6 つ）に並べる画面
+function tabPickerRow() {
+  if (visibleViews().length <= tabMax() + 1) return '';
+  const title = IS_TOUCH ? '下のタブ' : 'せまい画面のタブ';
+  const desc = IS_TOUCH ? '並べる画面を 4 つまで選べます。残りは「その他」から開きます' : 'ウィンドウをせまくしたとき、上に並べる画面を 6 つまで選べます。残りは「…」から開きます';
+  return settingRow(title, desc, '') + `<div class="tab-picker" id="tabPicker">${tabPickerHtml()}</div>`;
 }
 
 function tabPickerHtml() {
@@ -591,6 +631,18 @@ function tabPickerHtml() {
 function bindWebAppGroup(el) {
   const ib = $('#installBtn', el);
   if (ib) ib.onclick = openInstallHowto;
+  bindTabPicker(el);
+  const btn = $('#notifyBtn', el);
+  if (!btn) return;
+  btn.onclick = async () => {
+    const r = await window.api.requestNotify();
+    $('#notifyDesc', el).textContent = notifyStatusText();
+    if (r !== 'default') btn.remove();
+    if (r === 'granted') window.api.notify('🔔 通知がオンになりました', '予定の時刻になったらお知らせします');
+  };
+}
+
+function bindTabPicker(el) {
   const tp = $('#tabPicker', el);
   if (tp) {
     tp.onclick = (e) => {
@@ -603,7 +655,7 @@ function bindWebAppGroup(el) {
         if (cur.length <= 1) return;
         cur = cur.filter((x) => x !== id);
       } else {
-        if (cur.length >= 4) { toast('タブは 4 つまでです。先にどれかを外してください'); return; }
+        if (cur.length >= tabMax()) { toast(`タブは ${tabMax()} つまでです。先にどれかを外してください`); return; }
         cur.push(id);
       }
       // 並びはいつもの順番に
@@ -613,14 +665,6 @@ function bindWebAppGroup(el) {
       tp.innerHTML = tabPickerHtml();
     };
   }
-  const btn = $('#notifyBtn', el);
-  if (!btn) return;
-  btn.onclick = async () => {
-    const r = await window.api.requestNotify();
-    $('#notifyDesc', el).textContent = notifyStatusText();
-    if (r !== 'default') btn.remove();
-    if (r === 'granted') window.api.notify('🔔 通知がオンになりました', '予定の時刻になったらお知らせします');
-  };
 }
 
 function openHelp() {
