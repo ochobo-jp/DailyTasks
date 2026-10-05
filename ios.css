@@ -46,7 +46,9 @@ html[data-platform="ios"] .titlebar {
 }
 html[data-platform="ios"] .layout-compact .titlebar { padding-bottom: 10px; align-items: center; }
 html[data-platform="ios"] .layout-compact .date { font-size: 28px; font-weight: 700; letter-spacing: 0.005em; }
-html[data-platform="ios"] .layout-compact #searchBtn { display: grid; }
+html[data-platform="ios"] .layout-compact #searchBtn,
+html[data-platform="ios"] .layout-compact #timerBtn { display: grid; }
+html[data-platform="ios"] #timerBtn.on { background: var(--accent-soft); }
 html[data-platform="ios"] .icon-btn { width: 40px; height: 40px; border-radius: 50%; }
 html[data-platform="ios"] .icon-btn svg { width: 21px; height: 21px; }
 html[data-platform="ios"] .layout-compact .tb-right .icon-btn { color: var(--accent); }
@@ -187,3 +189,11 @@ html[data-platform="ios"] .zen { padding-top: calc(var(--safe-t) + 16px); paddin
 /* タップで反応がわかるように（ホバーの代わり） */
 html[data-platform="ios"] .chip:active, html[data-platform="ios"] .btn:active,
 html[data-platform="ios"] .icon-btn:active { opacity: 0.6; }
+
+/* ---------- スタイルの一覧：下の色選び ---------- */
+
+html[data-platform="ios"] .layout-compact .style-dock {
+  bottom: calc(-1 * (var(--safe-b) + 20px));
+  margin: 0 calc(-1 * (var(--safe-r) + 18px)) calc(-1 * (var(--safe-b) + 20px)) calc(-1 * (var(--safe-l) + 18px));
+  padding: 12px calc(var(--safe-r) + 18px) calc(var(--safe-b) + 14px) calc(var(--safe-l) + 18px);
+}

@@ -235,6 +235,15 @@ const actions = {
   'help': () => openHelp(),
   'palette': () => openPalette(),
   'more-views': (el) => openMoreViews(el),
+  'install-howto': () => openInstallHowto(),
+  'install-dismiss': () => { prefs().installHintClosed = true; save(); refresh(); toast('案内は設定の「この端末」からも見られます'); },
+  'style-gallery': () => openStyleGallery(),
+  'style-random': () => {
+    const s = randomStyle();
+    renderAll();
+    if ($('#stylePicker')) { $('#stylePicker').innerHTML = styleSummary(); $('#styleExtras').innerHTML = styleExtras(); }
+    toast(`スタイルを「${s.name}」にしました`);
+  },
 
   'toggle-todo': (el) => {
     const t = findTodo(el.dataset.id);
@@ -818,6 +827,7 @@ $('#pinBtn').onclick = togglePin;
 $('#miniBtn').onclick = () => window.api.setMini(true);
 $('#setBtn').onclick = () => openSettings();
 $('#searchBtn').onclick = () => openPalette();
+$('#timerBtn').onclick = () => { if (state.zen) closeZen(); switchView('focus'); };
 $('#titlebar').addEventListener('dblclick', (e) => {
   if (!e.target.closest('button')) window.api.toggleMaximize();
 });

@@ -128,7 +128,77 @@ const STYLES = [
       { id: 'graphite', name: 'グラファイト', colors: ['#f2f2f7', '#8e8e93'] },
     ],
   },
+  {
+    id: 'comic', name: 'マンガ', desc: '太い線とトーンの点々。見出しはマンガのコマの文字みたい',
+    variants: [
+      { id: 'shonen', name: '少年', colors: ['#ffffff', '#e60012'] },
+      { id: 'shojo', name: '少女', colors: ['#fff5fa', '#ff5fa2'] },
+      { id: 'amecomi', name: 'アメコミ', colors: ['#fff6cc', '#1e5bd8'] },
+      { id: 'mono', name: 'モノクロ', colors: ['#f4f4f4', '#222222'] },
+    ],
+  },
+  {
+    id: 'rpg', name: 'RPG', desc: 'ゲームのメッセージウィンドウ。選んでいる行に ▶ が出ます', dark: true,
+    variants: [
+      { id: 'quest', name: 'クエスト', colors: ['#1b2a8a', '#ffd75e'] },
+      { id: 'fantasy', name: 'ファンタジー', colors: ['#3446b8', '#9fe8ff'] },
+      { id: 'dungeon', name: 'ダンジョン', colors: ['#111111', '#ff6b4a'] },
+      { id: 'forest', name: '森の村', colors: ['#1d5a2a', '#ffe08a'] },
+    ],
+  },
+  {
+    id: 'cafe', name: 'カフェ', desc: 'クリーム色の紙と、コーヒー色の文字。黒板メニューのような見出し',
+    variants: [
+      { id: 'latte', name: 'ラテ', colors: ['#f6efe4', '#6f4e37'] },
+      { id: 'matcha', name: '抹茶', colors: ['#f3f1e4', '#5b7f3a'] },
+      { id: 'berry', name: 'ベリー', colors: ['#fbeff1', '#b03a5b'] },
+      { id: 'espresso', name: 'エスプレッソ', colors: ['#2a1f1a', '#d9a066'], dark: true },
+    ],
+  },
+  {
+    id: 'space', name: '宇宙', desc: '星がまたたく夜空。済んだことは星のように光ります', dark: true,
+    variants: [
+      { id: 'galaxy', name: '銀河', colors: ['#8b5cf6', '#22d3ee'] },
+      { id: 'nebula', name: '星雲', colors: ['#ff4fd8', '#7b61ff'] },
+      { id: 'mars', name: '火星', colors: ['#ff7a45', '#ffb36b'] },
+      { id: 'moon', name: '月', colors: ['#cfd6e6', '#8fa3c8'] },
+    ],
+  },
+  {
+    id: 'material', name: 'マテリアル', desc: 'Android のような、やわらかい色の面と大きな角丸',
+    variants: [
+      { id: 'purple', name: 'パープル', colors: ['#fef7ff', '#6750a4'] },
+      { id: 'green', name: 'グリーン', colors: ['#f7fbf1', '#386a20'] },
+      { id: 'blue', name: 'ブルー', colors: ['#f8f9ff', '#0061a4'] },
+      { id: 'orange', name: 'オレンジ', colors: ['#fff8f4', '#8b5000'] },
+      { id: 'dark', name: 'ダーク', colors: ['#141218', '#d0bcff'], dark: true },
+    ],
+  },
+  {
+    id: 'vapor', name: 'ベイパー', desc: '80年代の夕焼けとネオンのグリッド。見出しはメタリック', dark: true,
+    variants: [
+      { id: 'sunset', name: 'サンセット', colors: ['#ff71ce', '#01cdfe'] },
+      { id: 'outrun', name: 'アウトラン', colors: ['#ff2a6d', '#05d9e8'] },
+      { id: 'miami', name: 'マイアミ', colors: ['#ff9de2', '#2de2e6'] },
+      { id: 'pastel', name: 'パステル', colors: ['#ffe3f6', '#b967ff'], dark: false },
+    ],
+  },
 ];
+
+// 設定のスタイル一覧で絞り込むための分類
+const STYLE_TAGS = {
+  glass: ['simple'], ios: ['simple'], minimal: ['simple'], soft: ['simple', 'cute'], material: ['simple'], news: ['simple', 'unique'],
+  paper: ['cute', 'unique'], pop: ['cute'], cafe: ['cute', 'simple'], comic: ['unique', 'cute'], retro: ['unique', 'cute'], wa: ['unique'],
+  chalk: ['unique'], neon: ['dark'], aurora: ['dark'], space: ['dark'], terminal: ['dark', 'unique'], rpg: ['dark', 'unique'], vapor: ['dark', 'cute'],
+};
+const STYLE_FILTERS = [
+  { id: 'all', name: 'すべて' },
+  { id: 'simple', name: 'シンプル' },
+  { id: 'cute', name: 'かわいい' },
+  { id: 'dark', name: 'ダーク' },
+  { id: 'unique', name: '個性派' },
+];
+const styleHasDark = (s) => !!(s.dark || s.darkToggle || s.variants.some((v) => v.dark));
 
 // 端末のダークモード（iPhone スタイルはこれに合わせる）
 const systemDark = matchMedia('(prefers-color-scheme: dark)');
@@ -202,19 +272,51 @@ function stylePreview(style, variant) {
   </span>`;
 }
 
-function stylePicker() {
+// 設定のいちばん上：いまのスタイルと色。ほかのスタイルは「スタイルを選ぶ」で一覧から
+function variantSwatches(style, currentId) {
+  return `<div class="vswatches">${style.variants.map((v) => `<button class="vswatch ${v.id === currentId ? 'on' : ''}" data-pick-variant="${v.id}" aria-label="${v.name}" title="${v.name}">
+      <i style="--a:${v.colors[0]};--b:${v.colors[1]}"></i><small>${v.name}</small></button>`).join('')}</div>`;
+}
+
+function styleSummary() {
+  const p = prefs();
+  const style = styleById(p.style);
+  const variant = variantOf(style, p.variant);
+  return `<div class="style-now">
+      <button class="style-now-preview" data-act="style-gallery" aria-label="スタイルを選ぶ">${stylePreview(style, variant)}</button>
+      <div class="style-now-text">
+        <b>${style.name}<span>・${variant.name}</span></b>
+        <small>${style.desc}</small>
+        <div class="style-now-btns">
+          <button class="btn primary" data-act="style-gallery">${ICON.paint}スタイルを選ぶ（${STYLES.length}種類）</button>
+          <button class="btn" data-act="style-random" title="おまかせ">🎲 おまかせ</button>
+        </div>
+      </div>
+    </div>
+    <div class="variant-label">色</div>
+    ${variantSwatches(style, variant.id)}`;
+}
+
+// スタイルの一覧（絞り込みつき）。押すとすぐ全体に反映される
+function styleGalleryGrid(filter) {
   const p = prefs();
   const current = styleById(p.style);
-  const order = IS_TOUCH ? [styleById('ios'), ...STYLES.filter((s) => s.id !== 'ios')] : STYLES;
-  const tiles = order.map((s) => {
+  let list = IS_TOUCH ? [styleById('ios'), ...STYLES.filter((s) => s.id !== 'ios')] : STYLES;
+  if (filter !== 'all') list = list.filter((s) => (STYLE_TAGS[s.id] || []).includes(filter) || (filter === 'dark' && styleHasDark(s)));
+  return list.map((s) => {
     const v = s.id === current.id ? variantOf(s, p.variant) : s.variants[0];
     return `<button class="style-tile ${s.id === current.id ? 'on' : ''}" data-pick-style="${s.id}">
       ${stylePreview(s, v)}
-      <span class="st-text"><b>${s.name}</b><small>${s.desc}</small></span>
+      <span class="st-name">${s.name}<i class="st-dots">${s.variants.map((x) => `<i style="background:${x.colors[1]}"></i>`).join('')}</i></span>
     </button>`;
   }).join('');
-  const variants = current.variants.map((v) => `<button class="variant-chip ${v.id === variantOf(current, p.variant).id ? 'on' : ''}" data-pick-variant="${v.id}">
-      <i style="background:${v.colors[0]}"></i><i style="background:${v.colors[1]}"></i>${v.name}</button>`).join('');
-  return `<div class="style-grid">${tiles}</div>
-    <div class="variant-row"><span class="variant-label">${current.name}の色</span><div class="variant-chips">${variants}</div></div>`;
+}
+
+function randomStyle() {
+  const p = prefs();
+  const others = STYLES.filter((s) => s.id !== p.style);
+  const s = others[Math.floor(Math.random() * others.length)];
+  const v = s.variants[Math.floor(Math.random() * s.variants.length)];
+  setStyle(s.id, v.id);
+  return s;
 }

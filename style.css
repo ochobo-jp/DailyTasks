@@ -1233,7 +1233,7 @@ kbd {
    ============================================================ */
 
 .layout-wide #setBtn, .layout-xwide #setBtn, .layout-compact #pinBtn { display: none; }
-#searchBtn { display: none; }
+#searchBtn, #timerBtn { display: none; }
 
 .layout-compact .tabbar { display: flex; gap: 2px; justify-content: space-between; }
 .layout-compact .tab {
@@ -1256,6 +1256,13 @@ kbd {
 .layout-compact .add-options > * { flex-shrink: 0; }
 
 .compact-actions { display: none; }
+
+/* iPhone：ホーム画面に追加の案内・下のタブの選択 */
+.install-hint .wx-prompt-icon { font-size: 30px; }
+.howto { margin: 0 0 12px; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; line-height: 1.6; }
+.howto b { color: var(--accent); }
+.tab-picker { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0 12px; }
+.tab-picker .chip svg { width: 15px; height: 15px; }
 .layout-compact .compact-actions { display: flex; justify-content: flex-end; margin: -4px 0 10px; }
 
 /* ============================================================

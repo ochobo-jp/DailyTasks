@@ -41,6 +41,8 @@ function renderTitlebar() {
   $('#miniBtn').innerHTML = ICON.pip;
   $('#setBtn').innerHTML = ICON.gear;
   $('#searchBtn').innerHTML = ICON.search;
+  $('#timerBtn').innerHTML = ICON.timer;
+  $('#timerBtn').classList.toggle('on', state.view === 'focus' || timer.running);
   $('#minBtn').innerHTML = ICON.minus;
   $('#maxBtn').innerHTML = state.windowState.maximized || state.windowState.fullScreen ? ICON.restore : ICON.maximize;
   $('#maxBtn').title = state.windowState.fullScreen ? '全画面を終了（F11）' : state.windowState.maximized ? '元のサイズに戻す' : '最大化（F11 で全画面）';
@@ -91,7 +93,38 @@ const TOUCH_TAB_ORDER = ['today', 'todo', 'school', 'calendar', 'routine', 'some
 function touchTabs() {
   const all = visibleViews();
   const sorted = TOUCH_TAB_ORDER.map((id) => all.find((v) => v.id === id)).filter(Boolean);
-  return sorted.length <= 5 ? { main: sorted, more: [] } : { main: sorted.slice(0, 4), more: sorted.slice(4) };
+  if (sorted.length <= 5) return { main: sorted, more: [] };
+  // 設定で選んだ画面（4 つまで）を左から。残りは「その他」へ
+  const chosen = (prefs().tabs || []).map((id) => sorted.find((v) => v.id === id)).filter(Boolean).slice(0, 4);
+  const main = chosen.length ? chosen : sorted.slice(0, 4);
+  const more = sorted.filter((v) => !main.includes(v));
+  return more.length === 1 ? { main: [...main, ...more], more: [] } : { main, more };
+}
+
+// ブラウザで開いているときだけ：ホーム画面に追加すると全画面になることを案内
+function installHint() {
+  if (!IS_WEB || !window.api.ios || window.api.standalone || prefs().installHintClosed) return '';
+  return `<section class="card wx-prompt install-hint">
+    <span class="wx-prompt-icon">📲</span>
+    <div class="wx-prompt-text"><b>ホーム画面に追加しよう</b><small>下の Safari のバーが消えて、全画面のアプリになります</small></div>
+    <button class="btn primary" data-act="install-howto">やり方</button>
+    <button class="mini-btn" data-act="install-dismiss" aria-label="閉じる">${ICON.close}</button>
+  </section>`;
+}
+
+function openInstallHowto() {
+  openSheet(`
+    <div class="sheet-head"><h2>ホーム画面に追加する</h2><span class="spacer"></span><button class="icon-btn" id="ihClose" aria-label="閉じる">${ICON.close}</button></div>
+    <ol class="howto">
+      <li><b>Safari</b> でこのページを開いておく（Chrome などでは追加できません）</li>
+      <li>画面の下にある <b>共有ボタン</b>（四角から矢印が出ているマーク）を押す</li>
+      <li>メニューを下にスクロールして <b>「ホーム画面に追加」</b> を押す</li>
+      <li>右上の <b>「追加」</b> を押す</li>
+      <li>ホーム画面にできた <b>Daily Tasks</b> のアイコンから開く</li>
+    </ol>
+    <p class="desc small">アイコンから開くと、下のバーや上のアドレス欄が消えて全画面になります。オフラインでも開けて、通知も使えるようになります。データはこの iPhone の中にそのまま残ります。</p>`, (el) => {
+    $('#ihClose', el).onclick = closeSheet;
+  });
 }
 
 function renderTouchTabbar(tb) {
@@ -165,7 +198,7 @@ function renderToday() {
   const s = todaySummary();
   const wide = state.layout !== 'compact';
 
-  let html = (state.layout === 'xwide' ? '' : weatherStrip()) + summaryCard();
+  let html = installHint() + (state.layout === 'xwide' ? '' : weatherStrip()) + summaryCard();
   if (s.total > 0 && s.left === 0) html += '<div class="all-done">🎉 今日のタスクはぜんぶ完了！おつかれさまでした</div>';
 
   let colA = section('ルーティン', routines.map((r) => routineRow(r)), { count: `${s.rDone}/${s.routines}` });

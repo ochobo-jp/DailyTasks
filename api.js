@@ -318,7 +318,10 @@
         document.head.appendChild(meta);
       }
       const c = getComputedStyle(document.body).backgroundColor;
-      meta.content = c && !/rgba\(.*, 0\)$/.test(c) && c !== 'transparent' ? c : (dark ? '#000000' : '#f2f2f7');
+      const color = c && !/rgba\(.*, 0\)$/.test(c) && c !== 'transparent' ? c : (dark ? '#000000' : '#f2f2f7');
+      meta.content = color;
+      // Safari のバーの下や、引っぱったときに見える部分もページと同じ色に
+      root.style.backgroundColor = color;
     });
   }
 

@@ -38,6 +38,8 @@ const DEFAULT_PREFS = {
   features: { school: true, someday: true },
   bgm: { on: false, sound: 'rain', volume: 0.6, duringBreak: false, tracks: [], shuffle: false },
   classNotify: true,      // 授業の 5 分前に通知
+  tabs: null,             // iPhone の下のタブに並べる画面（null ならおすすめの順）
+  installHintClosed: false, // 「ホーム画面に追加」の案内を閉じた
   weather: { enabled: true, place: null, prompted: false },
   sound: true,
   confetti: true,

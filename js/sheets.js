@@ -13,10 +13,11 @@ function openSheet(html, bind) {
   closeSheet();
   closeMenu();
   closePalette();
-  sheet.innerHTML = html;
+  // 中身は毎回新しい入れ物に入れる。前のシートで付けたイベントが残らないように
+  sheet.innerHTML = `<div class="sheet-body">${html}</div>`;
   sheet.hidden = false;
   backdrop.hidden = false;
-  sheetCleanup = bind(sheet) || null;
+  sheetCleanup = bind(sheet.firstElementChild) || null;
   $$('textarea.autosize', sheet).forEach(autosize);
 }
 
@@ -353,6 +354,54 @@ async function importBackup() {
 
 const settingRow = (label, desc, control) => `<div class="setting-row"><div><div class="label">${label}</div>${desc ? `<div class="desc">${desc}</div>` : ''}</div>${control}</div>`;
 
+// ---------- スタイルの一覧 ----------
+// 押すとすぐアプリ全体の見た目が変わる（このシートも）ので、見比べながら選べる
+
+function styleDock() {
+  const p = prefs();
+  const style = styleById(p.style);
+  const variant = variantOf(style, p.variant);
+  return `<div class="dock-text"><b>${style.name}</b><small>${style.desc}</small></div>
+    ${variantSwatches(style, variant.id)}`;
+}
+
+function openStyleGallery(filter = state.styleFilter || 'all') {
+  state.styleFilter = filter;
+  const p = prefs();
+  openSheet(`
+    <div class="sheet-head">
+      <button class="icon-btn" id="sgBack" aria-label="設定にもどる">${ICON.chevL}</button>
+      <h2>スタイル</h2><span class="spacer"></span>
+      <button class="btn" id="sgRandom">🎲 おまかせ</button>
+      <button class="icon-btn" id="sgClose" aria-label="閉じる">${ICON.close}</button>
+    </div>
+    <div class="style-filters">${STYLE_FILTERS.map((f) => `<button class="chip ${f.id === filter ? 'on' : ''}" data-sfilter="${f.id}">${f.name}</button>`).join('')}</div>
+    <div class="style-grid gallery" id="sgGrid">${styleGalleryGrid(filter)}</div>
+    <div class="style-dock" id="sgDock">${styleDock()}</div>`, (el) => {
+    const repaint = () => {
+      $('#sgGrid', el).innerHTML = styleGalleryGrid(state.styleFilter);
+      $('#sgDock', el).innerHTML = styleDock();
+      renderAll();
+    };
+    $('#sgClose', el).onclick = closeSheet;
+    $('#sgBack', el).onclick = () => openSettings();
+    $('#sgRandom', el).onclick = () => { randomStyle(); repaint(); };
+    el.addEventListener('click', (e) => {
+      const f = e.target.closest('[data-sfilter]');
+      if (f) {
+        state.styleFilter = f.dataset.sfilter;
+        $$('[data-sfilter]', el).forEach((x) => x.classList.toggle('on', x === f));
+        $('#sgGrid', el).innerHTML = styleGalleryGrid(state.styleFilter);
+        $('#sgGrid', el).scrollIntoView({ block: 'nearest' });
+      }
+      const st = e.target.closest('[data-pick-style]');
+      if (st) { setStyle(st.dataset.pickStyle); repaint(); }
+      const v = e.target.closest('[data-pick-variant]');
+      if (v) { setStyle(p.style, v.dataset.pickVariant); repaint(); }
+    });
+  });
+}
+
 // スタイルによって出す項目（ガラスだけの夜モード・透け具合）
 function styleExtras() {
   const p = prefs();
@@ -372,7 +421,7 @@ function openSettings() {
     <div class="sheet-head"><h2>設定</h2><span class="spacer"></span><button class="icon-btn" id="sClose" aria-label="閉じる">${ICON.close}</button></div>
     <div class="setting-group style-group">
       <h3>スタイル</h3>
-      <div id="stylePicker">${stylePicker()}</div>
+      <div id="stylePicker">${styleSummary()}</div>
       <div id="styleExtras">${styleExtras()}</div>
     </div>
     <div class="settings">
@@ -420,13 +469,11 @@ function openSettings() {
       </div>
     </div>`, (el) => {
     const repaintStyle = () => {
-      $('#stylePicker', el).innerHTML = stylePicker();
+      $('#stylePicker', el).innerHTML = styleSummary();
       $('#styleExtras', el).innerHTML = styleExtras();
     };
     $('#sClose', el).onclick = closeSheet;
     el.addEventListener('click', (e) => {
-      const st = e.target.closest('[data-pick-style]');
-      if (st) { setStyle(st.dataset.pickStyle); repaintStyle(); renderAll(); }
       const v = e.target.closest('[data-pick-variant]');
       if (v) { setStyle(p.style, v.dataset.pickVariant); repaintStyle(); renderAll(); }
       if (e.target.closest('#swDark')) { setDarkMode(!p.dark); repaintStyle(); renderAll(); }
@@ -519,16 +566,49 @@ function notifyStatusText() {
 function webAppGroup() {
   const perm = window.api.notifyPermission();
   const install = window.api.ios && !window.api.standalone
-    ? settingRow('ホーム画面に追加', 'Safari の下にある共有ボタン（□↑）→「ホーム画面に追加」。アイコンから全画面で開けて、オフラインでも使えます', '')
+    ? settingRow('ホーム画面に追加', 'アイコンから全画面で開けて、下の Safari のバーが消えます。オフラインでも使えます', `<button class="btn" id="installBtn">やり方</button>`)
+    : '';
+  const tabs = IS_TOUCH && visibleViews().length > 5
+    ? settingRow('下のタブ', '並べる画面を 4 つまで選べます。残りは「その他」から開きます', '') + `<div class="tab-picker" id="tabPicker">${tabPickerHtml()}</div>`
     : '';
   return `<div class="setting-group">
     <h3>この端末</h3>
     ${install}
+    ${tabs}
     ${settingRow('通知', `<span id="notifyDesc">${notifyStatusText()}</span>`, perm === 'default' ? `<button class="btn" id="notifyBtn">${ICON.bell}許可する</button>` : '')}
   </div>`;
 }
 
+function tabPickerHtml() {
+  const { main } = touchTabs();
+  return VIEWS.filter((v) => visibleViews().includes(v)).map((v) => `<button class="chip ${main.includes(v) ? 'on' : ''}" data-tabpick="${v.id}">${ICON[v.icon]}${v.label}</button>`).join('');
+}
+
 function bindWebAppGroup(el) {
+  const ib = $('#installBtn', el);
+  if (ib) ib.onclick = openInstallHowto;
+  const tp = $('#tabPicker', el);
+  if (tp) {
+    tp.onclick = (e) => {
+      const b = e.target.closest('[data-tabpick]');
+      if (!b) return;
+      const p = prefs();
+      let cur = touchTabs().main.map((v) => v.id).filter((id) => TOUCH_TAB_ORDER.includes(id));
+      const id = b.dataset.tabpick;
+      if (cur.includes(id)) {
+        if (cur.length <= 1) return;
+        cur = cur.filter((x) => x !== id);
+      } else {
+        if (cur.length >= 4) { toast('タブは 4 つまでです。先にどれかを外してください'); return; }
+        cur.push(id);
+      }
+      // 並びはいつもの順番に
+      p.tabs = VIEWS.map((v) => v.id).filter((x) => cur.includes(x));
+      save();
+      renderTabbar();
+      tp.innerHTML = tabPickerHtml();
+    };
+  }
   const btn = $('#notifyBtn', el);
   if (!btn) return;
   btn.onclick = async () => {
