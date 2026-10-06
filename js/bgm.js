@@ -12,7 +12,7 @@ const BGM_SOUNDS = [
   { id: 'stream', icon: '🏞️', name: '川のせせらぎ' },
   { id: 'waves', icon: '🌊', name: '波の音' },
   { id: 'fire', icon: '🔥', name: '焚き火' },
-  { id: 'forest', icon: '🌲', name: '森の小鳥' },
+  { id: 'forest', icon: '🐦', name: '小鳥のさえずり' },
   { id: 'insects', icon: '🦗', name: '虫の声' },
   { id: 'cafe', icon: '☕', name: 'カフェ' },
   { id: 'train', icon: '🚃', name: '電車の中' },

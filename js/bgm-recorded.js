@@ -17,11 +17,11 @@ const SOUND_BASE = 'sounds/';
 const RECORDED = {
   rain: { loop: true, lowpass: 7000, files: [{ f: 'rain.mp3', gain: 1.8 }] },
   stream: { loop: true, files: [{ f: 'stream.mp3', gain: 29 }] },
-  // 波：サーッという高い音（ノイズっぽさ）を削って、ザブーンという低い音を残す
-  waves: { loop: true, lowpass: 1700, files: [{ f: 'waves.mp3', gain: 1.1 }] },
+  // 波：湖の岸に寄せるおだやかな波（海の「サーッ」が少ない）。風のゴーッという低い音と、高いシャー音を少し削る
+  waves: { loop: true, highpass: 90, lowpass: 3800, files: [{ f: 'waves.mp3', gain: 1.36 }] },
   fire: { loop: true, files: [{ f: 'fire.mp3', gain: 4.9, from: 10, end: 54 }] },
-  // 森：鳥の声を少し遠くに（小さく・やわらかく）して、にぎやかさを抑える
-  forest: { loop: true, lowpass: 2400, files: [{ f: 'forest.mp3', gain: 4.4 }] },
+  // 小鳥：明け方に窓の前でさえずる 1 羽。まわりは静かで、鳴き声もまばら
+  forest: { loop: true, lowpass: 6000, files: [{ f: 'forest.mp3', gain: 0.37 }] },
   insects: { loop: true, layers: [0, 9], files: [{ f: 'insects.mp3', gain: 1.5 }] },
   cafe: { loop: true, files: [{ f: 'cafe.mp3', gain: 0.47 }] },
   train: { loop: true, lowpass: 9000, files: [{ f: 'train.mp3', gain: 0.27 }] },
@@ -33,9 +33,9 @@ const RECORDED = {
 const SOUND_CREDITS = [
   {"id": "rain", "file": "rain.mp3", "title": "Calm rain", "artist": "Zuvji", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Calm_rain.wav"},
   {"id": "stream", "file": "stream.mp3", "title": "433589 jackthemurray stream-river-water-up-close", "artist": "jackthemurray", "license": "CC0", "page": "https://commons.wikimedia.org/wiki/File:433589_jackthemurray_stream-river-water-up-close.wav"},
-  {"id": "waves", "file": "waves.mp3", "title": "NausetBeach", "artist": "Groov3", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:NausetBeach.ogg"},
+  {"id": "waves", "file": "waves.mp3", "title": "Lake Okeechobee Surf in April 2016", "artist": "Andrew Migneault", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Lake_Okeechobee_Surf_in_April_2016.ogg"},
   {"id": "fire", "file": "fire.mp3", "title": "Campfire sound ambience", "artist": "Glaneur de sons", "license": "CC BY 3.0", "page": "https://commons.wikimedia.org/wiki/File:Campfire_sound_ambience.ogg"},
-  {"id": "forest", "file": "forest.mp3", "title": "Atmo – Vögel Standard", "artist": "Burkhard Mücke", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Atmo_%E2%80%93_V%C3%B6gel_Standard.mp3"},
+  {"id": "forest", "file": "forest.mp3", "title": "Bird singing", "artist": "jc (PDSounds)", "license": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Bird_singing.ogg"},
   {"id": "insects", "file": "insects.mp3", "title": "Audio Hörbild Grillenzirpen - nachts um 3 im Föhrenwald Mödling", "artist": "DrTrumpet", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Audio_H%C3%B6rbild_Grillenzirpen_-_nachts_um_3_im_F%C3%B6hrenwald_M%C3%B6dling.ogg"},
   {"id": "cafe", "file": "cafe.mp3", "title": "Cafe ambiance", "artist": "Marble Toast", "license": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Cafe_ambiance.ogg"},
   {"id": "train", "file": "train.mp3", "title": "Northern Trains 323239 DMSO A, on the Crewe to Manchester line, Jan 2022", "artist": "TheFrog001", "license": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Northern_Trains_323239_DMSO_A%2C_on_the_Crewe_to_Manchester_line%2C_Jan_2022.ogg"},
@@ -58,17 +58,20 @@ function playRecorded(life, def, firstOffset = null) {
   limit.attack.value = 0.002;
   limit.release.value = 0.2;
   limit.connect(life.dest);
-  if (def.lowpass) {
-    // 2 段重ねて、境目から上をしっかり削る
-    const lp1 = ctx.createBiquadFilter();
-    const lp2 = ctx.createBiquadFilter();
-    for (const lp of [lp1, lp2]) { lp.type = 'lowpass'; lp.frequency.value = def.lowpass; lp.Q.value = 0.6; }
-    out.connect(lp1);
-    lp1.connect(lp2);
-    lp2.connect(limit);
-  } else {
-    out.connect(limit);
+  // lowpass / highpass：2 段重ねて、境目から上（下）をしっかり削る
+  let node = out;
+  for (const [type, freq] of [['lowpass', def.lowpass], ['highpass', def.highpass]]) {
+    if (!freq) continue;
+    for (let i = 0; i < 2; i++) {
+      const f = ctx.createBiquadFilter();
+      f.type = type;
+      f.frequency.value = freq;
+      f.Q.value = 0.6;
+      node.connect(f);
+      node = f;
+    }
   }
+  node.connect(limit);
   const decks = [0, 1].map(() => {
     const a = new Audio();
     a.preload = 'auto';
