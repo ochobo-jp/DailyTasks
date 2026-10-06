@@ -2075,7 +2075,7 @@ html[data-style="vapor"] body::before {
 .vswatch.on small { color: var(--ink); font-weight: 700; }
 
 /* スタイルの一覧 */
-.style-filters { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 0 12px; padding-bottom: 2px; }
+.style-filters { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 0 12px; padding-bottom: 2px; padding-right: 24px; -webkit-mask: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
 .style-filters::-webkit-scrollbar { display: none; }
 .style-filters .chip { flex-shrink: 0; }
 .style-grid.gallery { margin-bottom: 12px; }
@@ -2089,7 +2089,7 @@ html[data-style="vapor"] body::before {
 .layout-wide .style-dock, .layout-xwide .style-dock { margin: 0 -24px -22px; padding: 12px 24px 16px; bottom: -22px; }
 .dock-text { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; min-width: 0; }
 .dock-text b { font-size: 15px; white-space: nowrap; }
-.dock-text small { font-size: 11.5px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dock-text small { font-size: 11.5px; color: var(--ink-2); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .style-dock .vswatches { margin-bottom: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 
 /* ---------- スタイルの一覧：検索・お気に入り・日替わり ---------- */

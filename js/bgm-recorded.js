@@ -10,22 +10,23 @@
 const SOUND_BASE = 'sounds/';
 
 // どの音にどのファイルを使うか。loop: 1 つを繰り返す / それ以外: 曲を順番に。
-// gain は録音ごとの音の大きさをそろえる倍率（あらかじめ録音の大きさを測って決めた。大きな音が割れない範囲で）。
+// gain は録音ごとの音の大きさをそろえる倍率。scripts/bgm-loudness.js でファイル全体の「聞こえる大きさ」（K 特性）を測って、
+// 自然の音はおよそ -27〜-30 dB、曲は -25 dB にそろえた。焚き火のパチッなどの急な大きい音は、最後のリミッターで抑える。
 // from / end：最初や最後が静かすぎる録音は、その間だけを繰り返す。layers：同じ録音をずらして重ねる（鳴き声のすき間を埋める）。
 // mix：別々の録音を同時に重ねる。lowpass：高い音を少しやわらげる（雨のパチパチなど）
 const RECORDED = {
   rain: { loop: true, lowpass: 7000, files: [{ f: 'rain.mp3', gain: 1.8 }] },
-  stream: { loop: true, files: [{ f: 'stream.mp3', gain: 24 }] },
+  stream: { loop: true, files: [{ f: 'stream.mp3', gain: 29 }] },
   // 波：サーッという高い音（ノイズっぽさ）を削って、ザブーンという低い音を残す
-  waves: { loop: true, lowpass: 1700, files: [{ f: 'waves.mp3', gain: 2.6 }] },
-  fire: { loop: true, files: [{ f: 'fire.mp3', gain: 3.5, from: 10, end: 54 }] },
+  waves: { loop: true, lowpass: 1700, files: [{ f: 'waves.mp3', gain: 1.1 }] },
+  fire: { loop: true, files: [{ f: 'fire.mp3', gain: 4.9, from: 10, end: 54 }] },
   // 森：鳥の声を少し遠くに（小さく・やわらかく）して、にぎやかさを抑える
-  forest: { loop: true, lowpass: 2400, files: [{ f: 'forest.mp3', gain: 3.8 }] },
-  insects: { loop: true, layers: [0, 9], files: [{ f: 'insects.mp3', gain: 3 }] },
-  cafe: { loop: true, files: [{ f: 'cafe.mp3', gain: 0.65 }] },
-  train: { loop: true, lowpass: 9000, files: [{ f: 'train.mp3', gain: 0.4 }] },
-  celtic: { loop: false, files: [{ f: 'celtic1.mp3', gain: 0.4, from: 6 }, { f: 'celtic2.mp3', gain: 0.62 }] },
-  lofi: { loop: false, files: [{ f: 'lofi1.mp3', gain: 0.45 }, { f: 'lofi2.mp3', gain: 0.32 }] },
+  forest: { loop: true, lowpass: 2400, files: [{ f: 'forest.mp3', gain: 4.4 }] },
+  insects: { loop: true, layers: [0, 9], files: [{ f: 'insects.mp3', gain: 1.5 }] },
+  cafe: { loop: true, files: [{ f: 'cafe.mp3', gain: 0.47 }] },
+  train: { loop: true, lowpass: 9000, files: [{ f: 'train.mp3', gain: 0.27 }] },
+  celtic: { loop: false, files: [{ f: 'celtic1.mp3', gain: 0.34, from: 6 }, { f: 'celtic2.mp3', gain: 0.62 }] },
+  lofi: { loop: false, files: [{ f: 'lofi1.mp3', gain: 0.36 }, { f: 'lofi2.mp3', gain: 0.27 }] },
 };
 
 // 音源の作者とライセンス（設定と BGM メニューの「音源について」に出す）
@@ -49,6 +50,14 @@ const XFADE = 4;          // つなぎ目のクロスフェード（秒）
 function playRecorded(life, def, firstOffset = null) {
   const ctx = actx();
   const out = ctx.createGain();
+  // 最後にリミッター：音量を上げたときに、パチッという急な音が割れないように
+  const limit = ctx.createDynamicsCompressor();
+  limit.threshold.value = -6;
+  limit.knee.value = 4;
+  limit.ratio.value = 16;
+  limit.attack.value = 0.002;
+  limit.release.value = 0.2;
+  limit.connect(life.dest);
   if (def.lowpass) {
     // 2 段重ねて、境目から上をしっかり削る
     const lp1 = ctx.createBiquadFilter();
@@ -56,9 +65,9 @@ function playRecorded(life, def, firstOffset = null) {
     for (const lp of [lp1, lp2]) { lp.type = 'lowpass'; lp.frequency.value = def.lowpass; lp.Q.value = 0.6; }
     out.connect(lp1);
     lp1.connect(lp2);
-    lp2.connect(life.dest);
+    lp2.connect(limit);
   } else {
-    out.connect(life.dest);
+    out.connect(limit);
   }
   const decks = [0, 1].map(() => {
     const a = new Audio();

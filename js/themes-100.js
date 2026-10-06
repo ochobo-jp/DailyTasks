@@ -1,7 +1,7 @@
 'use strict';
 
 // ============================================================
-//  スタイル 61〜100（themes.js の一覧に足す）。CSS は themes-100.css
+//  スタイルの追加分（themes.js の一覧に足す）。CSS は themes-100.css
 // ============================================================
 
 const MORE_STYLES = [
@@ -92,8 +92,32 @@ const MORE_STYLES = [
     { id: 'white', name: 'ホワイト', colors: ['#f4f2ef', '#b8975a'] }, { id: 'black', name: 'ブラック', colors: ['#161616', '#c9a96e'], dark: true }] }],
   ['simple', { id: 'wood', name: '木', desc: '木の机の上に白い紙。木目がやさしい', variants: [
     { id: 'light', name: 'メープル', colors: ['#e3c9a3', '#7a5230'] }, { id: 'dark', name: 'ウォルナット', colors: ['#4a3426', '#e2b77a'], dark: true }] }],
-  ['simple', { id: 'eink', name: '電子ペーパー', desc: '電子書籍の画面のような、白と黒だけの静かな画面。動きもなし', variants: [
-    { id: 'white', name: 'ホワイト', colors: ['#f2f2ee', '#222222'] }, { id: 'warm', name: 'ウォーム', colors: ['#efe9dc', '#2a2620'] }] }],
+
+  // ---------- 似ていたスタイルの代わりに入れた 12 種類 ----------
+  ['simple', { id: 'desert', name: '砂漠', desc: 'なだらかな砂の丘と大きな太陽。あたたかい砂の色', variants: [
+    { id: 'day', name: '昼', colors: ['#f3e3c7', '#c4622d'] }, { id: 'dusk', name: '夕暮れ', colors: ['#2b1d2e', '#ff9a5a'], dark: true }] }],
+  ['simple', { id: 'topo', name: '登山地図', desc: '等高線の地図。見出しは山頂の ▲、タスクは道しるべ', variants: [
+    { id: 'trail', name: 'トレイル', colors: ['#eef0e2', '#c0392b'] }, { id: 'night', name: '夜の山', colors: ['#14201c', '#e6c45a'], dark: true }] }],
+  ['simple', { id: 'sketch', name: 'スケッチ', desc: 'えんぴつで描いたような、少しゆがんだ手描きの線', variants: [
+    { id: 'pencil', name: 'えんぴつ', colors: ['#fbfbf8', '#333333'] }, { id: 'pen', name: '青ペン', colors: ['#fbfbf8', '#2456c8'] }] }],
+  ['cute', { id: 'circus', name: 'サーカス', desc: '赤白しまのテントと、電球がぐるりと光る看板', variants: [
+    { id: 'classic', name: 'クラシック', colors: ['#fff4e2', '#d7263d'] }, { id: 'night', name: '夜の部', colors: ['#1d1030', '#ffcc33'], dark: true }] }],
+  ['dark', { id: 'halloween', name: 'ハロウィン', desc: '大きな月とクモの巣。済んだタスクにはかぼちゃ', dark: true, variants: [
+    { id: 'pumpkin', name: 'かぼちゃ', colors: ['#16101f', '#ff7a1a'] }, { id: 'ghost', name: 'おばけ', colors: ['#0f1418', '#9fe870'] }] }],
+  ['dark', { id: 'circuit', name: '回路基板', desc: '緑の基板に金の配線。チェックははんだのパッド', dark: true, variants: [
+    { id: 'green', name: 'グリーン', colors: ['#0b3d2a', '#e8b84a'] }, { id: 'blue', name: 'ブルー', colors: ['#0b2140', '#e8b84a'] }, { id: 'black', name: 'ブラック', colors: ['#141414', '#e8b84a'] }] }],
+  ['dark', { id: 'gem', name: '宝石', desc: 'ベルベットの上に、カットされた宝石の色。チェックもダイヤ形', dark: true, variants: [
+    { id: 'ruby', name: 'ルビー', colors: ['#14070b', '#e0115f'] }, { id: 'sapphire', name: 'サファイア', colors: ['#060b1c', '#2f6bff'] }, { id: 'emerald', name: 'エメラルド', colors: ['#04140d', '#19b36b'] }] }],
+  ['unique', { id: 'sento', name: '銭湯', desc: 'タイルの壁にペンキの富士山。見出しはのれん', variants: [
+    { id: 'men', name: '男湯', colors: ['#eef4f8', '#2a5caa'] }, { id: 'women', name: '女湯', colors: ['#f8eef0', '#c8364a'] }] }],
+  ['unique', { id: 'showa', name: '昭和レトロ', desc: 'ホーロー看板と、花柄の壁紙。喫茶店や商店街の色', variants: [
+    { id: 'kissa', name: '喫茶', colors: ['#f2e6cc', '#b5462f'] }, { id: 'shotengai', name: '商店街', colors: ['#e8f0e6', '#1f7a6e'] }] }],
+  ['unique', { id: 'camo', name: '迷彩', desc: '迷彩柄にステンシルの文字。見出しはドッグタグ', variants: [
+    { id: 'woodland', name: 'ウッドランド', colors: ['#4b5320', '#d9c58b'], dark: true }, { id: 'desert', name: 'デザート', colors: ['#c2a878', '#5b4a2e'] }, { id: 'urban', name: 'アーバン', colors: ['#5a5f66', '#ff6a00'], dark: true }] }],
+  ['bold', { id: 'cardboard', name: '段ボール', desc: 'タスクが段ボール箱に。ガムテープで閉じて、済んだら「配達済」', variants: [
+    { id: 'kraft', name: 'クラフト', colors: ['#c89f6c', '#b3261e'] }, { id: 'white', name: '白箱', colors: ['#e6e1d6', '#2a6fb0'] }] }],
+  ['bold', { id: 'puzzle', name: 'パズル', desc: 'タスクがジグソーパズルのピースに。済んだピースははまって光る', variants: [
+    { id: 'color', name: 'カラフル', colors: ['#f4f1ea', '#ef6f5e'] }, { id: 'wood', name: '木のパズル', colors: ['#e8d2ab', '#8a5a2b'] }] }],
 ];
 
 for (const [cat, style] of MORE_STYLES) {

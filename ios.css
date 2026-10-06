@@ -173,7 +173,8 @@ html[data-platform="ios"] .menu-item:active:not(:disabled) { background: var(--a
 
 /* ---------- 検索・トースト・集中モード ---------- */
 
-html[data-platform="ios"] .layout-compact .palette { top: calc(var(--safe-t) + 8px); left: 8px; right: 8px; width: auto; }
+html[data-platform="ios"] .layout-compact .palette { top: calc(var(--safe-t) + 8px); left: 8px; right: 8px; width: auto; transform: none; animation-name: pal-in-ios; }
+@keyframes pal-in-ios { from { opacity: 0; transform: translateY(-6px) scale(0.99); } }
 html[data-platform="ios"] .toast { bottom: calc(var(--safe-b) + var(--tabbar-h) + 84px); }
 html[data-platform="ios"].kb-open .toast { bottom: 84px; }
 html[data-platform="ios"] .zen { padding-top: calc(var(--safe-t) + 16px); padding-bottom: calc(var(--safe-b) + 16px); }
@@ -207,3 +208,6 @@ html[data-platform="ios"] .layout-compact .style-dock {
   margin: 0 calc(-1 * (var(--safe-r) + 18px)) calc(-1 * (var(--safe-b) + 20px)) calc(-1 * (var(--safe-l) + 18px));
   padding: 12px calc(var(--safe-r) + 18px) calc(var(--safe-b) + 14px) calc(var(--safe-l) + 18px);
 }
+
+/* タッチでは「元に戻す」は下のお知らせから。タイトルバーのボタンは出さない */
+html[data-platform="ios"] #undoBtn, html[data-platform="ios"] #redoBtn { display: none !important; }

@@ -48,6 +48,17 @@ function renderTitlebar() {
   $('#maxBtn').innerHTML = state.windowState.maximized || state.windowState.fullScreen ? ICON.restore : ICON.maximize;
   $('#maxBtn').title = state.windowState.fullScreen ? '全画面を終了（F11）' : state.windowState.maximized ? '元のサイズに戻す' : '最大化（F11 で全画面）';
   $('#hideBtn').innerHTML = ICON.close;
+  updateUndoButtons();
+}
+
+// 元に戻せる操作があるときだけ、タイトルバーに ↶ ↷ を出す（マウスだけでも戻せるように）
+function updateUndoButtons() {
+  const u = $('#undoBtn');
+  const r = $('#redoBtn');
+  if (!u || !r) return;
+  if (!u.innerHTML) { u.innerHTML = ICON.undo; r.innerHTML = ICON.redo; }
+  u.hidden = !undoHistory.undo.length || state.layout === 'mini';
+  r.hidden = !undoHistory.redo.length || state.layout === 'mini';
 }
 
 function navBadge(id) {
@@ -436,11 +447,13 @@ function renderMonth() {
     if (todos.length) tipParts.push(`ToDo ${todos.length - open.length}/${todos.length}`);
     let marks;
     if (showTitles) {
-      const max = state.windowState.fullScreen ? 4 : 3;
+      // 入りきらないときは「+N」の行も数に入れて、マスからはみ出さないようにする
+      const lines = state.windowState.fullScreen ? 4 : 3;
+      const max = todos.length > lines ? lines - 1 : lines;
       marks = `<span class="cal-evs">${todos.slice(0, max).map((x) => `<span class="cal-ev ${x.done ? 'done' : ''}" style="--c:${listById(x.listId)?.color || 'var(--accent-a)'}">${x.time ? `${x.time} ` : ''}${escapeHtml(x.title)}</span>`).join('')}
         ${todos.length > max ? `<span class="cal-more">+${todos.length - max}</span>` : ''}</span>`;
     } else {
-      marks = `<span class="cal-dots">${open.slice(0, 4).map((x) => `<i style="background:${listById(x.listId)?.color || 'var(--accent-a)'}"></i>`).join('')}${open.length > 4 ? '<b>+</b>' : ''}</span>`;
+      marks = `<span class="cal-dots">${open.slice(0, 3).map((x) => `<i style="background:${listById(x.listId)?.color || 'var(--accent-a)'}"></i>`).join('')}${open.length > 3 ? '<b>+</b>' : ''}</span>`;
     }
     cells += `<button class="cal-cell ${inMonth ? '' : 'out'} ${k === t ? 'today' : ''} ${k === state.calSelected ? 'sel' : ''} ${d.getDay() === 0 ? 'sun' : d.getDay() === 6 ? 'sat' : ''}"
         data-act="cal-select" data-day="${k}" data-drop-day="${k}" data-tip="${tipParts.join('・')}">
@@ -464,7 +477,7 @@ function renderMonth() {
   // 今日の日記は右パネルにもあるので、全画面のときは出さない
   if (sel < t || (sel === t && state.layout !== 'xwide')) detail += journalCard(sel);
 
-  return `<div class="cal-layout">
+  return `<div class="cal-wrap"><div class="cal-layout">
     <section class="card cal">
       ${calToolbar(`${y}年 ${m}月`, 'month')}
       <div class="cal-grid cal-week">${weekOrder().map((d) => `<span class="${d === 0 ? 'sun' : d === 6 ? 'sat' : ''}">${WEEK[d]}</span>`).join('')}</div>
@@ -472,7 +485,7 @@ function renderMonth() {
       <p class="hint small">ToDo をドラッグして日付に落とすと、期限を変えられます</p>
     </section>
     <div class="cal-detail">${detail}</div>
-  </div>`;
+  </div></div>`;
 }
 
 function renderWeekBoard() {

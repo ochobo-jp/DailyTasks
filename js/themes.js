@@ -249,22 +249,6 @@ const STYLES = [
     ],
   },
   {
-    id: 'nordic', name: '北欧', desc: 'あたたかい白に、くすんだ緑とテラコッタ。ゆったりした余白',
-    variants: [
-      { id: 'sage', name: 'セージ', colors: ['#f6f3ee', '#7d9a7e'] },
-      { id: 'terracotta', name: 'テラコッタ', colors: ['#f7f1ea', '#c8714d'] },
-      { id: 'fjord', name: 'フィヨルド', colors: ['#f1f4f6', '#4f6d8a'] },
-    ],
-  },
-  {
-    id: 'frost', name: 'フロスト', desc: '凍った窓ガラスのような、ひんやり澄んだ青白い画面',
-    variants: [
-      { id: 'ice', name: 'アイス', colors: ['#e8f3fb', '#3a8fd6'] },
-      { id: 'mint', name: 'ミント', colors: ['#e6f7f3', '#1fa38a'] },
-      { id: 'lilac', name: 'ライラック', colors: ['#f0ecfb', '#7b61d6'] },
-    ],
-  },
-  {
     id: 'linen', name: 'リネン', desc: '麻の布の手ざわり。明朝体の見出しと、やさしい生成り色',
     variants: [
       { id: 'natural', name: 'ナチュラル', colors: ['#efe8dc', '#8c6b4a'] },
@@ -273,14 +257,6 @@ const STYLES = [
     ],
   },
   // ---------- かわいい（追加） ----------
-  {
-    id: 'candy', name: 'キャンディ', desc: 'ストライプの包み紙と、ぷるんとつやのあるボタン',
-    variants: [
-      { id: 'strawberry', name: 'いちごミルク', colors: ['#ffe4ec', '#ff5d8f'] },
-      { id: 'ramune', name: 'ラムネ', colors: ['#e2f6ff', '#2fb4e8'] },
-      { id: 'melon', name: 'メロンソーダ', colors: ['#e5fbe7', '#2ec26a'] },
-    ],
-  },
   {
     id: 'bear', name: 'くま', desc: 'カードにくまの耳。ふわふわの茶色で、ほっとする画面',
     variants: [
@@ -298,14 +274,6 @@ const STYLES = [
     ],
   },
   {
-    id: 'y2k', name: 'Y2K', desc: 'ホログラムとクロームの 2000 年代。キラキラの星つき',
-    variants: [
-      { id: 'holo', name: 'ホログラム', colors: ['#f2f0ff', '#9b7bff'] },
-      { id: 'bubble', name: 'バブル', colors: ['#fff0fb', '#ff4fc3'] },
-      { id: 'chrome', name: 'クローム', colors: ['#eef1f5', '#5a6b85'] },
-    ],
-  },
-  {
     id: 'picnic', name: 'ピクニック', desc: 'ギンガムチェックの敷物の上に、紙ナプキンのカード',
     variants: [
       { id: 'red', name: 'あか', colors: ['#fbe9e7', '#d84339'] },
@@ -314,14 +282,6 @@ const STYLES = [
     ],
   },
   // ---------- ダーク（追加） ----------
-  {
-    id: 'midnight', name: 'ミッドナイト', desc: '深い紺に金の細い線。ホテルのラウンジのような落ち着き', dark: true,
-    variants: [
-      { id: 'gold', name: 'ゴールド', colors: ['#0d1426', '#d4af6a'] },
-      { id: 'silver', name: 'シルバー', colors: ['#10131a', '#c4ccd8'] },
-      { id: 'emerald', name: 'エメラルド', colors: ['#071a17', '#5fc9a5'] },
-    ],
-  },
   {
     id: 'cyber', name: 'サイバー', desc: '黄色と黒の警告ストライプ、斜めに欠けた角、ゆれる文字', dark: true,
     variants: [
@@ -347,14 +307,6 @@ const STYLES = [
       { id: 'green', name: '鬼火', colors: ['#06120a', '#5cff8a'] },
     ],
   },
-  {
-    id: 'deepsea', name: '深海', desc: '光の届かない海の底。泡が立ちのぼり、青く光る', dark: true,
-    variants: [
-      { id: 'abyss', name: '深淵', colors: ['#020b18', '#2fe0d0'] },
-      { id: 'jelly', name: 'クラゲ', colors: ['#0b0618', '#c77dff'] },
-      { id: 'coral', name: 'サンゴ', colors: ['#120712', '#ff7b9c'] },
-    ],
-  },
   // ---------- 個性派（追加） ----------
   {
     id: 'blueprint', name: '設計図', desc: '青い方眼紙に白い線。寸法の矢印つきの製図のような画面', dark: true,
@@ -370,14 +322,6 @@ const STYLES = [
       { id: 'gallery', name: 'ギャラリー', colors: ['#ece8e1', '#b8892f'] },
       { id: 'modern', name: '現代美術館', colors: ['#f5f5f5', '#222222'] },
       { id: 'night', name: '夜の美術館', colors: ['#1b1714', '#c9a24a'], dark: true },
-    ],
-  },
-  {
-    id: 'botanical', name: '植物図鑑', desc: '古い図鑑の紙に、緑の挿絵と飾り罫',
-    variants: [
-      { id: 'fern', name: 'シダ', colors: ['#f2ecd9', '#4f7a3a'] },
-      { id: 'rose', name: 'バラ', colors: ['#f5e9df', '#a8445b'] },
-      { id: 'lavender', name: 'ラベンダー', colors: ['#efebf2', '#6d5a9e'] },
     ],
   },
   {
@@ -398,27 +342,11 @@ const STYLES = [
   },
   // ---------- 大胆（追加） ----------
   {
-    id: 'chat', name: 'チャット', desc: 'タスクがメッセージの吹き出しに。見出しは日付の区切り',
-    variants: [
-      { id: 'green', name: 'グリーン', colors: ['#8fb4d9', '#06c755'] },
-      { id: 'blue', name: 'ブルー', colors: ['#f1f1f4', '#0a84ff'] },
-      { id: 'dark', name: 'ダーク', colors: ['#0f0f12', '#5e5ce6'], dark: true },
-    ],
-  },
-  {
     id: 'metro', name: 'タイル', desc: '真四角の色タイルがびっしり並ぶ。大きな文字と英字の見出し',
     variants: [
       { id: 'color', name: 'カラフル', colors: ['#1f1f1f', '#00a300'], dark: true },
       { id: 'light', name: 'ライト', colors: ['#f0f0f0', '#2d89ef'] },
       { id: 'mono', name: 'モノ', colors: ['#111111', '#ffffff'], dark: true },
-    ],
-  },
-  {
-    id: 'timeline', name: '年表', desc: 'タスクが 1 本の線でつながった年表に。丸い節をたどって進む',
-    variants: [
-      { id: 'indigo', name: 'インディゴ', colors: ['#f5f6fb', '#4b5bd6'] },
-      { id: 'coral', name: 'コーラル', colors: ['#fff6f3', '#f0644c'] },
-      { id: 'night', name: '夜', colors: ['#12141c', '#7ee0c3'], dark: true },
     ],
   },
   {
@@ -435,14 +363,6 @@ const STYLES = [
       { id: 'fashion', name: 'ファッション', colors: ['#ffffff', '#ff2e63'] },
       { id: 'travel', name: '旅', colors: ['#f7f3ea', '#e07a2e'] },
       { id: 'tech', name: 'テック', colors: ['#0d0d0d', '#7cff6b'], dark: true },
-    ],
-  },
-  {
-    id: 'scrap', name: 'スクラップ', desc: 'ポラロイド写真のようなカードを、テープで貼ったスクラップ帳',
-    variants: [
-      { id: 'kraft', name: 'クラフト', colors: ['#cdb08a', '#ffffff'] },
-      { id: 'black', name: '黒台紙', colors: ['#24211e', '#ffffff'], dark: true },
-      { id: 'pink', name: 'ピンク', colors: ['#f7d9e1', '#ffffff'] },
     ],
   },
 
@@ -495,15 +415,6 @@ const STYLES = [
     ],
   },
   {
-    id: 'clay', name: 'クレイ', desc: 'ねんどで作ったような、ぷっくりやわらかい立体',
-    variants: [
-      { id: 'pink', name: 'ピンク', colors: ['#fde8ef', '#f27aa0'] },
-      { id: 'mint', name: 'ミント', colors: ['#e3f7ef', '#3fbf8f'] },
-      { id: 'lavender', name: 'ラベンダー', colors: ['#ece8fb', '#8b74e8'] },
-      { id: 'peach', name: 'ピーチ', colors: ['#fdeee3', '#f39a5d'] },
-    ],
-  },
-  {
     id: 'watercolor', name: '水彩', desc: '画用紙に水彩絵の具をにじませたような、やわらかい色',
     variants: [
       { id: 'spring', name: '春', colors: ['#fbf8f2', '#e7849b'] },
@@ -530,19 +441,19 @@ const STYLES = [
 // 設定のスタイル一覧で絞り込むための分類（1 つのスタイルは 1 つの分類だけに入れる）
 const STYLE_CATEGORY = {
   glass: 'simple', ios: 'simple', minimal: 'simple', soft: 'simple', material: 'simple', news: 'simple',
-  mono: 'simple', nordic: 'simple', frost: 'simple', linen: 'simple',
+  mono: 'simple', linen: 'simple',
   pop: 'cute', paper: 'cute', cafe: 'cute', comic: 'cute',
-  candy: 'cute', bear: 'cute', sakura: 'cute', y2k: 'cute', picnic: 'cute',
+  bear: 'cute', sakura: 'cute', picnic: 'cute',
   neon: 'dark', aurora: 'dark', space: 'dark', vapor: 'dark',
-  midnight: 'dark', cyber: 'dark', editor: 'dark', ember: 'dark', deepsea: 'dark',
+  cyber: 'dark', editor: 'dark', ember: 'dark',
   retro: 'unique', wa: 'unique', chalk: 'unique', terminal: 'unique', rpg: 'unique',
-  blueprint: 'unique', museum: 'unique', botanical: 'unique', receipt: 'unique', origami: 'unique',
+  blueprint: 'unique', museum: 'unique', receipt: 'unique', origami: 'unique',
   board: 'bold', bento: 'bold', brutal: 'bold', planner: 'bold', kanban: 'bold', widget: 'bold',
-  chat: 'bold', metro: 'bold', timeline: 'bold', cards: 'bold', magazine: 'bold', scrap: 'bold',
+  metro: 'bold', cards: 'bold', magazine: 'bold',
   retropc: 'bold', led: 'bold', stained: 'bold',
   aqua: 'unique', tatami: 'unique',
   nightview: 'dark',
-  clay: 'cute', watercolor: 'cute', beach: 'cute',
+  watercolor: 'cute', beach: 'cute',
   snow: 'simple',
 };
 const STYLE_FILTERS = [
@@ -560,7 +471,7 @@ const STYLE_FILTERS = [
 const systemDark = matchMedia('(prefers-color-scheme: dark)');
 systemDark.addEventListener('change', () => { if (state.data && styleById(prefs().style).autoDark) { applyAppearance(); renderAll(); } });
 
-const styleById = (id) => STYLES.find((s) => s.id === id) || STYLES[0];
+const styleById = (id) => STYLES.find((s) => s.id === liveStyleId(id)) || STYLES[0];
 const variantOf = (style, id) => style.variants.find((v) => v.id === id) || style.variants[0];
 
 function isDarkLook(style, variant, p = prefs()) {

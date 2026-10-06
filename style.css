@@ -349,7 +349,12 @@ h1, h2, .title, .date, .summary-title, .zen-title, .tl-title, .mini-title, .cal-
 .next-up:hover { filter: brightness(1.05); }
 .next-label { font-size: 10.5px; font-weight: 700; color: var(--accent); white-space: nowrap; }
 .next-up b { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.next-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.next-up { flex-wrap: wrap; row-gap: 2px; }
+/* 名前は 7 文字ぶん入らなければ次の行へ（消えてしまわないように） */
+.next-title { flex: 1 1 7em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* せまい画面では、次の予定の名前を 2 行まで出す */
+.layout-compact .next-up { flex-wrap: wrap; row-gap: 2px; }
+.layout-compact .next-title { flex-basis: 100%; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .next-until { font-size: 11px; color: var(--ink-3); white-space: nowrap; }
 
 .week { display: flex; gap: 5px; align-items: flex-end; max-width: 520px; }
@@ -729,9 +734,9 @@ kbd {
 .tl-body { flex: 1; min-width: 0; cursor: pointer; }
 .tl-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tl-time { font-size: 10.5px; color: var(--ink-3); margin-top: 1px; font-variant-numeric: tabular-nums; }
-.tl-now { position: absolute; left: 40px; right: 0; height: 0; border-top: 2px solid var(--danger); z-index: 2; pointer-events: none; }
+.tl-now { position: absolute; left: 40px; right: 0; height: 0; border-top: 2px solid var(--danger); z-index: 6; pointer-events: none; }
 .tl-now::before { content: ""; position: absolute; left: -4px; top: -5px; width: 8px; height: 8px; border-radius: 50%; background: var(--danger); }
-.tl-now span { position: absolute; right: 0; top: -17px; font-size: 10px; font-weight: 700; color: var(--danger); font-variant-numeric: tabular-nums; }
+.tl-now span { position: absolute; right: 0; top: -17px; padding: 0 4px; border-radius: 4px; background: var(--sheet-bg); font-size: 10px; font-weight: 700; color: var(--danger); font-variant-numeric: tabular-nums; }
 .tl-ghost { position: absolute; left: 44px; right: 2px; height: 0; border-top: 2px dashed var(--accent-a); z-index: 3; pointer-events: none; }
 .tl-ghost span { position: absolute; left: 4px; top: -18px; padding: 1px 6px; border-radius: 6px; background: var(--accent-a); color: #fff; font-size: 10.5px; font-weight: 700; }
 .tl-hint { margin: 6px 2px 2px; }
@@ -740,8 +745,18 @@ kbd {
    カレンダー（月・週）
    ============================================================ */
 
+.cal-wrap { container: cal / inline-size; }
 .cal-layout { display: grid; gap: 16px; }
-.layout-wide .cal-layout, .layout-xwide .cal-layout { grid-template-columns: minmax(380px, 1.35fr) minmax(300px, 1fr); align-items: start; }
+/* 横に並べるのは、カレンダーと日の詳しい内容の両方が入る広さがあるときだけ（足りないと見切れる） */
+@container cal (min-width: 860px) {
+  .layout-wide .cal-layout, .layout-xwide .cal-layout { grid-template-columns: minmax(380px, 1.35fr) minmax(300px, 1fr); align-items: start; }
+}
+/* マスがせまいとき：天気は絵だけにして、日付の数字と重ならないように */
+section.cal { container: calgrid / inline-size; }
+@container calgrid (max-width: 560px) {
+  .cal-wx small { display: none; }
+  .cal-wx { top: 2px; right: 2px; font-size: 10px; }
+}
 .cal { padding: 14px; }
 .cal-head { display: flex; align-items: center; gap: 4px; margin-bottom: 10px; flex-wrap: wrap; }
 .cal-head .seg { margin-right: 6px; }
@@ -773,9 +788,10 @@ kbd {
 .cal-cell.sun .cal-num { color: #d9587a; } .cal-cell.sat .cal-num { color: #4f8be0; }
 .cal-cell.today .cal-num { background: var(--grad); color: #fff; border-radius: 999px; padding: 0 6px; }
 .cal-mood { position: absolute; top: 3px; right: 4px; font-size: 13px; }
-.cal-dots { display: flex; gap: 3px; margin-top: auto; margin-bottom: 6px; align-items: center; }
+.cal-dots { display: flex; flex-wrap: nowrap; gap: 3px; margin-top: auto; margin-bottom: 6px; align-items: center; max-width: 100%; }
+.cal-dots i { flex-shrink: 0; }
 .cal-dots i { width: 6px; height: 6px; border-radius: 50%; }
-.cal-dots b { font-size: 10px; color: var(--ink-3); line-height: 1; }
+.cal-dots b { font-size: 9px; color: var(--ink-3); line-height: 6px; }
 .cal-evs { display: flex; flex-direction: column; gap: 2px; width: 100%; margin-top: 3px; min-width: 0; }
 .cal-ev {
   display: block; width: 100%;
@@ -792,7 +808,17 @@ kbd {
 .cal-rate span { display: block; height: 100%; background: var(--accent-a); border-radius: 2px; }
 
 .week-card { padding: 14px; }
+.week-card.cal { container: week / inline-size; }
 .week-board { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.week-board > .wk-col { min-width: 0; }
+/* 7 列が入らない広さでは、4 列 × 2 段にして横にはみ出さないように */
+@container week (max-width: 840px) {
+  .week-board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .week-board .wk-col { min-height: 180px; }
+}
+@container week (max-width: 480px) {
+  .week-board { grid-template-columns: minmax(0, 1fr); }
+}
 .layout-compact .week-board { grid-template-columns: minmax(0, 1fr); }
 .wk-col {
   display: flex; flex-direction: column; gap: 6px;
@@ -809,7 +835,7 @@ kbd {
 .wk-col.past { opacity: 0.85; }
 .wk-col.sel:not(.today) { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent-a) 40%, transparent); }
 .wk-col.drop-on { outline: 2px dashed var(--accent-a); outline-offset: -2px; }
-.wk-head { display: flex; align-items: baseline; gap: 6px; padding: 2px 6px 7px; border-bottom: 1px solid var(--line); border-radius: 8px 8px 0 0; text-align: left; }
+.wk-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; padding: 2px 6px 7px; border-bottom: 1px solid var(--line); border-radius: 8px 8px 0 0; text-align: left; }
 .wk-head:hover .wk-date { color: var(--accent); }
 .wk-dow { font-size: 11px; font-weight: 700; color: var(--ink-3); }
 .wk-dow.sun { color: #d9587a; } .wk-dow.sat { color: #4f8be0; }
@@ -1170,7 +1196,9 @@ kbd {
 .sub.done .sub-title { color: var(--ink-3); text-decoration: line-through; }
 .sub .mini-btn { opacity: 0; }
 .sub:hover .mini-btn { opacity: 1; }
-.sub-add .text { width: 100%; }
+.sub-add { display: flex; align-items: center; gap: 6px; }
+.sub-add .text { width: auto; flex: 1; min-width: 0; }
+.sub-add-btn { flex-shrink: 0; background: var(--accent-soft); color: var(--accent); }
 
 .mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .mini-stats div { display: flex; flex-direction: column; align-items: center; padding: 10px 6px; border-radius: 12px; background: var(--glass-soft); border: 1px solid var(--glass-border); }
@@ -1239,6 +1267,14 @@ kbd {
 
 .layout-wide #setBtn, .layout-xwide #setBtn, .layout-compact #pinBtn { display: none; }
 #searchBtn, #timerBtn { display: none; }
+.layout-compact #searchBtn { display: grid; }
+#undoBtn[hidden], #redoBtn[hidden] { display: none; }
+/* せまい画面は ↶ だけ（↷ は右クリックのメニューから）。日付が 2 行に折り返さないように */
+.layout-compact #redoBtn { display: none; }
+/* せまい画面は ミニ表示 ボタンも右クリックのメニューへ（日付が見切れないように） */
+.layout-compact #miniBtn { display: none; }
+.layout-compact .titlebar .date { white-space: nowrap; }
+.titlebar .tb-left { min-width: 0; }
 
 .layout-compact .tabbar { display: flex; gap: 2px; justify-content: space-between; }
 .layout-compact .tab {
@@ -1307,7 +1343,10 @@ kbd {
 .bgm-tile small { font-size: 10.5px; font-weight: 600; color: var(--ink-2); }
 .bgm-tile:hover { background: var(--field-focus); }
 .bgm-tile.on { border-color: var(--accent-a); background: var(--accent-soft); }
-.bgm-vol-row .range { width: 190px; }
+.bgm-vol-row { align-items: center; }
+.bgm-vol-row > span { padding-top: 0; }
+.bgm-vol-row .range { width: auto; flex: 1; min-width: 0; }
+.bgm-layer-row .menu-chip { min-width: 30px; padding-left: 6px; padding-right: 6px; justify-content: center; }
 .bgm-tracks { padding: 6px 10px 2px; font-size: 11.5px; color: var(--ink-3); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ============================================================
@@ -1333,6 +1372,10 @@ kbd {
 
 .tt-card { padding: 12px; margin-bottom: 16px; overflow-x: auto; }
 .tt-grid { display: grid; grid-template-columns: 52px repeat(var(--days), minmax(56px, 1fr)); gap: 4px; min-width: calc(56px + var(--days) * 60px); }
+/* せまい画面：時限の列とマスを細くして、5 日分がカードに収まるように */
+.layout-compact .tt-grid { grid-template-columns: 36px repeat(var(--days), minmax(44px, 1fr)); gap: 3px; min-width: calc(36px + var(--days) * 47px); }
+.layout-compact .tt-cell { padding: 5px 2px; }
+.layout-compact .tt-time { font-size: 8.5px; }
 .tt-corner { }
 .tt-day { text-align: center; font-size: 12px; font-weight: 700; color: var(--ink-2); padding: 2px 0 4px; border-radius: 8px; }
 .tt-day.today { color: var(--accent); background: var(--accent-soft); }

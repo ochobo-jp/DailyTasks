@@ -36,7 +36,7 @@ const DEFAULT_PREFS = {
   tint: 0.6,
   dark: false,            // ガラスの夜モード
   features: { school: true, someday: true, life: true, study: true },
-  bgm: { on: false, sound: 'rain', volume: 0.6, duringBreak: false, tracks: [], shuffle: false },
+  bgm: { on: false, sound: 'rain', layer: null, volume: 0.6, duringBreak: false, tracks: [], shuffle: false },
   classNotify: true,      // 授業の 5 分前に通知
   tabs: null,             // iPhone の下のタブに並べる画面（null ならおすすめの順）
   styleFavs: [],          // お気に入りのスタイル
@@ -89,6 +89,13 @@ function newTodo(fields) {
 }
 
 // 設定を今の形にそろえる（入れ子の項目も足りないものを補う）
+// 似ているほかのスタイルとまとめたスタイル → 引き継ぎ先
+const RETIRED_STYLES = {
+  eink: 'mono', nordic: 'linen', frost: 'snow', clay: 'soft', candy: 'pop', y2k: 'yumekawa',
+  deepsea: 'space', midnight: 'artdeco', botanical: 'museum', chat: 'sns', scrap: 'board', timeline: 'subway',
+};
+const liveStyleId = (id) => RETIRED_STYLES[id] || id;
+
 function mergePrefs(p = {}) {
   const d = freshPrefs();
   const out = {
@@ -101,6 +108,9 @@ function mergePrefs(p = {}) {
   if (p.accent && !p.variant) out.variant = p.accent;
   delete out.accent;
   // ピアノの BGM はケルトに入れ替えた
+  if (RETIRED_STYLES[out.style]) out.style = liveStyleId(out.style);
+  out.styleFavs = [...new Set((out.styleFavs || []).map(liveStyleId))];
+  out.styleRecent = [...new Set((out.styleRecent || []).map(liveStyleId))];
   if (out.bgm.sound === 'piano') out.bgm.sound = 'celtic';
   if (out.bgm.sound === 'chime') out.bgm.sound = 'cafe';
   return out;
@@ -212,6 +222,7 @@ function recordHistory() {
   if (undoHistory.undo.length > HISTORY_LIMIT) undoHistory.undo.shift();
   undoHistory.redo = [];
   undoHistory.current = snap;
+  if (typeof updateUndoButtons === 'function') updateUndoButtons();
 }
 
 // クリックなどの操作を始める前に呼ぶ。直前までの変更を 1 つの「元に戻す」単位として区切る
@@ -234,6 +245,7 @@ function undo() {
   if (!undoHistory.undo.length) return false;
   undoHistory.redo.push(undoHistory.current);
   restoreSnapshot(undoHistory.undo.pop());
+  if (typeof updateUndoButtons === 'function') updateUndoButtons();
   return true;
 }
 
@@ -242,6 +254,7 @@ function redo() {
   if (!undoHistory.redo.length) return false;
   undoHistory.undo.push(undoHistory.current);
   restoreSnapshot(undoHistory.redo.pop());
+  if (typeof updateUndoButtons === 'function') updateUndoButtons();
   return true;
 }
 

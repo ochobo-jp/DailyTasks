@@ -294,7 +294,7 @@ function openSubjectSheet(s) {
       ${field('色', `<div class="swatches">${SUBJECT_COLORS.map((c) => `<button class="swatch ${c === s.color ? 'on' : ''}" data-color="${c}" style="background:${c}"></button>`).join('')}</div>`)}
       ${field('欠席できる回数', `<div class="inline"><input type="number" class="text num-input" id="sMax" min="0" max="99" value="${s.maxAbsence ?? ''}" placeholder="—"><span class="small muted">回まで（空欄なら数えない）</span></div>`)}
       ${field('課題', `<div class="list sheet-list" id="sAssign"></div>
-        <form class="sub-add" id="sAssignForm"><input class="text" id="sAssignInput" placeholder="課題を追加…（例：金曜までに レポート）" maxlength="200"></form>`, 'full')}
+        <form class="sub-add" id="sAssignForm"><input class="text" id="sAssignInput" placeholder="課題を追加…（例：金曜までに レポート）" maxlength="200"><button class="icon-btn sub-add-btn" aria-label="追加" title="追加">${ICON.plus}</button></form>`, 'full')}
       ${field('持ち物（「、」で区切る）', `<input class="text wide-input" id="sItems" maxlength="200" value="${escapeHtml(s.items || '')}" placeholder="例：教科書、ノート、体操服">`, 'full')}
       ${field('メモ（テスト範囲など）', `<textarea class="text autosize" id="sNote" rows="2" maxlength="3000">${escapeHtml(s.note || '')}</textarea>`, 'full')}
       ${field('テストの点数', `<div class="grade-list">${gradeRows(s.id) || '<span class="muted small">まだありません</span>'}</div>

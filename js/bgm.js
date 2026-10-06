@@ -2,7 +2,8 @@
 
 // ============================================================
 //  集中タイマーの BGM
-//  雨音・波・焚き火・森・ピアノ・ローファイは、その場で WebAudio で作る（音声ファイルはいらない）。
+//  自然の音・カフェ・電車・曲は本物の録音（bgm-recorded.js）、ブラウン / ホワイトノイズはその場で作る。
+//  「重ねる」で、もう 1 つの音を小さく重ねられる（雨＋カフェ など）。
 //  「マイ音楽」は自分の曲ファイルを順番に（またはシャッフルで）流す
 // ============================================================
 
@@ -30,6 +31,7 @@ const bgm = {
   ctx: null,
   out: null,
   current: null,     // 鳴っている音 { id, life }
+  layer: null,       // 重ねている音 { id, life }
   preview: false,    // BGM メニューを開いている間の試聴
   manual: false,     // タイマーと関係なく流している
   audio: null,       // マイ音楽の再生
@@ -238,22 +240,25 @@ function makeLife(dest) {
 
 // ---------- 再生の切り替え ----------
 
-function startGenerated(id) {
+// 重ねる音の大きさ（メインの音に対して）
+const LAYER_LEVEL = 0.45;
+
+function startGenerated(id, slot = 'current') {
   const ctx = actx();
   const dest = amp(0);
   dest.connect(bgm.out);
   const t = ctx.currentTime;
   dest.gain.setValueAtTime(0, t);
-  dest.gain.linearRampToValueAtTime(SOUND_LEVEL[id] ?? 1, t + 1.8);
+  dest.gain.linearRampToValueAtTime((SOUND_LEVEL[id] ?? 1) * (slot === 'layer' ? LAYER_LEVEL : 1), t + 1.8);
   const life = makeLife(dest);
   BGM_BUILDERS[id](life);
-  bgm.current = { id, life };
+  bgm[slot] = { id, life };
 }
 
-function stopGenerated(fade = 1) {
-  const cur = bgm.current;
+function stopGenerated(fade = 1, slot = 'current') {
+  const cur = bgm[slot];
   if (!cur) return;
-  bgm.current = null;
+  bgm[slot] = null;
   const ctx = actx();
   const g = cur.life.dest.gain;
   const t = ctx.currentTime;
@@ -366,7 +371,22 @@ function bgmSync() {
       startGenerated(id);
     }
   }
+  // 重ねる音（マイ音楽にも重ねられる）
+  const layer = bgmLayerId();
+  if (!want || !layer) stopGenerated(1.2, 'layer');
+  else if (!bgm.layer || bgm.layer.id !== layer) {
+    stopGenerated(0.8, 'layer');
+    startGenerated(layer, 'layer');
+  }
   renderBgmChips();
+}
+
+// 重ねる音：メインと同じ音・マイ音楽・もうない音は重ねない
+function bgmLayerId() {
+  const b = prefs().bgm;
+  const id = b.layer;
+  if (!id || id === b.sound || id === 'mine' || !BGM_BUILDERS[id]) return null;
+  return id;
 }
 
 function bgmSetVolume(v) {
@@ -387,7 +407,8 @@ function bgmChip() {
   const b = prefs().bgm;
   const s = bgmSound();
   const playing = bgmPlaying();
-  const label = b.on || bgm.manual ? `${s.icon} ${s.name}` : 'BGM オフ';
+  const lay = bgmLayerId();
+  const label = b.on || bgm.manual ? `${s.icon} ${s.name}${lay ? ` ＋ ${bgmSound(lay).icon}` : ''}` : 'BGM オフ';
   return `<button class="bgm-chip ${b.on || bgm.manual ? 'on' : ''} ${playing ? 'playing' : ''}" data-act="bgm-menu" title="BGM を選ぶ">
     <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="bgm-label">${label}</span><span class="bgm-caret">▾</span></button>`;
 }
@@ -406,6 +427,10 @@ function bgmMenuHtml() {
     <div class="bgm-grid">
       ${BGM_SOUNDS.map((s) => `<button class="bgm-tile ${b.sound === s.id ? 'on' : ''}" data-m="sound" data-v="${s.id}"><span>${s.icon}</span><small>${s.name}</small></button>`).join('')}
     </div>
+    <div class="menu-row bgm-layer-row"><span>重ねる</span><div class="menu-chips">
+      <button class="menu-chip ${bgmLayerId() ? '' : 'on'}" data-m="layer" data-v="">なし</button>
+      ${BGM_SOUNDS.filter((s) => s.id !== 'mine' && s.id !== b.sound).map((s) => `<button class="menu-chip ${bgmLayerId() === s.id ? 'on' : ''}" data-m="layer" data-v="${s.id}" title="${s.name}を小さく重ねる">${s.icon}</button>`).join('')}
+    </div></div>
     <div class="menu-row bgm-vol-row"><span>音量</span><input type="range" class="range bgm-vol" min="0" max="100" value="${Math.round(b.volume * 100)}"></div>
     ${b.sound === 'mine' ? `
       <div class="bgm-tracks">${tracks.length ? `${tracks.length} 曲${cur ? `・いま：${escapeHtml(cur.name)}` : ''}` : 'まだ曲がありません'}</div>
@@ -429,6 +454,9 @@ function openBgmMenu(x, y) {
       b.sound = v;
       b.on = true;
       // 選んでいる間は試しに鳴らす
+      bgm.preview = true;
+    } else if (m === 'layer') {
+      b.layer = v || null;
       bgm.preview = true;
     } else if (m === 'on') {
       b.on = !b.on;

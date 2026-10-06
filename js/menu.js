@@ -264,5 +264,33 @@ document.addEventListener('contextmenu', (e) => {
   const list = t.closest('[data-list]');
   if (list && list.dataset.list && listById(list.dataset.list)) { listMenu(listById(list.dataset.list), e.clientX, e.clientY); return; }
   const day = t.closest('[data-drop-day]');
-  if (day) dayMenu(day.dataset.dropDay, e.clientX, e.clientY);
+  if (day) { dayMenu(day.dataset.dropDay, e.clientX, e.clientY); return; }
+  // ボタンやリンクの上でなければ、アプリ全体のメニュー（マウスだけで、たいていのことができるように）
+  if (!t.closest('button, a, select, .sheet, .palette, .menu')) appMenu(e.clientX, e.clientY);
 });
+
+function appMenu(x, y) {
+  const html = `
+    ${mItem('add', 'plus', '追加する', { kbd: 'Ctrl+N' })}
+    ${mItem('search', 'search', '検索・コマンド', { kbd: 'Ctrl+K' })}
+    ${mSep}
+    ${mItem('undo', 'undo', '元に戻す', { kbd: 'Ctrl+Z', disabled: !undoHistory.undo.length })}
+    ${mItem('redo', 'redo', 'やり直す', { kbd: 'Ctrl+Y', disabled: !undoHistory.redo.length })}
+    ${mSep}
+    ${mItem('focus', 'timer', '集中モード')}
+    ${mItem('style', 'paint', 'スタイルを選ぶ')}
+    ${IS_WEB ? '' : mItem('mini', 'pip', 'ミニ表示')}
+    ${IS_WEB ? '' : mItem('full', 'expand', state.windowState.fullScreen ? '全画面を終了' : '全画面', { kbd: 'F11' })}
+    ${mItem('settings', 'gear', '設定')}`;
+  openMenu(x, y, html, (m) => {
+    if (m === 'add') focusAdd();
+    else if (m === 'search') openPalette();
+    else if (m === 'undo') doUndo();
+    else if (m === 'redo') doRedo();
+    else if (m === 'focus') openZen();
+    else if (m === 'style') openStyleGallery();
+    else if (m === 'full') window.api.toggleFullScreen();
+    else if (m === 'mini') window.api.setMini(true);
+    else if (m === 'settings') openSettings();
+  });
+}

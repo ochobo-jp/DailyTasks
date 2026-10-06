@@ -180,7 +180,7 @@ function openSomedaySheet(x) {
       ${field('いつまでに', `<div class="chips" id="sHorizon"></div>
         <div class="inline field-note"><span class="small muted">目標の月</span><input type="month" class="text" id="sTarget" value="${x.target || ''}"><button class="chip" id="sTargetClear">なし</button></div>`, 'full')}
       ${field('ステップ', `<div class="subtasks" id="sSteps"></div>
-        <form class="sub-add" id="sStepForm"><input class="text" id="sStepInput" placeholder="小さな一歩を追加…（例：登山靴を買う）" maxlength="200"></form>`, 'full')}
+        <form class="sub-add" id="sStepForm"><input class="text" id="sStepInput" placeholder="小さな一歩を追加…（例：登山靴を買う）" maxlength="200"><button class="icon-btn sub-add-btn" aria-label="追加" title="追加">${ICON.plus}</button></form>`, 'full')}
       ${field('メモ', `<textarea class="text autosize" id="sNote" rows="3" maxlength="5000" placeholder="きっかけ、調べたこと、リンクなど">${escapeHtml(x.note)}</textarea>`, 'full')}
     </div>
     <div class="sheet-foot">

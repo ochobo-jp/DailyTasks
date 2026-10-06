@@ -73,7 +73,7 @@ function openTodoSheet(t) {
       ${field('優先度', `<div class="chips" id="sPrio"></div>`)}
       ${schoolOn() && school().subjects.length ? field('科目（学校の課題）', `<div class="chips" id="sSubj"></div>`, 'full') : ''}
       ${field('サブタスク', `<div class="subtasks" id="sSubs"></div>
-        <form class="sub-add" id="sSubForm"><input class="text" id="sSubInput" placeholder="サブタスクを追加…（複数行の貼り付けもOK）" maxlength="300"></form>`, 'full')}
+        <form class="sub-add" id="sSubForm"><input class="text" id="sSubInput" placeholder="サブタスクを追加…（複数行の貼り付けもOK）" maxlength="300"><button class="icon-btn sub-add-btn" aria-label="追加" title="追加">${ICON.plus}</button></form>`, 'full')}
       ${field('メモ', `<textarea class="text autosize" id="sNote" rows="3" maxlength="5000" placeholder="詳しいことやリンクなど">${escapeHtml(t.note)}</textarea>`, 'full')}
     </div>
     <div class="sheet-foot">

@@ -44,12 +44,20 @@ function transition(update) {
 //  画面の切り替え
 // ============================================================
 
-function switchView(view, { keepFilter = false } = {}) {
+const viewNav = { back: [], fwd: [] };
+
+function switchView(view, { keepFilter = false, fromHistory = false } = {}) {
   // 全画面のときは右パネルにタイマーがあるので、集中は集中モードで開く
   if (view === 'focus' && state.layout === 'xwide') { openZen(); return; }
   const def = VIEWS.find((v) => v.id === view);
   if (!def || (def.feature && !prefs().features[def.feature])) view = 'today';
   if (!keepFilter && view === 'todo') state.filter.listId = null;
+  // マウスの「戻る / 進む」ボタン用の履歴
+  if (!fromHistory && state.view !== view) {
+    viewNav.back.push(state.view);
+    if (viewNav.back.length > 30) viewNav.back.shift();
+    viewNav.fwd = [];
+  }
   state.view = view;
   try { localStorage.setItem('view', view); } catch { /* 保存できなくても困らない */ }
   content.scrollTop = 0;
@@ -842,6 +850,62 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ============================================================
+//  マウスだけで操作する
+// ============================================================
+
+// マウスの「戻る」ボタン：開いているものを閉じる → 前の画面へ。「進む」ボタンで次の画面へ
+document.addEventListener('mouseup', (e) => {
+  if (e.button !== 3 && e.button !== 4) return;
+  e.preventDefault();
+  if (state.layout === 'mini') return;
+  if (e.button === 3) {
+    if (!menuEl.hidden) { closeMenu(); return; }
+    if (!paletteEl.hidden) { closePalette(); return; }
+    if (!sheet.hidden) { closeSheet(); return; }
+    if (state.zen) { closeZen(); return; }
+    const prev = viewNav.back.pop();
+    if (prev) { viewNav.fwd.push(state.view); switchView(prev, { fromHistory: true, keepFilter: true }); }
+  } else {
+    const next = viewNav.fwd.pop();
+    if (next) { viewNav.back.push(state.view); switchView(next, { fromHistory: true, keepFilter: true }); }
+  }
+});
+// 戻る / 進むボタンで、ページそのものが戻ってしまわないように
+document.addEventListener('mousedown', (e) => { if (e.button === 3 || e.button === 4) e.preventDefault(); });
+
+// ホイール：横にしか動かない場所（チップの列・タブ・横に並ぶボードなど）は、ふつうのホイールで横に動かす
+document.addEventListener('wheel', (e) => {
+  if (e.ctrlKey || e.shiftKey || !e.deltaY || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  const dy = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
+  const canY = (el) => {
+    const o = getComputedStyle(el).overflowY;
+    if (!(o === 'auto' || o === 'scroll') || el.scrollHeight <= el.clientHeight + 1) return false;
+    return dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0;
+  };
+  for (let el = e.target instanceof Element ? e.target : null; el && el !== document.documentElement; el = el.parentElement) {
+    const cs = getComputedStyle(el);
+    const xs = (cs.overflowX === 'auto' || cs.overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 1;
+    if (xs) {
+      // 右から並ぶ箱（縦書き・row-reverse）は scrollLeft が 0 から負の向きに動くので、下に回すと左へ進める
+      const rev = cs.flexDirection === 'row-reverse' || cs.direction === 'rtl';
+      const max = el.scrollWidth - el.clientWidth;
+      const pos = rev ? -el.scrollLeft : el.scrollLeft;
+      const canX = dy > 0 ? pos < max - 1 : pos > 1;
+      if (!canX) continue;
+      // 低い横の列はいつでも。高い箱（ボードなど）は、縦にスクロールできるものがないときだけ
+      let vertical = false;
+      // （CSS で --wheel-x: 1 にした箱は、高くても横に動かす。縦書きの短冊の列など）
+      if (el.clientHeight > 140 && cs.getPropertyValue('--wheel-x').trim() !== '1') for (let p = el; p && p !== document.documentElement; p = p.parentElement) if (canY(p)) { vertical = true; break; }
+      if (vertical) return;
+      el.scrollLeft += rev ? -dy : dy;
+      e.preventDefault();
+      return;
+    }
+    if (canY(el)) return;
+  }
+}, { passive: false });
+
+// ============================================================
 //  ウィンドウ
 // ============================================================
 
@@ -852,6 +916,8 @@ $('#pinBtn').onclick = togglePin;
 $('#miniBtn').onclick = () => window.api.setMini(true);
 $('#setBtn').onclick = () => openSettings();
 $('#searchBtn').onclick = () => openPalette();
+$('#undoBtn').onclick = () => doUndo();
+$('#redoBtn').onclick = () => doRedo();
 $('#timerBtn').onclick = () => { if (state.zen) closeZen(); switchView('focus'); };
 $('#titlebar').addEventListener('dblclick', (e) => {
   if (!e.target.closest('button')) window.api.toggleMaximize();
